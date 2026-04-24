@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate - v1.5.6</title>
+    <title>HILO Master Ultimate GoogleSheet - v1.6.0</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
         * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
         body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: background-color 0.5s ease; }
+        .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; font-weight: bold; }
         .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 15px; }
         .mode-switcher { display: flex; background: #222; padding: 5px; border-radius: 15px; width: 100%; max-width: 350px; margin-bottom: 5px; }
         .mode-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
@@ -38,7 +39,7 @@
         .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
         .tod-box.hidden-tod::after { content: "?"; font-size: 24px; }
         .btn-yellow { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 24px; font-weight: bold; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); cursor: pointer; color: #111; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
-        .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; margin-top: 10px; }
+        .btn-open { background: #eee; color: #333; box-shadow: 0 5px 0 #bbb; margin-top: 10px; }
         button:active { transform: translateY(3px); box-shadow: none; }
         .history-container { width: 100%; max-width: 500px; margin-top: 10px; padding-bottom: 50px; }
         .history-item { background: #1e1e1e; border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; border-left: 5px solid #333; }
@@ -59,7 +60,7 @@
                 <div class="dot" style="background: #2c3e50;" onclick="changeBg('#2c3e50')"></div>
                 <div class="dot" style="background: #4a1413;" onclick="changeBg('#4a1413')"></div>
             </div>
-            <div class="version-display">V. 1.5.6</div>
+            <div class="version-display">V. 1.6.0</div>
         </div>
     </div>
 
@@ -91,9 +92,8 @@
     <audio id="openSound" src="open.mp3"></audio>
 
     <script>
-        // CONFIG ใหม่ล่าสุด
-        const TELEGRAM_TOKEN = '7585980788:AAHLOxDXYwR668-iThdCk_RI7a7LiWKb0NE';
-        const TELEGRAM_CHAT_ID = '8150591302'; 
+        // *** ใส่ URL จากการ Deploy เว็บแอป ของ Google Apps Script ที่นี่ ***
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwQfX6MdpaDzYyX7l-N3p311hwFRMixo_SH0a0aVC22/dev';
 
         let currentMode = 'hilo'; 
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
@@ -113,10 +113,21 @@
         }
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
-        function sendToTelegram(message) {
-            const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
+        // ฟังก์ชันส่งไป Google Sheets
+        function sendToGoogleSheet() {
+            const params = new URLSearchParams({
+                mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา',
+                d1: result.d1,
+                d2: result.d2,
+                d3: result.d3,
+                total: result.total,
+                status: result.status
+            });
+            
+            // ส่งแบบ GET เพื่อความรวดเร็วและไม่ติดบล็อก
             const img = new Image();
-            img.src = url; 
+            img.src = GOOGLE_SHEET_URL + '?' + params.toString();
+            console.log("ส่งข้อมูลไป Google Sheets แล้ว...");
         }
 
         function startShake() {
@@ -140,11 +151,8 @@
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
-                // ส่งผลเข้า Telegram
-                let modeTxt = currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา';
-                let diceTxt = currentMode === 'hilo' ? `${result.d1}, ${result.d2}, ${result.d3}` : `${animalMap[result.d1]}, ${animalMap[result.d2]}, ${animalMap[result.d3]}`;
-                let msg = `🎲 เขย่าใหม่! (${modeTxt})\nผล: ${diceTxt}\nสรุป: ${result.status} (${result.total})`;
-                sendToTelegram(msg);
+                // ส่งข้อมูลทันทีที่เขย่าจบ
+                sendToGoogleSheet();
 
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
