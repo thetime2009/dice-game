@@ -1,18 +1,118 @@
 <!DOCTYPE html>
-<html>
-<head><title>Dice Game</title></head>
-<body>
-    <h1>เกมทอยลูกเต๋า 3 ลูก</h1>
-    <button onclick="rollDice()">ทอยลูกเต๋า!</button>
-    <p id="result"></p>
-    <script>
-        function rollDice() {
-            let d1 = Math.floor(Math.random() * 6) + 1;
-            let d2 = Math.floor(Math.random() * 6) + 1;
-            let d3 = Math.floor(Math.random() * 6) + 1;
-            document.getElementById('result').innerHTML = 
-                `ผล: ${d1}, ${d2}, ${d3} <br> รวม: ${d1+d2+d3}`;
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium 3-Dice Game</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #0f2027; background: linear-gradient(to right, #2c5364, #203a43, #0f2027); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white; overflow: hidden; }
+        .container { text-align: center; }
+        
+        button { padding: 18px 50px; font-size: 28px; cursor: pointer; background: linear-gradient(145deg, #f1c40f, #d4ac0d); border: none; border-radius: 50px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: 0.2s; font-weight: bold; color: #333; text-transform: uppercase; letter-spacing: 2px; }
+        button:active { transform: translateY(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+        /* Modal Popup */
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
+        .modal-content { background: #1e1e1e; margin: 10% auto; padding: 40px; border: 3px solid #f1c40f; width: 320px; border-radius: 30px; text-align: center; box-shadow: 0 0 50px rgba(241, 196, 15, 0.2); animation: shakePop 0.5s ease-out; }
+
+        @keyframes shakePop {
+            0% { transform: scale(0.5); rotate: -10deg; }
+            50% { transform: scale(1.1); rotate: 10deg; }
+            100% { transform: scale(1); rotate: 0deg; }
         }
-    </script>
+
+        /* 3D-Look Dice */
+        .dice-container { display: flex; justify-content: space-between; margin: 30px 0; }
+        .dice { 
+            width: 80px; height: 80px; background: white; color: #333; border-radius: 15px; 
+            display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold;
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1), 5px 10px 20px rgba(0,0,0,0.4);
+            position: relative; border-bottom: 6px solid #ccc;
+        }
+
+        .result-text { font-size: 32px; margin-top: 20px; font-weight: bold; transition: 0.3s; }
+        .status-high { color: #2ecc71; text-shadow: 0 0 15px rgba(46, 204, 113, 0.5); }
+        .status-low { color: #3498db; text-shadow: 0 0 15px rgba(52, 152, 219, 0.5); }
+        .status-hilo { color: #ff4757; font-size: 42px; text-shadow: 0 0 20px rgba(255, 71, 87, 0.8); animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .close-btn { margin-top: 30px; padding: 10px 30px; background: #eee; color: #333; border-radius: 10px; cursor: pointer; font-weight: bold; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="font-size: 40px; margin-bottom: 30px;">DICE MASTER 3</h1>
+    <button onclick="rollDice()">ทอยลูกเต๋า!</button>
+</div>
+
+<!-- Modal -->
+<div id="diceModal" class="modal">
+    <div class="modal-content">
+        <div class="dice-container">
+            <div id="d1" class="dice">?</div>
+            <div id="d2" class="dice">?</div>
+            <div id="d3" class="dice">?</div>
+        </div>
+        <h2 id="totalScore" style="color: #aaa; margin: 10px 0;">รวม: ?</h2>
+        <div id="statusLabel" class="result-text"></div>
+        <div class="close-btn" onclick="closeModal()">เล่นอีกครั้ง</div>
+    </div>
+</div>
+
+<!-- Audio (ใส่ไฟล์เสียงฟรีจากเน็ต) -->
+<audio id="diceSound" src="https://soundjay.com"></audio>
+<audio id="winSound" src="https://soundjay.com"></audio>
+
+<script>
+    const diceSound = document.getElementById('diceSound');
+    const winSound = document.getElementById('winSound');
+
+    function rollDice() {
+        // เล่นเสียงทอย
+        diceSound.play();
+
+        // สุ่มเลข
+        const d1 = Math.floor(Math.random() * 6) + 1;
+        const d2 = Math.floor(Math.random() * 6) + 1;
+        const d3 = Math.floor(Math.random() * 6) + 1;
+        const total = d1 + d2 + d3;
+
+        // อัปเดตข้อมูลในหน้าเว็บ
+        document.getElementById('d1').innerText = d1;
+        document.getElementById('d2').innerText = d2;
+        document.getElementById('d3').innerText = d3;
+        document.getElementById('totalScore').innerText = `แต้มรวม: ${total}`;
+
+        const statusLabel = document.getElementById('statusLabel');
+        statusLabel.className = 'result-text';
+
+        if (total === 11) {
+            statusLabel.innerText = "11-HI-LO";
+            statusLabel.classList.add('status-hilo');
+            setTimeout(() => winSound.play(), 300); // เล่นเสียงชนะถ้าออก 11
+        } else if (total >= 1 && total <= 10) {
+            statusLabel.innerText = "ต่ำ (LOW)";
+            statusLabel.classList.add('status-low');
+        } else {
+            statusLabel.innerText = "สูง (HIGH)";
+            statusLabel.classList.add('status-high');
+        }
+
+        // แสดง Modal
+        document.getElementById('diceModal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('diceModal').style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('diceModal')) { closeModal(); }
+    }
+</script>
+
 </body>
 </html>
