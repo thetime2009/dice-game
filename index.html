@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Mobile - v1.2.2</title>
+    <title>HILO Master Custom - v1.2.3</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; }
-        
-        /* ป้องกันการเลือกข้อความและซูมบนมือถือ */
         * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
         
         body { 
             font-family: 'Kanit', sans-serif; background-color: var(--bg-color); 
             color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            transition: background-color 0.5s ease;
         }
 
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
@@ -23,17 +20,21 @@
         .header { margin: 10px 0 20px 0; display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
-        /* Layout ปรับตามขนาดหน้าจอ */
-        .container { 
-            display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 500px;
-        }
+        .container { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 500px; }
 
         /* ฝั่งโต๊ด */
         .tod-section { text-align: center; width: 100%; max-width: 140px; }
         .tod-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-row { background: #222; border-radius: 12px; padding: 8px; margin-bottom: 8px; display: flex; gap: 8px; justify-content: center; }
-        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
-        .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
+        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; overflow: hidden; }
+        
+        /* สไตล์รูปปิดฝาสำหรับโต๊ด */
+        .tod-box.hidden-tod { 
+            background-image: url('cover.jpg'); 
+            background-size: cover; 
+            background-position: center;
+            border: 1px solid #444;
+        }
 
         /* การ์ดเกมหลัก */
         .game-card {
@@ -48,17 +49,23 @@
         .result-box { 
             width: 85px; height: 85px; background: white; color: black; border-radius: 15px;
             display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
         }
 
-        .red-num { color: #e74c3c !important; }
-        .hidden { background: #333 !important; color: #333 !important; transform: rotateY(180deg); position: relative; }
-        .hidden::after { content: "?"; color: var(--primary-yellow); position: absolute; transform: rotateY(180deg); font-size: 35px; }
+        /* สไตล์รูปปิดฝาสำหรับลูกเต๋าหลัก */
+        .result-box.hidden { 
+            background-image: url('cover.jpg'); 
+            background-size: cover; 
+            background-position: center;
+            color: transparent !important;
+            transform: rotateY(180deg);
+            border: 1px solid var(--primary-yellow);
+        }
 
         .status-text { font-size: 32px; font-weight: bold; margin-bottom: 15px; min-height: 48px; }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: #e74c3c; }
 
-        /* ปุ่มกดสำหรับมือถือ */
         .btn-container { display: flex; gap: 10px; width: 100%; }
         button { 
             width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 20px; font-weight: bold;
@@ -68,7 +75,6 @@
         .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; }
         button:active { transform: translateY(3px); box-shadow: none; filter: brightness(0.9); }
 
-        /* ประวัติ */
         .history-container { width: 100%; max-width: 450px; margin-top: 25px; padding-bottom: 40px; }
         .history-item { 
             background: #1e1e1e; border-radius: 15px; padding: 12px 15px; margin-bottom: 8px;
@@ -78,21 +84,17 @@
         @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px, -2px); } 75% { transform: translate(2px, 2px); } }
         .shaking { animation: shake 0.1s infinite; }
 
-        /* Responsive: บนหน้าจอเล็กมากให้จัดโต๊ดกับกระดานเป็นแนวนอนถ้าไหว */
-        @media (min-width: 480px) {
-            .container { flex-direction: row; }
-            .tod-section { width: 140px; }
-        }
+        @media (min-width: 480px) { .container { flex-direction: row; } .tod-section { width: 140px; } }
         @media (max-width: 479px) {
             .container { flex-direction: column; align-items: center; }
             .tod-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
-            .tod-display-wrap { display: flex; gap: 10px; } /* จัดโต๊ดแนวนอนบนมือถือ */
+            .tod-display-wrap { display: flex; gap: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.2.2</div>
+    <div class="version-tag">VERSION 1.2.3</div>
 
     <div class="header">
         <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
@@ -102,36 +104,30 @@
     </div>
 
     <div class="container">
-        <!-- ฝั่งโต๊ด -->
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
             <div id="todDisplay" class="tod-display-wrap">
-                <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
+                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
+                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
+                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
             </div>
         </div>
 
-        <!-- กระดานหลัก -->
         <div class="game-card">
             <div class="mini-dice">
                 <div id="mi1" class="mini-icon">🎲</div>
                 <div id="mi2" class="mini-icon">🎲</div>
                 <div id="mi3" class="mini-icon">🎲</div>
             </div>
-
             <div class="main-results" id="mainBoard">
                 <div id="d1" class="result-box hidden"></div>
                 <div id="d2" class="result-box hidden"></div>
                 <div id="d3" class="result-box hidden"></div>
             </div>
-
-            <div id="statusLabel" class="status-text">-</div>
-
+            <div id="statusLabel" class="status-text">พร้อมเขย่า!</div>
             <div id="rollInitial">
                 <button class="btn-yellow" onclick="startShake()">เขย่าลูกเต๋า</button>
             </div>
-            
             <div id="rollSecondary" class="btn-container" style="display:none;">
                 <button class="btn-yellow" onclick="startShake()">เขย่าเพิ่ม</button>
                 <button class="btn-open" onclick="revealResults()">เปิดดูแต้ม</button>
@@ -140,7 +136,6 @@
     </div>
 
     <div class="history-container">
-        <div style="margin: 0 0 10px 10px; color: #666; font-size: 14px;">📊 ประวัติล่าสุด</div>
         <div id="historyList"></div>
     </div>
 
@@ -154,12 +149,9 @@
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
         function startShake() {
-            // สั่นโทรศัพท์สั้นๆ (ถ้ามือถือรองรับ)
             if (navigator.vibrate) navigator.vibrate(50);
-            
-            const shakeAudio = document.getElementById('shakeSound');
-            shakeAudio.currentTime = 0;
-            shakeAudio.play().catch(() => {});
+            document.getElementById('shakeSound').currentTime = 0;
+            document.getElementById('shakeSound').play().catch(() => {});
 
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
@@ -172,10 +164,10 @@
                 box.innerText = "";
             });
             
-            // ล้างหน้าโต๊ดเป็น ?
-            const q = '<div class="tod-box hidden-tod">?</div>';
             document.getElementById('todDisplay').innerHTML = `
-                <div class="tod-row">${q}${q}</div><div class="tod-row">${q}${q}</div><div class="tod-row">${q}${q}</div>
+                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
+                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
+                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
             `;
 
             setTimeout(() => {
@@ -184,10 +176,8 @@
                 result.d2 = Math.floor(Math.random() * 6) + 1;
                 result.d3 = Math.floor(Math.random() * 6) + 1;
                 result.total = result.d1 + result.d2 + result.d3;
-
-                if (result.total === 11) { result.status = "11-HI-LO"; result.class = "hilo"; }
-                else if (result.total <= 10) { result.status = "ต่ำ (LOW)"; result.class = "low"; }
-                else { result.status = "สูง (HIGH)"; result.class = "high"; }
+                result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ (LOW)" : "สูง (HIGH)");
+                result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
@@ -229,11 +219,7 @@
             const item = document.createElement('div');
             item.className = 'history-item';
             const f = (v) => (v === 1 || v === 4) ? `<span class="red-num">${v}</span>` : v;
-            item.innerHTML = `
-                <span>[${f(result.d1)}, ${f(result.d2)}, ${f(result.d3)}]</span>
-                <span class="${result.class}">${result.status}</span>
-                <span style="color:#666">${result.total}</span>
-            `;
+            item.innerHTML = `<span>[${f(result.d1)}, ${f(result.d2)}, ${f(result.d3)}]</span><span class="${result.class}">${result.status}</span><span>${result.total}</span>`;
             list.insertBefore(item, list.firstChild);
             if (list.children.length > 5) list.removeChild(list.lastChild);
         }
