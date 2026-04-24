@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v1.2.4</title>
+    <title>HILO Master Pro - v1.2.5</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -16,49 +16,42 @@
 
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
 
-        /* แถบเลือกสี */
         .header { margin: 10px 0 20px 0; display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
         .container { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 500px; }
 
-        /* ฝั่งโต๊ดด้านซ้าย */
+        /* ฝั่งโต๊ด */
         .tod-section { text-align: center; width: 100%; max-width: 140px; }
         .tod-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-row { background: #222; border-radius: 12px; padding: 8px; margin-bottom: 8px; display: flex; gap: 8px; justify-content: center; }
         .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
-        
-        /* โต๊ดใช้เครื่องหมาย ? ตอนปิด */
-        .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); position: relative; }
+        .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
         .tod-box.hidden-tod::after { content: "?"; }
 
         /* การ์ดเกมหลัก */
         .game-card {
             width: 100%; max-width: 340px; background: var(--card-bg); border: 2px solid var(--primary-yellow);
-            border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative; overflow: hidden;
         }
 
-        .mini-dice { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .mini-icon { font-size: 32px; }
+        .dice-area { position: relative; height: 120px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; }
 
-        .main-results { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        /* ฝาครอบรูปเดียว */
+        #singleCover {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('cover.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center;
+            z-index: 10; display: none; border-radius: 15px;
+        }
+
+        .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; }
         .result-box { 
-            width: 85px; height: 85px; background: white; color: black; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.4s; overflow: hidden;
+            width: 80px; height: 80px; background: white; color: black; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* ลูกเต๋าหลักใช้รูป cover.jpg ตอนปิด */
-        .result-box.hidden { 
-            background-image: url('cover.jpg'); 
-            background-size: cover; 
-            background-position: center;
-            color: transparent !important;
-            transform: rotateY(180deg);
-            border: 1px solid var(--primary-yellow);
-        }
-
-        /* สีแดงสำหรับ 1 และ 4 */
         .red-num { color: var(--red-die) !important; }
 
         .status-text { font-size: 32px; font-weight: bold; margin-bottom: 15px; min-height: 48px; }
@@ -74,14 +67,11 @@
         button:active { transform: translateY(3px); box-shadow: none; }
 
         .history-container { width: 100%; max-width: 450px; margin-top: 25px; padding-bottom: 40px; }
-        .history-item { 
-            background: #1e1e1e; border-radius: 15px; padding: 12px 15px; margin-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333;
-        }
+        .history-item { background: #1e1e1e; border-radius: 15px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px, -2px); } 75% { transform: translate(2px, 2px); } }
-        .shaking { animation: shake 0.1s infinite; }
+        @keyframes shakeCover { 0%, 100% { transform: translate(0,0) rotate(0); } 20% { transform: translate(-3px, -2px) rotate(-1deg); } 40% { transform: translate(3px, -1px) rotate(1deg); } 60% { transform: translate(-3px, 1px) rotate(-1deg); } 80% { transform: translate(2px, 2px) rotate(1deg); } }
+        .shaking-cover { animation: shakeCover 0.15s infinite; }
 
         @media (min-width: 480px) { .container { flex-direction: row; } .tod-section { width: 140px; } }
         @media (max-width: 479px) { .container { flex-direction: column; align-items: center; } .tod-section { width: 100%; display: flex; flex-direction: column; align-items: center; } .tod-display-wrap { display: flex; gap: 10px; } }
@@ -89,7 +79,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.2.4</div>
+    <div class="version-tag">VERSION 1.2.5</div>
 
     <div class="header">
         <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
@@ -111,20 +101,23 @@
 
         <!-- กระดานหลัก -->
         <div class="game-card">
-            <div class="mini-dice">
-                <div id="mi1" class="mini-icon">🎲</div>
-                <div id="mi2" class="mini-icon">🎲</div>
-                <div id="mi3" class="mini-icon">🎲</div>
+            <div class="dice-area">
+                <!-- รูปฝาปิดอันเดียว -->
+                <div id="singleCover"></div>
+                
+                <div class="main-results">
+                    <div id="d1" class="result-box">-</div>
+                    <div id="d2" class="result-box">-</div>
+                    <div id="d3" class="result-box">-</div>
+                </div>
             </div>
-            <div class="main-results" id="mainBoard">
-                <div id="d1" class="result-box hidden"></div>
-                <div id="d2" class="result-box hidden"></div>
-                <div id="d3" class="result-box hidden"></div>
-            </div>
+
             <div id="statusLabel" class="status-text">พร้อมเขย่า!</div>
+            
             <div id="rollInitial">
                 <button class="btn-yellow" onclick="startShake()">เขย่าลูกเต๋า</button>
             </div>
+            
             <div id="rollSecondary" class="btn-container" style="display:none;">
                 <button class="btn-yellow" onclick="startShake()">เขย่าเพิ่ม</button>
                 <button class="btn-open" onclick="revealResults()">เปิดดูแต้ม</button>
@@ -141,27 +134,27 @@
 
     <script>
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
-        const diceIcons = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
         function startShake() {
             if (navigator.vibrate) navigator.vibrate(50);
-            document.getElementById('shakeSound').currentTime = 0;
-            document.getElementById('shakeSound').play().catch(() => {});
+            const shakeAudio = document.getElementById('shakeSound');
+            shakeAudio.currentTime = 0;
+            shakeAudio.play().catch(() => {});
 
+            const cover = document.getElementById('singleCover');
+            const statusLabel = document.getElementById('statusLabel');
+            
+            // แสดงฝาครอบและเขย่า
+            cover.style.display = "block";
+            cover.classList.add('shaking-cover');
+            
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
-            document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
-            document.getElementById('mainBoard').classList.add('shaking');
+            statusLabel.innerText = "กำลังเขย่า...";
 
-            document.querySelectorAll('.result-box').forEach(box => {
-                box.classList.add('hidden');
-                box.classList.remove('red-num');
-                box.innerText = "";
-            });
-            
-            // ปิดโต๊ดด้วยเครื่องหมาย ?
+            // ล้างผลโต๊ด
             document.getElementById('todDisplay').innerHTML = `
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
@@ -169,7 +162,8 @@
             `;
 
             setTimeout(() => {
-                document.getElementById('mainBoard').classList.remove('shaking');
+                cover.classList.remove('shaking-cover');
+                
                 result.d1 = Math.floor(Math.random() * 6) + 1;
                 result.d2 = Math.floor(Math.random() * 6) + 1;
                 result.d3 = Math.floor(Math.random() * 6) + 1;
@@ -177,24 +171,25 @@
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ (LOW)" : "สูง (HIGH)");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
-                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+                statusLabel.innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
             }, 1200);
         }
 
         function revealResults() {
             document.getElementById('openSound').play().catch(() => {});
+            
+            // ซ่อนฝาครอบ
+            document.getElementById('singleCover').style.display = "none";
+            
             const dice = [result.d1, result.d2, result.d3];
             const isRed = (v) => (v === 1 || v === 4) ? 'red-num' : '';
             
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
-                const icon = document.getElementById(`mi${i+1}`);
                 box.innerText = val;
-                box.classList.remove('hidden');
-                icon.innerText = diceIcons[val-1];
-                if (val === 1 || val === 4) { box.classList.add('red-num'); icon.classList.add('red-num'); }
-                else { icon.classList.remove('red-num'); box.classList.remove('red-num'); }
+                box.classList.remove('red-num');
+                if (val === 1 || val === 4) box.classList.add('red-num');
             });
 
             document.getElementById('todDisplay').innerHTML = `
