@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3-Dice Master Pro</title>
+    <title>3-Dice Hidden Master</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #1a1a1a; }
@@ -14,48 +14,53 @@
             transition: background-color 0.5s ease;
         }
 
-        /* ปุ่มเปลี่ยนสีพื้นหลัง */
-        .theme-switcher { margin-top: 20px; display: flex; gap: 10px; }
-        .dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        /* ส่วนเลือกสี */
+        .theme-switcher { margin-top: 20px; display: flex; gap: 12px; background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 30px; }
+        .dot { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid white; transition: 0.3s; }
+        .dot:hover { transform: scale(1.2); }
 
-        /* การ์ดเกมหลัก */
         .game-card {
             background: #111; border: 3px solid #f1c40f; border-radius: 30px;
             width: 350px; padding: 40px 20px; margin-top: 30px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); position: relative;
         }
 
-        /* รูปภาพลูกเต๋าจำลอง */
-        .dice-visuals { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .dice-img { width: 60px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+        .dice-visuals { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; opacity: 0.6; }
 
         /* ช่องแสดงตัวเลข */
         .dice-values { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
         .val-box { 
-            background: white; color: #333; width: 80px; height: 80px; 
+            background: #fff; color: #333; width: 80px; height: 80px; 
             border-radius: 15px; display: flex; align-items: center; justify-content: center; 
             font-size: 45px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        .total-text { font-size: 22px; color: #aaa; margin: 10px 0; }
-        .result-label { font-size: 35px; font-weight: bold; margin-bottom: 25px; }
         
-        /* สีตามเงื่อนไข */
+        /* สไตล์ตอนปิดตัวเลข */
+        .val-box.hidden { background: #444; color: #444; transform: rotateY(180deg); position: relative; }
+        .val-box.hidden::after { content: "?"; color: #f1c40f; position: absolute; transform: rotateY(180deg); }
+
+        .total-text { font-size: 22px; color: #aaa; margin: 10px 0; min-height: 33px; }
+        .result-label { font-size: 35px; font-weight: bold; margin-bottom: 25px; min-height: 52px; }
+        
         .high { color: #2ecc71; }
         .low { color: #3498db; }
         .hilo { color: #e74c3c; animation: pulse 1s infinite; }
 
-        button.main-btn { 
+        .btn-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        button { 
             padding: 12px 40px; font-size: 20px; border-radius: 15px; border: none;
-            background: #eee; color: #333; cursor: pointer; font-weight: bold; transition: 0.2s;
+            cursor: pointer; font-weight: bold; transition: 0.2s; width: 80%;
         }
-        button.main-btn:hover { background: #fff; transform: scale(1.05); }
+        .roll-btn { background: #f1c40f; color: #111; }
+        .open-btn { background: #eee; color: #333; display: none; } /* ซ่อนไว้ก่อน */
+        button:hover { transform: scale(1.05); filter: brightness(1.1); }
+        button:disabled { background: #555; cursor: not-allowed; transform: none; }
 
-        /* ส่วนของประวัติ */
         .history-section { width: 350px; margin-top: 30px; padding-bottom: 50px; }
         .history-item { 
-            background: rgba(255,255,255,0.1); margin-bottom: 8px; padding: 10px 15px; 
-            border-radius: 10px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.05); margin-bottom: 8px; padding: 12px; 
+            border-radius: 12px; display: flex; justify-content: space-between; border-left: 5px solid transparent;
         }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -63,20 +68,16 @@
 </head>
 <body>
 
-    <!-- เลือกสีพื้นหลัง -->
     <div class="theme-switcher">
         <div class="dot" style="background: #1a1a1a;" onclick="changeBg('#1a1a1a')"></div>
-        <div class="dot" style="background: #2c3e50;" onclick="changeBg('#2c3e50')"></div>
         <div class="dot" style="background: #1e3d2b;" onclick="changeBg('#1e3d2b')"></div>
         <div class="dot" style="background: #4a1413;" onclick="changeBg('#4a1413')"></div>
+        <div class="dot" style="background: #2c3e50;" onclick="changeBg('#2c3e50')"></div>
     </div>
 
     <div class="game-card">
         <div class="dice-visuals">
-            <!-- ใช้ Emoji แทนรูปภาพเพื่อให้แสดงผลได้ทันที -->
-            <div style="font-size: 50px;">🎲</div>
-            <div style="font-size: 50px;">🎲</div>
-            <div style="font-size: 50px;">🎲</div>
+            <div style="font-size: 50px;">🎲</div><div style="font-size: 50px;">🎲</div><div style="font-size: 50px;">🎲</div>
         </div>
 
         <div class="dice-values">
@@ -88,71 +89,97 @@
         <div class="total-text" id="totalScore">แต้มรวม: -</div>
         <div id="statusLabel" class="result-label">-</div>
 
-        <button class="main-btn" onclick="rollDice()">ทอยลูกเต๋า</button>
+        <div class="btn-group">
+            <button id="rollBtn" class="roll-btn" onclick="prepareDice()">ทอยลูกเต๋า</button>
+            <button id="openBtn" class="open-btn" onclick="revealDice()">เปิดดูตัวเลข</button>
+        </div>
     </div>
 
     <div class="history-section">
-        <h3>📜 ประวัติการทอย</h3>
+        <h3 style="border-bottom: 1px solid #444; padding-bottom: 10px;">📜 ประวัติการทอย</h3>
         <div id="historyList"></div>
     </div>
 
     <audio id="diceSound" src="https://soundjay.com"></audio>
+    <audio id="openSound" src="https://soundjay.com"></audio>
 
     <script>
+        let currentResult = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
+
         function changeBg(color) {
             document.documentElement.style.setProperty('--bg-color', color);
         }
 
-        function rollDice() {
+        // ขั้นตอนที่ 1: กดทอยเพื่อสุ่ม แต่ยังไม่เฉลย
+        function prepareDice() {
             document.getElementById('diceSound').play();
             
-            const d1 = Math.floor(Math.random() * 6) + 1;
-            const d2 = Math.floor(Math.random() * 6) + 1;
-            const d3 = Math.floor(Math.random() * 6) + 1;
-            const total = d1 + d2 + d3;
+            // สุ่มค่าไว้ในตัวแปร
+            currentResult.d1 = Math.floor(Math.random() * 6) + 1;
+            currentResult.d2 = Math.floor(Math.random() * 6) + 1;
+            currentResult.d3 = Math.floor(Math.random() * 6) + 1;
+            currentResult.total = currentResult.d1 + currentResult.d2 + currentResult.d3;
 
-            document.getElementById('d1').innerText = d1;
-            document.getElementById('d2').innerText = d2;
-            document.getElementById('d3').innerText = d3;
-            document.getElementById('totalScore').innerText = `แต้มรวม: ${total}`;
-
-            let status = "";
-            let statusClass = "";
-
-            if (total === 11) {
-                status = "11-HI-LO";
-                statusClass = "hilo";
-            } else if (total >= 3 && total <= 10) {
-                status = "ต่ำ (LOW)";
-                statusClass = "low";
+            // กำหนดสถานะ
+            if (currentResult.total === 11) {
+                currentResult.status = "11-HI-LO"; currentResult.class = "hilo";
+            } else if (currentResult.total <= 10) {
+                currentResult.status = "ต่ำ (LOW)"; currentResult.class = "low";
             } else {
-                status = "สูง (HIGH)";
-                statusClass = "high";
+                currentResult.status = "สูง (HIGH)"; currentResult.class = "high";
             }
 
-            const label = document.getElementById('statusLabel');
-            label.innerText = status;
-            label.className = "result-label " + statusClass;
+            // แสดงสถานะ "ปิดตัวเลข"
+            document.querySelectorAll('.val-box').forEach(el => {
+                el.classList.add('hidden');
+                el.innerText = ""; 
+            });
+            document.getElementById('totalScore').innerText = "แต้มรวม: ???";
+            document.getElementById('statusLabel').innerText = "รอลุ้นผล...";
+            document.getElementById('statusLabel').className = "result-label";
 
-            addToHistory(d1, d2, d3, total, status, statusClass);
+            // สลับปุ่ม
+            document.getElementById('rollBtn').style.display = "none";
+            document.getElementById('openBtn').style.display = "block";
         }
 
-        function addToHistory(d1, d2, d3, total, status, statusClass) {
+        // ขั้นตอนที่ 2: กดเปิดดูเฉลย
+        function revealDice() {
+            document.getElementById('openSound').play();
+
+            // แสดงตัวเลข
+            document.getElementById('d1').innerText = currentResult.d1;
+            document.getElementById('d2').innerText = currentResult.d2;
+            document.getElementById('d3').innerText = currentResult.d3;
+            document.querySelectorAll('.val-box').forEach(el => el.classList.remove('hidden'));
+
+            // แสดงผลรวมและคำทำนาย
+            document.getElementById('totalScore').innerText = `แต้มรวม: ${currentResult.total}`;
+            const label = document.getElementById('statusLabel');
+            label.innerText = currentResult.status;
+            label.className = "result-label " + currentResult.class;
+
+            // เพิ่มเข้าประวัติ
+            addToHistory();
+
+            // สลับปุ่มกลับ
+            document.getElementById('rollBtn').style.display = "block";
+            document.getElementById('openBtn').style.display = "none";
+            document.getElementById('rollBtn').innerText = "ทอยอีกครั้ง";
+        }
+
+        function addToHistory() {
             const historyList = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
+            item.style.borderLeftColor = getComputedStyle(document.getElementById('statusLabel')).color;
             item.innerHTML = `
-                <span>[${d1}, ${d2}, ${d3}]</span>
-                <strong class="${statusClass}">${status}</strong>
-                <span>รวม: ${total}</span>
+                <span>[${currentResult.d1}, ${currentResult.d2}, ${currentResult.d3}]</span>
+                <strong class="${currentResult.class}">${currentResult.status}</strong>
+                <span>รวม: ${currentResult.total}</span>
             `;
-            // เพิ่มรายการใหม่ไว้ด้านบนสุด
             historyList.insertBefore(item, historyList.firstChild);
-            
-            // จำกัดประวัติไว้แค่ 10 รายการล่าสุด
-            if (historyList.children.length > 10) {
-                historyList.removeChild(historyList.lastChild);
-            }
+            if (historyList.children.length > 8) historyList.removeChild(historyList.lastChild);
         }
     </script>
 </body>
