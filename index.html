@@ -2,92 +2,98 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HILO Master Pro - v1.2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HILO Master Mobile - v1.2.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; }
+        
+        /* ป้องกันการเลือกข้อความและซูมบนมือถือ */
+        * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
+        
         body { 
             font-family: 'Kanit', sans-serif; background-color: var(--bg-color); 
-            color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            transition: background-color 0.5s ease; position: relative;
+            color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            transition: background-color 0.5s ease;
         }
 
-        /* Version Label */
-        .version-tag { position: fixed; bottom: 10px; right: 15px; color: #444; font-size: 12px; font-weight: bold; }
+        .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
 
-        /* เลือกสีพื้นหลัง */
-        .header { margin: 20px 0; display: flex; gap: 10px; background: #222; padding: 10px 20px; border-radius: 30px; }
-        .dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 1.5px solid #555; transition: 0.3s; }
-        .dot:hover { transform: scale(1.2); }
+        /* แถบเลือกสี */
+        .header { margin: 10px 0 20px 0; display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
+        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
-        /* Layout หลัก */
-        .container { display: flex; gap: 30px; align-items: flex-start; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
-
-        /* ฝั่งซ้าย: โต๊ด */
-        .tod-section { text-align: center; width: 140px; }
-        .tod-title { font-size: 32px; font-weight: bold; margin-bottom: 15px; letter-spacing: 2px; }
-        .tod-row { background: #222; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; gap: 10px; justify-content: center; }
-        .tod-box { 
-            width: 45px; height: 45px; background: white; color: black; border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;
-            transition: 0.3s;
+        /* Layout ปรับตามขนาดหน้าจอ */
+        .container { 
+            display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 500px;
         }
+
+        /* ฝั่งโต๊ด */
+        .tod-section { text-align: center; width: 100%; max-width: 140px; }
+        .tod-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
+        .tod-row { background: #222; border-radius: 12px; padding: 8px; margin-bottom: 8px; display: flex; gap: 8px; justify-content: center; }
+        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
         .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
 
-        /* ฝั่งขวา: กระดานหลัก */
+        /* การ์ดเกมหลัก */
         .game-card {
-            width: 320px; background: var(--card-bg); border: 2px solid var(--primary-yellow);
-            border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            width: 100%; max-width: 340px; background: var(--card-bg); border: 2px solid var(--primary-yellow);
+            border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .mini-dice { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
-        .mini-icon { font-size: 28px; opacity: 0.8; transition: 0.3s; }
+        .mini-dice { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .mini-icon { font-size: 32px; }
 
-        .main-results { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .main-results { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
         .result-box { 
-            width: 75px; height: 75px; background: white; color: black; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 85px; height: 85px; background: white; color: black; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.3s;
         }
 
-        /* สีแดงสำหรับเลข 1 และ 4 */
         .red-num { color: #e74c3c !important; }
-
-        /* สถานะปิดตัวเลข */
         .hidden { background: #333 !important; color: #333 !important; transform: rotateY(180deg); position: relative; }
-        .hidden::after { content: "?"; color: var(--primary-yellow); position: absolute; transform: rotateY(180deg); font-size: 30px; }
+        .hidden::after { content: "?"; color: var(--primary-yellow); position: absolute; transform: rotateY(180deg); font-size: 35px; }
 
-        .total-info { font-size: 16px; color: #888; margin: 10px 0; }
-        .status-text { font-size: 30px; font-weight: bold; margin-bottom: 20px; min-height: 45px; }
-        .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: #e74c3c; animation: pulse 1s infinite; }
+        .status-text { font-size: 32px; font-weight: bold; margin-bottom: 15px; min-height: 48px; }
+        .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: #e74c3c; }
 
-        /* ปุ่มกด */
-        .btn-yellow { 
-            width: 100%; padding: 15px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold;
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); cursor: pointer; color: #222;
-            box-shadow: 0 4px 0 #967a06; transition: 0.1s;
+        /* ปุ่มกดสำหรับมือถือ */
+        .btn-container { display: flex; gap: 10px; width: 100%; }
+        button { 
+            width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 20px; font-weight: bold;
+            cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif;
         }
-        .btn-yellow:active { transform: translateY(3px); box-shadow: none; }
-        .btn-yellow:disabled { background: #555; box-shadow: none; cursor: not-allowed; }
+        .btn-yellow { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 4px 0 #967a06; }
+        .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; }
+        button:active { transform: translateY(3px); box-shadow: none; filter: brightness(0.9); }
 
-        /* ประวัติการทอย */
-        .history-container { width: 450px; margin-top: 30px; padding-bottom: 50px; }
+        /* ประวัติ */
+        .history-container { width: 100%; max-width: 450px; margin-top: 25px; padding-bottom: 40px; }
         .history-item { 
-            background: #1e1e1e; border-radius: 15px; padding: 12px 20px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333;
+            background: #1e1e1e; border-radius: 15px; padding: 12px 15px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 15px;
         }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-2px, -1px); } 100% { transform: translate(1px, 1px); } }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px, -2px); } 75% { transform: translate(2px, 2px); } }
         .shaking { animation: shake 0.1s infinite; }
+
+        /* Responsive: บนหน้าจอเล็กมากให้จัดโต๊ดกับกระดานเป็นแนวนอนถ้าไหว */
+        @media (min-width: 480px) {
+            .container { flex-direction: row; }
+            .tod-section { width: 140px; }
+        }
+        @media (max-width: 479px) {
+            .container { flex-direction: column; align-items: center; }
+            .tod-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
+            .tod-display-wrap { display: flex; gap: 10px; } /* จัดโต๊ดแนวนอนบนมือถือ */
+        }
     </style>
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.2.0</div>
+    <div class="version-tag">VERSION 1.2.2</div>
 
-    <!-- แถบเลือกสีพื้นหลัง -->
     <div class="header">
         <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
         <div class="dot" style="background: #1e3d2b;" onclick="changeBg('#1e3d2b')"></div>
@@ -96,17 +102,17 @@
     </div>
 
     <div class="container">
-        <!-- ฝั่งซ้าย: โต๊ด -->
+        <!-- ฝั่งโต๊ด -->
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
-            <div id="todDisplay">
+            <div id="todDisplay" class="tod-display-wrap">
                 <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
                 <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
                 <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
             </div>
         </div>
 
-        <!-- ฝั่งขวา: กระดานหลัก -->
+        <!-- กระดานหลัก -->
         <div class="game-card">
             <div class="mini-dice">
                 <div id="mi1" class="mini-icon">🎲</div>
@@ -120,20 +126,24 @@
                 <div id="d3" class="result-box hidden"></div>
             </div>
 
-            <div class="total-info" id="totalText">แต้มรวม: -</div>
             <div id="statusLabel" class="status-text">-</div>
 
-            <button id="rollBtn" class="btn-yellow" onclick="startShake()">เขย่าใหม่</button>
-            <button id="openBtn" class="btn-yellow" style="display:none;" onclick="revealResults()">เปิดดูแต้ม</button>
+            <div id="rollInitial">
+                <button class="btn-yellow" onclick="startShake()">เขย่าลูกเต๋า</button>
+            </div>
+            
+            <div id="rollSecondary" class="btn-container" style="display:none;">
+                <button class="btn-yellow" onclick="startShake()">เขย่าเพิ่ม</button>
+                <button class="btn-open" onclick="revealResults()">เปิดดูแต้ม</button>
+            </div>
         </div>
     </div>
 
     <div class="history-container">
-        <div style="margin-bottom: 15px; color: #888; font-size: 14px;">📊 ประวัติการทอย</div>
+        <div style="margin: 0 0 10px 10px; color: #666; font-size: 14px;">📊 ประวัติล่าสุด</div>
         <div id="historyList"></div>
     </div>
 
-    <!-- ไฟล์เสียงที่โหลดไว้ใน Repository -->
     <audio id="shakeSound" src="shake.mp3" preload="auto"></audio>
     <audio id="openSound" src="open.mp3" preload="auto"></audio>
 
@@ -144,119 +154,88 @@
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
         function startShake() {
-            // เล่นเสียงเขย่า (เรียกจากไฟล์ในเครื่อง)
+            // สั่นโทรศัพท์สั้นๆ (ถ้ามือถือรองรับ)
+            if (navigator.vibrate) navigator.vibrate(50);
+            
             const shakeAudio = document.getElementById('shakeSound');
             shakeAudio.currentTime = 0;
-            shakeAudio.play().catch(e => console.log("คลิกหน้าเว็บก่อนเพื่อเล่นเสียง"));
+            shakeAudio.play().catch(() => {});
 
-            const boxes = document.querySelectorAll('.result-box');
-            const rollBtn = document.getElementById('rollBtn');
-            
-            rollBtn.disabled = true;
+            document.getElementById('rollInitial').style.display = "none";
+            document.getElementById('rollSecondary').style.display = "none";
             document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
             document.getElementById('mainBoard').classList.add('shaking');
 
-            // ซ่อนผลหลักและโต๊ด
-            boxes.forEach(box => {
+            document.querySelectorAll('.result-box').forEach(box => {
                 box.classList.add('hidden');
                 box.classList.remove('red-num');
                 box.innerText = "";
             });
-
+            
+            // ล้างหน้าโต๊ดเป็น ?
+            const q = '<div class="tod-box hidden-tod">?</div>';
             document.getElementById('todDisplay').innerHTML = `
-                <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod">?</div><div class="tod-box hidden-tod">?</div></div>
+                <div class="tod-row">${q}${q}</div><div class="tod-row">${q}${q}</div><div class="tod-row">${q}${q}</div>
             `;
 
-            // หยุดเขย่าหลังจาก 1.5 วินาที
             setTimeout(() => {
                 document.getElementById('mainBoard').classList.remove('shaking');
-                prepareData();
-            }, 1500);
-        }
+                result.d1 = Math.floor(Math.random() * 6) + 1;
+                result.d2 = Math.floor(Math.random() * 6) + 1;
+                result.d3 = Math.floor(Math.random() * 6) + 1;
+                result.total = result.d1 + result.d2 + result.d3;
 
-        function prepareData() {
-            result.d1 = Math.floor(Math.random() * 6) + 1;
-            result.d2 = Math.floor(Math.random() * 6) + 1;
-            result.d3 = Math.floor(Math.random() * 6) + 1;
-            result.total = result.d1 + result.d2 + result.d3;
+                if (result.total === 11) { result.status = "11-HI-LO"; result.class = "hilo"; }
+                else if (result.total <= 10) { result.status = "ต่ำ (LOW)"; result.class = "low"; }
+                else { result.status = "สูง (HIGH)"; result.class = "high"; }
 
-            if (result.total === 11) { result.status = "11-HI-LO"; result.class = "hilo"; }
-            else if (result.total <= 10) { result.status = "ต่ำ (LOW)"; result.class = "low"; }
-            else { result.status = "สูง (HIGH)"; result.class = "high"; }
-
-            document.getElementById('rollBtn').style.display = "none";
-            document.getElementById('rollBtn').disabled = false;
-            document.getElementById('openBtn').style.display = "block";
-            document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+                document.getElementById('rollSecondary').style.display = "flex";
+            }, 1200);
         }
 
         function revealResults() {
-            // เล่นเสียงตอนเปิด
-            const openAudio = document.getElementById('openSound');
-            openAudio.currentTime = 0;
-            openAudio.play().catch(e => console.log("Error playing sound"));
-
+            document.getElementById('openSound').play().catch(() => {});
             const dice = [result.d1, result.d2, result.d3];
             
-            // เฉลยผลบนกระดานหลัก
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
                 const icon = document.getElementById(`mi${i+1}`);
                 box.innerText = val;
                 box.classList.remove('hidden');
                 icon.innerText = diceIcons[val-1];
-                
-                if (val === 1 || val === 4) {
-                    box.classList.add('red-num');
-                    icon.classList.add('red-num');
-                } else {
-                    icon.classList.remove('red-num');
-                }
+                if (val === 1 || val === 4) { box.classList.add('red-num'); icon.classList.add('red-num'); }
+                else { icon.classList.remove('red-num'); }
             });
 
-            // เฉลยโต๊ด
-            const isRed = (v) => (v === 1 || v === 4) ? 'red-num' : '';
-            const todHTML = `
-                <div class="tod-row">
-                    <div class="tod-box ${isRed(result.d1)}">${result.d1}</div>
-                    <div class="tod-box ${isRed(result.d2)}">${result.d2}</div>
-                </div>
-                <div class="tod-row">
-                    <div class="tod-box ${isRed(result.d1)}">${result.d1}</div>
-                    <div class="tod-box ${isRed(result.d3)}">${result.d3}</div>
-                </div>
-                <div class="tod-row">
-                    <div class="tod-box ${isRed(result.d2)}">${result.d2}</div>
-                    <div class="tod-box ${isRed(result.d3)}">${result.d3}</div>
-                </div>
+            const red = (v) => (v === 1 || v === 4) ? 'red-num' : '';
+            document.getElementById('todDisplay').innerHTML = `
+                <div class="tod-row"><div class="tod-box ${red(result.d1)}">${result.d1}</div><div class="tod-box ${red(result.d2)}">${result.d2}</div></div>
+                <div class="tod-row"><div class="tod-box ${red(result.d1)}">${result.d1}</div><div class="tod-box ${red(result.d3)}">${result.d3}</div></div>
+                <div class="tod-row"><div class="tod-box ${red(result.d2)}">${result.d2}</div><div class="tod-box ${red(result.d3)}">${result.d3}</div></div>
             `;
-            document.getElementById('todDisplay').innerHTML = todHTML;
 
-            document.getElementById('totalText').innerText = `แต้มรวม: ${result.total}`;
             const label = document.getElementById('statusLabel');
-            label.innerText = result.status;
+            label.innerText = result.status + " (" + result.total + ")";
             label.className = "status-text " + result.class;
 
             addToHistory();
-            document.getElementById('rollBtn').style.display = "block";
-            document.getElementById('openBtn').style.display = "none";
+            document.getElementById('rollSecondary').style.display = "none";
+            document.getElementById('rollInitial').style.display = "block";
         }
 
         function addToHistory() {
-            const historyList = document.getElementById('historyList');
+            const list = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
-            const format = (v) => (v === 1 || v === 4) ? `<span class="red-num">${v}</span>` : v;
-            
+            const f = (v) => (v === 1 || v === 4) ? `<span class="red-num">${v}</span>` : v;
             item.innerHTML = `
-                <span style="color:#aaa">[${format(result.d1)}, ${format(result.d2)}, ${format(result.d3)}]</span>
+                <span>[${f(result.d1)}, ${f(result.d2)}, ${f(result.d3)}]</span>
                 <span class="${result.class}">${result.status}</span>
-                <span style="color:#aaa">รวม: ${result.total}</span>
+                <span style="color:#666">${result.total}</span>
             `;
-            historyList.insertBefore(item, historyList.firstChild);
-            if (historyList.children.length > 5) historyList.removeChild(historyList.lastChild);
+            list.insertBefore(item, list.firstChild);
+            if (list.children.length > 5) list.removeChild(list.lastChild);
         }
     </script>
 </body>
