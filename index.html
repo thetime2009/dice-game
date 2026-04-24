@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate Telegram - v1.5.0</title>
+    <title>HILO Master Ultimate Telegram - v1.5.1</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
         * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
         
-        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: background-color 0.5s ease; }
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; font-weight: bold; }
 
         .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 15px; }
@@ -46,7 +46,7 @@
         .tod-box.hidden-tod::after { content: "?"; font-size: 24px; }
 
         .btn-yellow { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 24px; font-weight: bold; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); cursor: pointer; color: #111; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
-        .btn-open { background: #eee; color: #333; box-shadow: 0 5px 0 #bbb; margin-top: 10px; }
+        .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; margin-top: 10px; }
         button:active { transform: translateY(3px); box-shadow: none; }
 
         .history-container { width: 100%; max-width: 500px; margin-top: 10px; padding-bottom: 50px; }
@@ -58,7 +58,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.5.0</div>
+    <div class="version-tag">VERSION 1.5.1</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -129,12 +129,14 @@
         async function sendToTelegram(message) {
             const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
             try {
-                await fetch(url, {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' })
                 });
-            } catch (e) { console.error("Telegram Error", e); }
+                const resData = await response.json();
+                if(!resData.ok) console.error("Telegram API Error:", resData.description);
+            } catch (e) { console.error("Telegram Fetch Error", e); }
         }
 
         function startShake() {
@@ -160,7 +162,7 @@
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
-                // ส่งผลเข้า Telegram ทันทีที่เขย่าจบ (รู้ผลก่อนเปิดฝา)
+                // ส่งข้อมูลเข้า Telegram ทันที
                 let modeTxt = currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา';
                 let diceTxt = currentMode === 'hilo' ? `${result.d1}, ${result.d2}, ${result.d3}` : `${animalMap[result.d1]}, ${animalMap[result.d2]}, ${animalMap[result.d3]}`;
                 let msg = `<b>🎲 มีการเขย่าใหม่! (${modeTxt})</b>\n------------------------\nผล: ${diceTxt}\nสรุป: ${result.status} (${result.total})`;
