@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro Large - v1.3.7</title>
+    <title>HILO Master Ultimate - v1.4.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
         * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
         
-        body { 
-            font-family: 'Kanit', sans-serif; background-color: var(--bg-color); 
-            color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-        }
-
-        .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
+        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: background-color 0.5s ease; }
+        .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; font-weight: bold; }
 
         /* ส่วนหัวและสลับโหมด */
         .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 15px; }
@@ -25,12 +21,8 @@
         .theme-switcher { display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
-        /* การ์ดเกมหลัก (ขยายกว้างขึ้น) */
-        .game-card {
-            width: 100%; max-width: 500px; background: var(--card-bg); border: 2px solid var(--primary-yellow);
-            border-radius: 30px; padding: 25px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            position: relative; margin-bottom: 20px;
-        }
+        /* การ์ดเกมหลัก */
+        .game-card { width: 100%; max-width: 500px; background: var(--card-bg); border: 2px solid var(--primary-yellow); border-radius: 30px; padding: 25px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; margin-bottom: 20px; }
 
         /* พื้นที่ลูกเต๋าขนาดใหญ่ */
         .dice-area { position: relative; width: 100%; height: 220px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
@@ -39,12 +31,7 @@
         .main-results { display: flex; justify-content: center; gap: 15px; width: 100%; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 1; }
         
-        /* ขยายขนาดกล่องลูกเต๋า */
-        .result-box { 
-            width: 110px; height: 110px; background: white; color: black; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4); overflow: hidden; border: 4px solid transparent;
-        }
+        .result-box { width: 110px; height: 110px; background: white; color: black; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(0,0,0,0.4); overflow: hidden; border: 4px solid transparent; }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         
         .item-label { font-size: 38px; font-weight: bold; min-height: 55px; line-height: 1; }
@@ -54,7 +41,7 @@
         .status-text { font-size: 28px; font-weight: bold; margin-bottom: 20px; min-height: 40px; }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
-        /* ส่วนโต๊ด (ย้ายมาอยู่ด้านล่าง) */
+        /* ส่วนโต๊ด */
         .tod-section { width: 100%; margin-top: 10px; border-top: 1px solid #333; padding-top: 15px; }
         .tod-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-display-wrap { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -64,32 +51,24 @@
         .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
         .tod-box.hidden-tod::after { content: "?"; font-size: 24px; }
 
-        .btn-yellow { 
-            width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 24px; font-weight: bold; 
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); cursor: pointer; color: #111; 
-            box-shadow: 0 5px 0 #967a06; transition: 0.1s;
-        }
+        /* ปุ่มกด */
+        .btn-yellow { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 24px; font-weight: bold; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); cursor: pointer; color: #111; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
         .btn-open { background: #eee; color: #333; box-shadow: 0 5px 0 #bbb; margin-top: 10px; }
         button:active { transform: translateY(3px); box-shadow: none; }
 
         .history-container { width: 100%; max-width: 500px; margin-top: 10px; padding-bottom: 50px; }
-        .history-item { background: #1e1e1e; border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+        .history-item { background: #1e1e1e; border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; border-left: 5px solid #333; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(0,0); } 20% { transform: translate(-4px, -3px); } 60% { transform: translate(4px, 2px); } }
         .shaking-cover { animation: shakeCover 0.15s infinite; }
 
-        /* ปรับขนาดสำหรับมือถือหน้าจอเล็ก */
-        @media (max-width: 400px) {
-            .result-box { width: 85px; height: 85px; }
-            .item-label { font-size: 30px; }
-            .tod-box { width: 40px; height: 40px; }
-        }
+        @media (max-width: 400px) { .result-box { width: 85px; height: 85px; } .item-label { font-size: 30px; } .tod-box { width: 40px; height: 40px; } }
     </style>
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.3.7</div>
+    <div class="version-tag">VERSION 1.4.2</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -108,27 +87,15 @@
         <div class="dice-area">
             <div id="singleCover"></div>
             <div id="diceGroup" class="main-results">
-                <div class="dice-wrapper">
-                    <div id="d1" class="result-box"></div>
-                    <div id="label1" class="item-label"></div>
-                </div>
-                <div class="dice-wrapper">
-                    <div id="d2" class="result-box"></div>
-                    <div id="label2" class="item-label"></div>
-                </div>
-                <div class="dice-wrapper">
-                    <div id="d3" class="result-box"></div>
-                    <div id="label3" class="item-label"></div>
-                </div>
+                <div class="dice-wrapper"><div id="d1" class="result-box"></div><div id="label1" class="item-label"></div></div>
+                <div class="dice-wrapper"><div id="d2" class="result-box"></div><div id="label2" class="item-label"></div></div>
+                <div class="dice-wrapper"><div id="d3" class="result-box"></div><div id="label3" class="item-label"></div></div>
             </div>
         </div>
 
         <div id="statusLabel" class="status-text">-</div>
         
-        <div id="rollInitial">
-            <button class="btn-yellow" onclick="startShake()">เขย่าลูกเต๋า</button>
-        </div>
-        
+        <div id="rollInitial"><button class="btn-yellow" onclick="startShake()">เขย่าลูกเต๋า</button></div>
         <div id="rollSecondary" style="display:none; width:100%;">
             <div style="display:flex; gap:12px;">
                 <button class="btn-yellow" style="flex:1;" onclick="startShake()">เขย่าเพิ่ม</button>
@@ -136,24 +103,16 @@
             </div>
         </div>
 
-        <!-- โต๊ด (ย้ายลงมาด้านล่าง) -->
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
-            <div id="todDisplay" class="tod-display-wrap">
-                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
-            </div>
+            <div id="todDisplay" class="tod-display-wrap"></div>
         </div>
     </div>
 
-    <div class="history-container">
-        <div style="color: #666; margin-bottom: 10px; font-size: 14px;">📊 ประวัติล่าสุด</div>
-        <div id="historyList"></div>
-    </div>
+    <div class="history-container"><div id="historyList"></div></div>
 
-    <audio id="shakeSound" src="shake.mp3" preload="auto"></audio>
-    <audio id="openSound" src="open.mp3" preload="auto"></audio>
+    <audio id="shakeSound" src="shake.mp3"></audio>
+    <audio id="openSound" src="open.mp3"></audio>
 
     <script>
         let currentMode = 'hilo'; 
@@ -164,27 +123,22 @@
             currentMode = mode;
             document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
             document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
+            resetUI();
+        }
+
+        function resetUI() {
             document.getElementById('statusLabel').innerText = "-";
             document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
             document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; });
-            resetTod();
-        }
-
-        function resetTod() {
-            document.getElementById('todDisplay').innerHTML = `
-                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
-                <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
-            `;
+            document.getElementById('todDisplay').innerHTML = `<div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>`.repeat(3);
         }
 
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
         function startShake() {
             if (navigator.vibrate) navigator.vibrate(50);
-            const shakeAudio = document.getElementById('shakeSound');
-            shakeAudio.currentTime = 0; shakeAudio.play().catch(() => {});
-
+            const s = document.getElementById('shakeSound'); s.currentTime = 0; s.play().catch(()=>{});
+            
             document.getElementById('diceGroup').style.visibility = "hidden";
             const cover = document.getElementById('singleCover');
             cover.style.display = "block";
@@ -193,8 +147,7 @@
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
             document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
-            document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
-            resetTod();
+            resetUI();
 
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
@@ -209,8 +162,8 @@
             }, 1200);
         }
 
-        function revealResults() {
-            document.getElementById('openSound').play().catch(() => {});
+        async function revealResults() {
+            document.getElementById('openSound').play().catch(()=>{});
             document.getElementById('singleCover').style.display = "none";
             document.getElementById('diceGroup').style.visibility = "visible";
             
@@ -221,43 +174,49 @@
                 const box = document.getElementById(`d${i+1}`);
                 const label = document.getElementById(`label${i+1}`);
                 const prefix = (currentMode === 'hilo') ? 'h' : '';
-                
-                box.innerHTML = `<img src="${prefix}${val}.jpg" alt="dice">`;
+                box.innerHTML = `<img src="${prefix}${val}.jpg">`;
                 box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
-                
                 label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
                 label.className = `item-label ${isRed(val) ? 'red-text' : 'yellow-text'}`;
             });
 
-            const getTodBox = (v) => {
-                const prefix = (currentMode === 'hilo') ? 'h' : '';
-                return `<div class="tod-box" style="border-color:${isRed(v)?'var(--red-die)':'transparent'}"><img src="${prefix}${v}.jpg"></div>`;
-            };
-            document.getElementById('todDisplay').innerHTML = `
-                <div class="tod-row">${getTodBox(result.d1)}${getTodBox(result.d2)}</div>
-                <div class="tod-row">${getTodBox(result.d1)}${getTodBox(result.d3)}</div>
-                <div class="tod-row">${getTodBox(result.d2)}${getTodBox(result.d3)}</div>
-            `;
+            const getT = (v) => `<div class="tod-box" style="border-color:${isRed(v)?'var(--red-die)':'transparent'}"><img src="${currentMode==='hilo'?'h':''}${v}.jpg"></div>`;
+            document.getElementById('todDisplay').innerHTML = `<div class="tod-row">${getT(result.d1)}${getT(result.d2)}</div><div class="tod-row">${getT(result.d1)}${getT(result.d3)}</div><div class="tod-row">${getT(result.d2)}${getT(result.d3)}</div>`;
 
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').className = "status-text " + result.class;
             addToHistory();
+
+            // ระบบคิวเสียงขาน
+            for (let val of dice) {
+                await playVoice(val);
+            }
+
             document.getElementById('rollSecondary').style.display = "none";
             document.getElementById('rollInitial').style.display = "block";
+        }
+
+        function playVoice(num) {
+            return new Promise((resolve) => {
+                const prefix = (currentMode === 'hilo') ? 'n' : 'a';
+                const audio = new Audio(`${prefix}${num}.mp3`);
+                audio.play().catch(() => resolve());
+                audio.onended = resolve;
+                setTimeout(resolve, 1500); // กันค้าง
+            });
         }
 
         function addToHistory() {
             const list = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
-            const f = (v) => {
-                const name = currentMode === 'hilo' ? v : animalMap[v];
-                return (v==1||v==4) ? `<span class="red-num">${name}</span>` : name;
-            };
+            const f = (v) => (v==1||v==4) ? `<span class="red-num">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
             item.innerHTML = `<span>[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span class="${result.class}">${result.status}</span><span>${result.total}</span>`;
             list.insertBefore(item, list.firstChild);
             if (list.children.length > 5) list.removeChild(list.lastChild);
         }
+        
+        window.onload = resetUI;
     </script>
 </body>
 </html>
