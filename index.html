@@ -103,8 +103,8 @@
 
     <script>
         // CONFIG TELEGRAM
-        const TELEGRAM_TOKEN = '7585980788:AAEpBD9j_t3uLC8nkefRAfD7Ht2sqP6I_l0';
-        const TELEGRAM_CHAT_ID = '-5020123278';
+        const TELEGRAM_TOKEN53 = '7585980788:AAEpBD9j_t3uLC8nkefRAfD7Ht2sqP6I_l0';
+        const TELEGRAM_CHAT_ID53 = '-5020123278';
 
         let currentMode = 'hilo'; 
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
@@ -127,12 +127,12 @@
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
         async function sendToTelegram(message) {
-            const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
+            const url = `https://telegram.org{TELEGRAM_TOKEN53}/sendMessage`;
             try {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' })
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID53, text: message, parse_mode: 'HTML' })
                 });
                 const resData = await response.json();
                 if(!resData.ok) console.error("Telegram API Error:", resData.description);
