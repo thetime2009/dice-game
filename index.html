@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate - v1.4.2</title>
+    <title>HILO Master Ultimate - v1.4.3</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
         * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
         
-        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: background-color 0.5s ease; }
+        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; font-weight: bold; }
 
-        /* ส่วนหัวและสลับโหมด */
+        /* ส่วนหัวและการสลับโหมด */
         .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 15px; }
         .mode-switcher { display: flex; background: #222; padding: 5px; border-radius: 15px; width: 100%; max-width: 350px; }
         .mode-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
@@ -41,7 +41,7 @@
         .status-text { font-size: 28px; font-weight: bold; margin-bottom: 20px; min-height: 40px; }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
-        /* ส่วนโต๊ด */
+        /* ส่วนโต๊ดอยู่ด้านล่าง */
         .tod-section { width: 100%; margin-top: 10px; border-top: 1px solid #333; padding-top: 15px; }
         .tod-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-display-wrap { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -68,7 +68,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.4.2</div>
+    <div class="version-tag">VERSION 1.4.3</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -187,7 +187,7 @@
             document.getElementById('statusLabel').className = "status-text " + result.class;
             addToHistory();
 
-            // ระบบคิวเสียงขาน
+            // ขานแต้มทีละลูกแบบเร่งสปีด
             for (let val of dice) {
                 await playVoice(val);
             }
@@ -200,9 +200,10 @@
             return new Promise((resolve) => {
                 const prefix = (currentMode === 'hilo') ? 'n' : 'a';
                 const audio = new Audio(`${prefix}${num}.mp3`);
+                audio.playbackRate = 1.5; // เร่งเสียงพูดไวขึ้น 1.5 เท่า
                 audio.play().catch(() => resolve());
                 audio.onended = resolve;
-                setTimeout(resolve, 1500); // กันค้าง
+                setTimeout(resolve, 800); // ลดเวลาหน่วงระหว่างคำให้ไวขึ้น
             });
         }
 
