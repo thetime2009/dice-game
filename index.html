@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate Telegram - v1.5.3</title>
+    <title>HILO Master Ultimate Telegram - v1.5.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -58,7 +58,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.5.3</div>
+    <div class="version-tag">VERSION 1.5.2</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -103,8 +103,8 @@
 
     <script>
         // CONFIG TELEGRAM
-        const TELEGRAM_TOKEN53 = '7585980788:AAEpBD9j_t3uLC8nkefRAfD7Ht2sqP6I_l0';
-        const TELEGRAM_CHAT_ID53 = '-5218896453';
+        const TELEGRAM_TOKEN = '7585980788:AAEpBD9j_t3uLC8nkefRAfD7Ht2sqP6I_l0';
+        const TELEGRAM_CHAT_ID = '-5020123278'; // หากไม่ส่ง ให้ลองใช้ -1005020123278
 
         let currentMode = 'hilo'; 
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
@@ -127,16 +127,25 @@
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
         async function sendToTelegram(message) {
-            const url = `https://telegram.org{TELEGRAM_TOKEN53}/sendMessage`;
+            const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
             try {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID53, text: message, parse_mode: 'HTML' })
+                    body: JSON.stringify({ 
+                        chat_id: TELEGRAM_CHAT_ID, 
+                        text: message, 
+                        parse_mode: 'HTML',
+                        disable_notification: false 
+                    })
                 });
                 const resData = await response.json();
-                if(!resData.ok) console.error("Telegram API Error:", resData.description);
-            } catch (e) { console.error("Telegram Fetch Error", e); }
+                if(!resData.ok) {
+                    console.error("Telegram Error:", resData.description);
+                } else {
+                    console.log("Telegram Sent Successfully");
+                }
+            } catch (e) { console.error("Network Error:", e); }
         }
 
         function startShake() {
@@ -162,10 +171,10 @@
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
-                // ส่งข้อมูลเข้า Telegram ทันที
+                // ส่งข้อมูลเข้า Telegram
                 let modeTxt = currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา';
                 let diceTxt = currentMode === 'hilo' ? `${result.d1}, ${result.d2}, ${result.d3}` : `${animalMap[result.d1]}, ${animalMap[result.d2]}, ${animalMap[result.d3]}`;
-                let msg = `<b>🎲 มีการเขย่าใหม่! (${modeTxt})</b>\n------------------------\nผล: ${diceTxt}\nสรุป: ${result.status} (${result.total})`;
+                let msg = `<b>🎲 ผลการทอย (${modeTxt})</b>\n------------------------\nผล: <code>${diceTxt}</code>\nสรุป: <b>${result.status} (${result.total})</b>`;
                 sendToTelegram(msg);
 
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
