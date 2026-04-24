@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate - v1.4.3</title>
+    <title>HILO Master Ultimate - v1.4.4</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -41,7 +41,7 @@
         .status-text { font-size: 28px; font-weight: bold; margin-bottom: 20px; min-height: 40px; }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
-        /* ส่วนโต๊ดอยู่ด้านล่าง */
+        /* ส่วนโต๊ด */
         .tod-section { width: 100%; margin-top: 10px; border-top: 1px solid #333; padding-top: 15px; }
         .tod-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-display-wrap { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -68,7 +68,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.4.3</div>
+    <div class="version-tag">VERSION 1.4.4</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -187,23 +187,32 @@
             document.getElementById('statusLabel').className = "status-text " + result.class;
             addToHistory();
 
-            // ขานแต้มทีละลูกแบบเร่งสปีด
+            // 1. ขานแต้มทีละลูกแบบเร่งสปีด
             for (let val of dice) {
-                await playVoice(val);
+                await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`);
+            }
+
+            // 2. ขาน สูง/ต่ำ/11 ไฮโล เฉพาะโหมดไฮโล
+            if (currentMode === 'hilo') {
+                let summaryVoice = "";
+                if (result.total === 11) summaryVoice = "hilo11.mp3";
+                else if (result.total <= 10) summaryVoice = "low.mp3";
+                else summaryVoice = "high.mp3";
+                
+                await playVoice(summaryVoice);
             }
 
             document.getElementById('rollSecondary').style.display = "none";
             document.getElementById('rollInitial').style.display = "block";
         }
 
-        function playVoice(num) {
+        function playVoice(fileName) {
             return new Promise((resolve) => {
-                const prefix = (currentMode === 'hilo') ? 'n' : 'a';
-                const audio = new Audio(`${prefix}${num}.mp3`);
-                audio.playbackRate = 2; // เร่งเสียงพูดไวขึ้น 1.5 เท่า
+                const audio = new Audio(fileName);
+                audio.playbackRate = 1.5; // เร่งความเร็วเสียง
                 audio.play().catch(() => resolve());
                 audio.onended = resolve;
-                setTimeout(resolve, 800); // ลดเวลาหน่วงระหว่างคำให้ไวขึ้น
+                setTimeout(resolve, 800); // กันค้าง
             });
         }
 
