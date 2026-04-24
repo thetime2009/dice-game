@@ -131,7 +131,7 @@
     <audio id="openSound" src="open.mp3"></audio>
 
     <script>
-        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwQfX6MdpaDzYyX7l-N3p311hwFRMixo_SH0a0aVC22/dev'; // ใส่ URL ของคุณ
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzX21IzoycDNdXkUTP58b-qsRQQQ3bgW0oOG6rmigzYkeRXJIsLLNiquAUztpSAzssrcQ/exec'; // ใส่ URL ของคุณ
         
         let currentMode = 'hilo'; 
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
@@ -154,16 +154,52 @@
 
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
 
-        function sendToGoogleSheet() {
-            const params = new URLSearchParams({
-                mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา',
-                d1: result.d1, d2: result.d2, d3: result.d3,
-                total: result.total, status: result.status
-            });
-            const img = new Image();
-            img.src = GOOGLE_SHEET_URL + '?' + params.toString();
-        }
+      //  function sendToGoogleSheet() {
+      //      const params = new URLSearchParams({
+      //          mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา',
+      //          d1: result.d1, d2: result.d2, d3: result.d3,
+      //          total: result.total, status: result.status
+      //      });
+     //       const img = new Image();
+     //       img.src = GOOGLE_SHEET_URL + '?' + params.toString();
+    //    }
 
+
+function sendToGoogleSheet() {
+    // ตรวจสอบว่ามี URL และไม่ใช่ตัวอย่าง
+    if (!GOOGLE_SHEET_URL || GOOGLE_SHEET_URL === "" || GOOGLE_SHEET_URL.includes("YOUR_URL")) return;
+
+    const params = new URLSearchParams({
+        mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา',
+        d1: result.d1,
+        d2: result.d2,
+        d3: result.d3,
+        total: result.total,
+        status: result.status
+    });
+
+    // ใช้ fetch พร้อมโหมด no-cors เพื่อให้ส่งผ่านได้ทุกเครื่องโดยไม่ติดเรื่องความปลอดภัย
+    fetch(GOOGLE_SHEET_URL + "?" + params.toString(), {
+        mode: 'no-cors'
+    })
+    .then(() => console.log("บันทึกสำเร็จ (เครื่องอื่นส่งได้แน่นอน)"))
+    .catch(err => console.error("Error:", err));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         function startShake() {
             if (navigator.vibrate) navigator.vibrate(50);
             const s = document.getElementById('shakeSound'); s.currentTime = 0; s.play().catch(()=>{});
