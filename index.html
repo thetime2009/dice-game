@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate - v1.4.4</title>
+    <title>HILO Master Ultimate Telegram - v1.5.0</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -12,7 +12,6 @@
         body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; font-weight: bold; }
 
-        /* ส่วนหัวและการสลับโหมด */
         .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 15px; }
         .mode-switcher { display: flex; background: #222; padding: 5px; border-radius: 15px; width: 100%; max-width: 350px; }
         .mode-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
@@ -21,16 +20,12 @@
         .theme-switcher { display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
-        /* การ์ดเกมหลัก */
         .game-card { width: 100%; max-width: 500px; background: var(--card-bg); border: 2px solid var(--primary-yellow); border-radius: 30px; padding: 25px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; margin-bottom: 20px; }
-
-        /* พื้นที่ลูกเต๋าขนาดใหญ่ */
         .dice-area { position: relative; width: 100%; height: 220px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
         #singleCover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('cover.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 20; display: none; }
 
         .main-results { display: flex; justify-content: center; gap: 15px; width: 100%; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 1; }
-        
         .result-box { width: 110px; height: 110px; background: white; color: black; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(0,0,0,0.4); overflow: hidden; border: 4px solid transparent; }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         
@@ -41,7 +36,6 @@
         .status-text { font-size: 28px; font-weight: bold; margin-bottom: 20px; min-height: 40px; }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
-        /* ส่วนโต๊ด */
         .tod-section { width: 100%; margin-top: 10px; border-top: 1px solid #333; padding-top: 15px; }
         .tod-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-display-wrap { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -51,7 +45,6 @@
         .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
         .tod-box.hidden-tod::after { content: "?"; font-size: 24px; }
 
-        /* ปุ่มกด */
         .btn-yellow { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 24px; font-weight: bold; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); cursor: pointer; color: #111; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
         .btn-open { background: #eee; color: #333; box-shadow: 0 5px 0 #bbb; margin-top: 10px; }
         button:active { transform: translateY(3px); box-shadow: none; }
@@ -59,16 +52,13 @@
         .history-container { width: 100%; max-width: 500px; margin-top: 10px; padding-bottom: 50px; }
         .history-item { background: #1e1e1e; border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; border-left: 5px solid #333; }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(0,0); } 20% { transform: translate(-4px, -3px); } 60% { transform: translate(4px, 2px); } }
         .shaking-cover { animation: shakeCover 0.15s infinite; }
-
-        @media (max-width: 400px) { .result-box { width: 85px; height: 85px; } .item-label { font-size: 30px; } .tod-box { width: 40px; height: 40px; } }
     </style>
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.4.4</div>
+    <div class="version-tag">VERSION 1.5.0</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -92,9 +82,7 @@
                 <div class="dice-wrapper"><div id="d3" class="result-box"></div><div id="label3" class="item-label"></div></div>
             </div>
         </div>
-
         <div id="statusLabel" class="status-text">-</div>
-        
         <div id="rollInitial"><button class="btn-yellow" onclick="startShake()">เขย่าลูกเต๋า</button></div>
         <div id="rollSecondary" style="display:none; width:100%;">
             <div style="display:flex; gap:12px;">
@@ -102,7 +90,6 @@
                 <button class="btn-yellow btn-open" style="flex:1; margin-top:0;" onclick="revealResults()">เปิดดูแต้ม</button>
             </div>
         </div>
-
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
             <div id="todDisplay" class="tod-display-wrap"></div>
@@ -115,6 +102,10 @@
     <audio id="openSound" src="open.mp3"></audio>
 
     <script>
+        // CONFIG TELEGRAM
+        const TELEGRAM_TOKEN = '7585980788:AAEpBD9j_t3uLC8nkefRAfD7Ht2sqP6I_l0';
+        const TELEGRAM_CHAT_ID = '-5020123278';
+
         let currentMode = 'hilo'; 
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
@@ -134,6 +125,17 @@
         }
 
         function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
+
+        async function sendToTelegram(message) {
+            const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML' })
+                });
+            } catch (e) { console.error("Telegram Error", e); }
+        }
 
         function startShake() {
             if (navigator.vibrate) navigator.vibrate(50);
@@ -157,6 +159,13 @@
                 result.total = result.d1 + result.d2 + result.d3;
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
+
+                // ส่งผลเข้า Telegram ทันทีที่เขย่าจบ (รู้ผลก่อนเปิดฝา)
+                let modeTxt = currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา';
+                let diceTxt = currentMode === 'hilo' ? `${result.d1}, ${result.d2}, ${result.d3}` : `${animalMap[result.d1]}, ${animalMap[result.d2]}, ${animalMap[result.d3]}`;
+                let msg = `<b>🎲 มีการเขย่าใหม่! (${modeTxt})</b>\n------------------------\nผล: ${diceTxt}\nสรุป: ${result.status} (${result.total})`;
+                sendToTelegram(msg);
+
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "block";
             }, 1200);
@@ -187,32 +196,21 @@
             document.getElementById('statusLabel').className = "status-text " + result.class;
             addToHistory();
 
-            // 1. ขานแต้มทีละลูกแบบเร่งสปีด
-            for (let val of dice) {
-                await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`);
-            }
-
-            // 2. ขาน สูง/ต่ำ/11 ไฮโล เฉพาะโหมดไฮโล
+            for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
             if (currentMode === 'hilo') {
-                let summaryVoice = "";
-                if (result.total === 11) summaryVoice = "hilo11.mp3";
-                else if (result.total <= 10) summaryVoice = "low.mp3";
-                else summaryVoice = "high.mp3";
-                
-                await playVoice(summaryVoice);
+                let sVoice = result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3");
+                await playVoice(sVoice);
             }
 
             document.getElementById('rollSecondary').style.display = "none";
             document.getElementById('rollInitial').style.display = "block";
         }
 
-        function playVoice(fileName) {
+        function playVoice(f) {
             return new Promise((resolve) => {
-                const audio = new Audio(fileName);
-                audio.playbackRate = 1.5; // เร่งความเร็วเสียง
-                audio.play().catch(() => resolve());
-                audio.onended = resolve;
-                setTimeout(resolve, 800); // กันค้าง
+                const a = new Audio(f); a.playbackRate = 1.5;
+                a.play().catch(() => resolve()); a.onended = resolve;
+                setTimeout(resolve, 800);
             });
         }
 
