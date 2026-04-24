@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background: #f0f0f0; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #0088cc; color: white; border: none; border-radius: 10px; }
+        #log { margin-top: 20px; color: #333; }
+    </style>
+</head>
+<body>
+
+    <h2>Telegram Bot Tester</h2>
+    <button onclick="testTelegram()">ส่งข้อความ "Test"</button>
+    <div id="log">คลิกปุ่มเพื่อเริ่มทดสอบ...</div>
+
+    <script>
+        const TOKEN = '7585980788:AAEpBD9j_t3uLC8nkefRAfD7Ht2sqP6I_l0';
+        
+        // ทดสอบ Chat ID ทั้ง 2 รูปแบบ
+        // ถ้าแบบสั้นไม่ติด ให้ลองสลับไปใช้ตัวแปรแบบยาว (-100...)
+        const CHAT_ID = '-1005020123278'; 
+
+        async function testTelegram() {
+            const logDiv = document.getElementById('log');
+            logDiv.innerText = "กำลังส่ง...";
+            
+            const message = "Test - ทดสอบส่งจากหน้าเว็บ";
+            const url = `https://telegram.org{TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.ok) {
+                    logDiv.style.color = "green";
+                    logDiv.innerText = "✅ ส่งสำเร็จ! ตรวจสอบในกลุ่ม Telegram ของคุณ";
+                    alert("ส่งสำเร็จ!");
+                } else {
+                    logDiv.style.color = "red";
+                    logDiv.innerText = "❌ ส่งไม่สำเร็จ: " + data.description;
+                    console.error(data);
+                }
+            } catch (error) {
+                logDiv.style.color = "red";
+                logDiv.innerText = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ (Network Error)";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
