@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Custom - v1.2.3</title>
+    <title>HILO Master Pro - v1.2.4</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; }
+        :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
         * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; box-sizing: border-box; }
         
         body { 
@@ -22,19 +22,15 @@
 
         .container { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 500px; }
 
-        /* ฝั่งโต๊ด */
+        /* ฝั่งโต๊ดด้านซ้าย */
         .tod-section { text-align: center; width: 100%; max-width: 140px; }
         .tod-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-row { background: #222; border-radius: 12px; padding: 8px; margin-bottom: 8px; display: flex; gap: 8px; justify-content: center; }
-        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; overflow: hidden; }
+        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
         
-        /* สไตล์รูปปิดฝาสำหรับโต๊ด */
-        .tod-box.hidden-tod { 
-            background-image: url('cover.jpg'); 
-            background-size: cover; 
-            background-position: center;
-            border: 1px solid #444;
-        }
+        /* โต๊ดใช้เครื่องหมาย ? ตอนปิด */
+        .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); position: relative; }
+        .tod-box.hidden-tod::after { content: "?"; }
 
         /* การ์ดเกมหลัก */
         .game-card {
@@ -49,11 +45,10 @@
         .result-box { 
             width: 85px; height: 85px; background: white; color: black; border-radius: 15px;
             display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.4s; overflow: hidden;
         }
 
-        /* สไตล์รูปปิดฝาสำหรับลูกเต๋าหลัก */
+        /* ลูกเต๋าหลักใช้รูป cover.jpg ตอนปิด */
         .result-box.hidden { 
             background-image: url('cover.jpg'); 
             background-size: cover; 
@@ -63,8 +58,11 @@
             border: 1px solid var(--primary-yellow);
         }
 
+        /* สีแดงสำหรับ 1 และ 4 */
+        .red-num { color: var(--red-die) !important; }
+
         .status-text { font-size: 32px; font-weight: bold; margin-bottom: 15px; min-height: 48px; }
-        .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: #e74c3c; }
+        .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
         .btn-container { display: flex; gap: 10px; width: 100%; }
         button { 
@@ -73,28 +71,25 @@
         }
         .btn-yellow { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 4px 0 #967a06; }
         .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; }
-        button:active { transform: translateY(3px); box-shadow: none; filter: brightness(0.9); }
+        button:active { transform: translateY(3px); box-shadow: none; }
 
         .history-container { width: 100%; max-width: 450px; margin-top: 25px; padding-bottom: 40px; }
         .history-item { 
             background: #1e1e1e; border-radius: 15px; padding: 12px 15px; margin-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center; font-size: 15px;
+            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333;
         }
 
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px, -2px); } 75% { transform: translate(2px, 2px); } }
         .shaking { animation: shake 0.1s infinite; }
 
         @media (min-width: 480px) { .container { flex-direction: row; } .tod-section { width: 140px; } }
-        @media (max-width: 479px) {
-            .container { flex-direction: column; align-items: center; }
-            .tod-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
-            .tod-display-wrap { display: flex; gap: 10px; }
-        }
+        @media (max-width: 479px) { .container { flex-direction: column; align-items: center; } .tod-section { width: 100%; display: flex; flex-direction: column; align-items: center; } .tod-display-wrap { display: flex; gap: 10px; } }
     </style>
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.2.3</div>
+    <div class="version-tag">VERSION 1.2.4</div>
 
     <div class="header">
         <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
@@ -104,6 +99,7 @@
     </div>
 
     <div class="container">
+        <!-- ฝั่งโต๊ด -->
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
             <div id="todDisplay" class="tod-display-wrap">
@@ -113,6 +109,7 @@
             </div>
         </div>
 
+        <!-- กระดานหลัก -->
         <div class="game-card">
             <div class="mini-dice">
                 <div id="mi1" class="mini-icon">🎲</div>
@@ -164,6 +161,7 @@
                 box.innerText = "";
             });
             
+            // ปิดโต๊ดด้วยเครื่องหมาย ?
             document.getElementById('todDisplay').innerHTML = `
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
@@ -187,6 +185,7 @@
         function revealResults() {
             document.getElementById('openSound').play().catch(() => {});
             const dice = [result.d1, result.d2, result.d3];
+            const isRed = (v) => (v === 1 || v === 4) ? 'red-num' : '';
             
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
@@ -195,14 +194,13 @@
                 box.classList.remove('hidden');
                 icon.innerText = diceIcons[val-1];
                 if (val === 1 || val === 4) { box.classList.add('red-num'); icon.classList.add('red-num'); }
-                else { icon.classList.remove('red-num'); }
+                else { icon.classList.remove('red-num'); box.classList.remove('red-num'); }
             });
 
-            const red = (v) => (v === 1 || v === 4) ? 'red-num' : '';
             document.getElementById('todDisplay').innerHTML = `
-                <div class="tod-row"><div class="tod-box ${red(result.d1)}">${result.d1}</div><div class="tod-box ${red(result.d2)}">${result.d2}</div></div>
-                <div class="tod-row"><div class="tod-box ${red(result.d1)}">${result.d1}</div><div class="tod-box ${red(result.d3)}">${result.d3}</div></div>
-                <div class="tod-row"><div class="tod-box ${red(result.d2)}">${result.d2}</div><div class="tod-box ${red(result.d3)}">${result.d3}</div></div>
+                <div class="tod-row"><div class="tod-box ${isRed(result.d1)}">${result.d1}</div><div class="tod-box ${isRed(result.d2)}">${result.d2}</div></div>
+                <div class="tod-row"><div class="tod-box ${isRed(result.d1)}">${result.d1}</div><div class="tod-box ${isRed(result.d3)}">${result.d3}</div></div>
+                <div class="tod-row"><div class="tod-box ${isRed(result.d2)}">${result.d2}</div><div class="tod-box ${isRed(result.d3)}">${result.d3}</div></div>
             `;
 
             const label = document.getElementById('statusLabel');
