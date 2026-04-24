@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v1.3.4</title>
+    <title>HILO Master Pro - v1.3.5</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -16,7 +16,7 @@
 
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
 
-        /* ส่วนหัว */
+        /* หัวข้อและสลับโหมด */
         .header-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 20px; }
         .mode-switcher { display: flex; background: #222; padding: 5px; border-radius: 15px; width: 100%; max-width: 300px; }
         .mode-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; }
@@ -25,10 +25,10 @@
         .theme-switcher { display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
-        /* Layout หลัก: โต๊ดซ้าย / เกมขวา */
-        .main-layout { display: flex; gap: 20px; align-items: flex-start; justify-content: center; width: 100%; max-width: 550px; flex-wrap: nowrap; }
+        /* Layout */
+        .main-layout { display: flex; gap: 20px; align-items: flex-start; justify-content: center; width: 100%; max-width: 550px; }
 
-        /* ฝั่งโต๊ด (ซ้าย) */
+        /* โต๊ด (ซ้าย) */
         .tod-section { text-align: center; width: 120px; flex-shrink: 0; }
         .tod-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-row { background: #222; border-radius: 12px; padding: 6px; margin-bottom: 8px; display: flex; gap: 6px; justify-content: center; }
@@ -37,7 +37,7 @@
         .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
         .tod-box.hidden-tod::after { content: "?"; font-size: 20px; }
 
-        /* การ์ดเกม (ขวา) */
+        /* กระดานเกม (ขวา) */
         .game-card {
             flex-grow: 1; max-width: 350px; background: var(--card-bg); border: 2px solid var(--primary-yellow);
             border-radius: 25px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -71,14 +71,12 @@
         .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; margin-top: 8px; }
         button:active { transform: translateY(3px); box-shadow: none; }
 
-        /* ประวัติ */
         .history-container { width: 100%; max-width: 480px; margin-top: 25px; padding-bottom: 40px; }
         .history-item { background: #1e1e1e; border-radius: 12px; padding: 10px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
 
         @keyframes shakeCover { 0%, 100% { transform: translate(0,0); } 20% { transform: translate(-3px, -2px); } 60% { transform: translate(3px, 2px); } }
         .shaking-cover { animation: shakeCover 0.15s infinite; }
 
-        /* Responsive สำหรับมือถือแนวตั้ง */
         @media (max-width: 480px) {
             .main-layout { flex-direction: column; align-items: center; }
             .tod-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
@@ -88,7 +86,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.3.4</div>
+    <div class="version-tag">VERSION 1.3.5</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -104,7 +102,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- ฝั่งโต๊ด (ซ้ายมือ) -->
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
             <div id="todDisplay" class="tod-display-wrap">
@@ -114,21 +111,20 @@
             </div>
         </div>
 
-        <!-- ฝั่งกระดานเกม (ขวามือ) -->
         <div class="game-card">
             <div class="dice-area">
                 <div id="singleCover"></div>
                 <div id="diceGroup" class="main-results">
                     <div class="dice-wrapper">
-                        <div id="d1" class="result-box"><span style="font-size:40px; font-weight:bold;">-</span></div>
+                        <div id="d1" class="result-box"></div>
                         <div id="name1" class="animal-label"></div>
                     </div>
                     <div class="dice-wrapper">
-                        <div id="d2" class="result-box"><span style="font-size:40px; font-weight:bold;">-</span></div>
+                        <div id="d2" class="result-box"></div>
                         <div id="name2" class="animal-label"></div>
                     </div>
                     <div class="dice-wrapper">
-                        <div id="d3" class="result-box"><span style="font-size:40px; font-weight:bold;">-</span></div>
+                        <div id="d3" class="result-box"></div>
                         <div id="name3" class="animal-label"></div>
                     </div>
                 </div>
@@ -168,7 +164,7 @@
             document.getElementById('statusLabel').innerText = "-";
             document.querySelectorAll('.animal-label').forEach(el => el.innerText = "");
             document.querySelectorAll('.result-box').forEach(b => {
-                b.innerHTML = '<span style="font-size:40px; font-weight:bold;">-</span>';
+                b.innerHTML = "";
                 b.style.borderColor = "transparent";
             });
         }
@@ -177,8 +173,8 @@
 
         function startShake() {
             if (navigator.vibrate) navigator.vibrate(50);
-            const sSound = document.getElementById('shakeSound');
-            sSound.currentTime = 0; sSound.play().catch(() => {});
+            document.getElementById('shakeSound').currentTime = 0;
+            document.getElementById('shakeSound').play().catch(() => {});
 
             document.getElementById('diceGroup').style.visibility = "hidden";
             const cover = document.getElementById('singleCover');
@@ -213,11 +209,14 @@
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
                 const nameLabel = document.getElementById(`name${i+1}`);
+                
                 if (currentMode === 'hilo') {
-                    box.innerHTML = `<span style="font-size:40px; font-weight:bold; color:${isRed(val)?'var(--red-die)':'black'}">${val}</span>`;
+                    // โหมดไฮโล: ใช้ไฟล์ h1.jpg - h6.jpg
+                    box.innerHTML = `<img src="h${val}.jpg" alt="dice">`;
+                    box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
                     nameLabel.innerText = "";
-                    box.style.borderColor = "transparent";
                 } else {
+                    // โหมดน้ำเต้า: ใช้ไฟล์ 1.jpg - 6.jpg
                     box.innerHTML = `<img src="${val}.jpg" alt="dice">`;
                     box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
                     nameLabel.innerText = animalMap[val];
@@ -226,8 +225,8 @@
             });
 
             const getTod = (v) => {
-                if (currentMode === 'hilo') return `<div class="tod-box"><span style="font-weight:bold; color:${isRed(v)?'var(--red-die)':'black'}">${v}</span></div>`;
-                return `<div class="tod-box" style="border-color:${isRed(v)?'var(--red-die)':'transparent'}"><img src="${v}.jpg"></div>`;
+                const prefix = (currentMode === 'hilo') ? 'h' : '';
+                return `<div class="tod-box" style="border-color:${isRed(v)?'var(--red-die)':'transparent'}"><img src="${prefix}${v}.jpg"></div>`;
             };
             document.getElementById('todDisplay').innerHTML = `
                 <div class="tod-row">${getTod(result.d1)}${getTod(result.d2)}</div>
