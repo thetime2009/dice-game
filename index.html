@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v1.3.5</title>
+    <title>HILO Master Pro - v1.3.6</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -16,7 +16,7 @@
 
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
 
-        /* หัวข้อและสลับโหมด */
+        /* ส่วนหัวและสลับโหมด */
         .header-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 20px; }
         .mode-switcher { display: flex; background: #222; padding: 5px; border-radius: 15px; width: 100%; max-width: 300px; }
         .mode-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; }
@@ -44,11 +44,11 @@
             position: relative;
         }
 
-        .dice-area { position: relative; width: 100%; height: 180px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
+        .dice-area { position: relative; width: 100%; height: 200px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; }
         #singleCover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('cover.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 20; display: none; }
 
         .main-results { display: flex; justify-content: center; gap: 8px; width: 100%; }
-        .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
         .result-box { 
             width: 80px; height: 80px; background: white; color: black; border-radius: 15px;
             display: flex; align-items: center; justify-content: center; 
@@ -56,12 +56,13 @@
         }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        .animal-label { font-size: 24px; font-weight: bold; min-height: 36px; }
+        /* ตัวเลขบอกแต้ม หรือ ชื่อสัตว์ */
+        .item-label { font-size: 32px; font-weight: bold; min-height: 48px; }
         .red-text { color: var(--red-die) !important; }
         .yellow-text { color: var(--primary-yellow) !important; }
 
         .status-text { font-size: 22px; font-weight: bold; margin-bottom: 15px; min-height: 33px; }
-        .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); }
+        .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
         .btn-yellow { 
             width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 20px; font-weight: bold; 
@@ -86,7 +87,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.3.5</div>
+    <div class="version-tag">VERSION 1.3.6</div>
 
     <div class="header-container">
         <div class="mode-switcher">
@@ -117,15 +118,15 @@
                 <div id="diceGroup" class="main-results">
                     <div class="dice-wrapper">
                         <div id="d1" class="result-box"></div>
-                        <div id="name1" class="animal-label"></div>
+                        <div id="label1" class="item-label"></div>
                     </div>
                     <div class="dice-wrapper">
                         <div id="d2" class="result-box"></div>
-                        <div id="name2" class="animal-label"></div>
+                        <div id="label2" class="item-label"></div>
                     </div>
                     <div class="dice-wrapper">
                         <div id="d3" class="result-box"></div>
-                        <div id="name3" class="animal-label"></div>
+                        <div id="label3" class="item-label"></div>
                     </div>
                 </div>
             </div>
@@ -162,7 +163,7 @@
             document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
             document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
             document.getElementById('statusLabel').innerText = "-";
-            document.querySelectorAll('.animal-label').forEach(el => el.innerText = "");
+            document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
             document.querySelectorAll('.result-box').forEach(b => {
                 b.innerHTML = "";
                 b.style.borderColor = "transparent";
@@ -173,8 +174,9 @@
 
         function startShake() {
             if (navigator.vibrate) navigator.vibrate(50);
-            document.getElementById('shakeSound').currentTime = 0;
-            document.getElementById('shakeSound').play().catch(() => {});
+            const shakeAudio = document.getElementById('shakeSound');
+            shakeAudio.currentTime = 0;
+            shakeAudio.play().catch(() => {});
 
             document.getElementById('diceGroup').style.visibility = "hidden";
             const cover = document.getElementById('singleCover');
@@ -184,6 +186,7 @@
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
             document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
+            document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
 
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
@@ -208,19 +211,20 @@
             
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
-                const nameLabel = document.getElementById(`name${i+1}`);
+                const label = document.getElementById(`label${i+1}`);
                 
                 if (currentMode === 'hilo') {
-                    // โหมดไฮโล: ใช้ไฟล์ h1.jpg - h6.jpg
                     box.innerHTML = `<img src="h${val}.jpg" alt="dice">`;
                     box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
-                    nameLabel.innerText = "";
+                    // แสดงตัวเลขใต้ลูกเต๋า
+                    label.innerText = val;
+                    label.className = `item-label ${isRed(val) ? 'red-text' : 'yellow-text'}`;
                 } else {
-                    // โหมดน้ำเต้า: ใช้ไฟล์ 1.jpg - 6.jpg
                     box.innerHTML = `<img src="${val}.jpg" alt="dice">`;
                     box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
-                    nameLabel.innerText = animalMap[val];
-                    nameLabel.className = `animal-label ${isRed(val) ? 'red-text' : 'yellow-text'}`;
+                    // แสดงชื่อสัตว์ใต้ลูกเต๋า
+                    label.innerText = animalMap[val];
+                    label.className = `item-label ${isRed(val) ? 'red-text' : 'yellow-text'}`;
                 }
             });
 
