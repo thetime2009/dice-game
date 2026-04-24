@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3-Dice Master: Shake & Reveal</title>
+    <title>3-Dice Master: Red 1 & 4 Edition</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #1a1a1a; }
@@ -14,7 +14,6 @@
             transition: background-color 0.5s ease;
         }
 
-        /* ส่วนเลือกสี */
         .theme-switcher { margin-top: 20px; display: flex; gap: 12px; background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 30px; }
         .dot { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
 
@@ -24,21 +23,17 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.6); overflow: hidden;
         }
 
-        /* ส่วนของลูกเต๋าด้านบน */
         .dice-icons { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; height: 80px; align-items: center; }
-        .dice-icon { font-size: 55px; transition: 0.2s; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+        .dice-icon { font-size: 60px; transition: 0.2s; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); color: white; }
 
-        /* แอนิเมชันการเขย่าลูกเต๋า */
-        .shaking-dice { animation: diceShake 0.15s infinite; }
+        /* แอนิเมชันเขย่า */
+        .shaking-dice { animation: diceShake 0.15s infinite; color: white !important; }
         @keyframes diceShake {
             0% { transform: translate(2px, 2px) rotate(0deg) scale(1.1); }
-            25% { transform: translate(-2px, -1px) rotate(-10deg); }
             50% { transform: translate(-3px, 2px) rotate(10deg) scale(1.2); }
-            75% { transform: translate(1px, -2px) rotate(-5deg); }
             100% { transform: translate(2px, 1px) rotate(5deg) scale(1.1); }
         }
 
-        /* ช่องแสดงตัวเลข */
         .dice-values { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
         .val-box { 
             background: #fff; color: #333; width: 80px; height: 80px; 
@@ -47,6 +42,9 @@
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
+        /* คลาสพิเศษสำหรับเลข 1 และ 4 */
+        .red-text { color: #e74c3c !important; }
+
         .hidden { background: #333 !important; color: #333 !important; transform: rotateY(180deg); border: 2px dashed #f1c40f; }
         .hidden::after { content: "?"; color: #f1c40f; position: absolute; transform: rotateY(180deg); }
 
@@ -57,20 +55,13 @@
         .low { color: #3498db; }
         .hilo { color: #ff4757; animation: pulse 1s infinite; }
 
-        button { 
-            padding: 15px 40px; font-size: 22px; border-radius: 15px; border: none;
-            cursor: pointer; font-weight: bold; transition: 0.2s; width: 85%;
-        }
+        button { padding: 15px 40px; font-size: 22px; border-radius: 15px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; width: 85%; }
         .roll-btn { background: linear-gradient(145deg, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 5px #967a06; }
         .open-btn { background: #eee; color: #333; display: none; box-shadow: 0 5px #ccc; }
         button:active { transform: translateY(3px); box-shadow: none; }
 
-        /* ประวัติการทอย */
         .history-section { width: 350px; margin-top: 30px; padding-bottom: 50px; }
-        .history-item { 
-            background: rgba(255,255,255,0.05); margin-bottom: 8px; padding: 12px; 
-            border-radius: 12px; display: flex; justify-content: space-between; border-left: 5px solid #444;
-        }
+        .history-item { background: rgba(255,255,255,0.05); margin-bottom: 8px; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; border-left: 5px solid #444; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
@@ -85,7 +76,6 @@
     </div>
 
     <div class="game-card">
-        <!-- ลูกเต๋าด้านบน -->
         <div class="dice-icons">
             <div id="icon1" class="dice-icon">🎲</div>
             <div id="icon2" class="dice-icon">🎲</div>
@@ -98,7 +88,7 @@
             <div id="d3" class="val-box">?</div>
         </div>
 
-        <div class="total-text" id="totalScore">เขย่าเพื่อเริ่มเกม</div>
+        <div class="total-text" id="totalScore">แต้มรวม: -</div>
         <div id="statusLabel" class="result-label">-</div>
 
         <div class="btn-group">
@@ -108,11 +98,10 @@
     </div>
 
     <div class="history-section">
-        <h3 style="border-bottom: 1px solid #444; padding-bottom: 10px;">📜 ประวัติการทอย</h3>
+        <h3>📜 ประวัติการทอย</h3>
         <div id="historyList"></div>
     </div>
 
-    <!-- เสียงประกอบ -->
     <audio id="shakeSound" src="https://soundjay.com"></audio>
     <audio id="openSound" src="https://soundjay.com"></audio>
 
@@ -125,79 +114,74 @@
         }
 
         function startShake() {
-            const shakeAudio = document.getElementById('shakeSound');
-            shakeAudio.currentTime = 0;
-            shakeAudio.play();
-
+            document.getElementById('shakeSound').play();
             const icons = document.querySelectorAll('.dice-icon');
             const boxes = document.querySelectorAll('.val-box');
-            const rollBtn = document.getElementById('rollBtn');
             
-            rollBtn.disabled = true;
+            document.getElementById('rollBtn').disabled = true;
             document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
             
-            // ใส่เอฟเฟกต์เขย่าลูกเต๋าด้านบน
-            icons.forEach(icon => icon.classList.add('shaking-dice'));
-            
-            // เปลี่ยนหน้าลูกเต๋าหลอกๆ ระหว่างเขย่า
+            icons.forEach(icon => {
+                icon.classList.add('shaking-dice');
+                icon.classList.remove('red-text'); // รีเซ็ตสีตอนเขย่า
+            });
+
+            boxes.forEach(box => {
+                box.classList.add('hidden');
+                box.classList.remove('red-text');
+                box.innerText = "";
+            });
+
             let shakeInterval = setInterval(() => {
                 icons.forEach(icon => {
                     icon.innerText = diceEmojis[Math.floor(Math.random() * 6)];
                 });
             }, 100);
 
-            // ซ่อนช่องตัวเลขด้านล่างทันที
-            boxes.forEach(box => {
-                box.classList.add('hidden');
-                box.innerText = "";
-            });
-
-            // หยุดเขย่าหลังจาก 1.8 วินาที
             setTimeout(() => {
                 clearInterval(shakeInterval);
                 icons.forEach(icon => {
                     icon.classList.remove('shaking-dice');
-                    icon.innerText = "🎲"; // คืนค่าเป็นรูปถุง/กล่องลูกเต๋า
+                    icon.innerText = "🎲"; 
                 });
                 stopShake();
             }, 1800);
         }
 
         function stopShake() {
-            // สุ่มผลลัพธ์จริง
             result.d1 = Math.floor(Math.random() * 6) + 1;
             result.d2 = Math.floor(Math.random() * 6) + 1;
             result.d3 = Math.floor(Math.random() * 6) + 1;
             result.total = result.d1 + result.d2 + result.d3;
 
-            if (result.total === 11) {
-                result.status = "11-HI-LO"; result.class = "hilo";
-            } else if (result.total <= 10) {
-                result.status = "ต่ำ (LOW)"; result.class = "low";
-            } else {
-                result.status = "สูง (HIGH)"; result.class = "high";
-            }
+            if (result.total === 11) { result.status = "11-HI-LO"; result.class = "hilo"; }
+            else if (result.total <= 10) { result.status = "ต่ำ (LOW)"; result.class = "low"; }
+            else { result.status = "สูง (HIGH)"; result.class = "high"; }
 
             document.getElementById('rollBtn').style.display = "none";
             document.getElementById('rollBtn').disabled = false;
             document.getElementById('openBtn').style.display = "block";
             document.getElementById('statusLabel').innerText = "เขย่าเสร็จแล้ว!";
-            document.getElementById('totalScore').innerText = "รอลุ้นผล...";
         }
 
         function revealDice() {
             document.getElementById('openSound').play();
+            const diceData = [result.d1, result.d2, result.d3];
 
-            // แสดงหน้าลูกเต๋าตามจริงที่สุ่มได้
-            document.getElementById('icon1').innerText = diceEmojis[result.d1 - 1];
-            document.getElementById('icon2').innerText = diceEmojis[result.d2 - 1];
-            document.getElementById('icon3').innerText = diceEmojis[result.d3 - 1];
+            diceData.forEach((val, index) => {
+                const iconEl = document.getElementById(`icon${index + 1}`);
+                const boxEl = document.getElementById(`d${index + 1}`);
+                
+                iconEl.innerText = diceEmojis[val - 1];
+                boxEl.innerText = val;
+                boxEl.classList.remove('hidden');
 
-            // แสดงตัวเลขในกล่อง
-            document.getElementById('d1').innerText = result.d1;
-            document.getElementById('d2').innerText = result.d2;
-            document.getElementById('d3').innerText = result.d3;
-            document.querySelectorAll('.val-box').forEach(box => box.classList.remove('hidden'));
+                // เช็คเงื่อนไขสีแดงสำหรับเลข 1 และ 4
+                if (val === 1 || val === 4) {
+                    iconEl.classList.add('red-text');
+                    boxEl.classList.add('red-text');
+                }
+            });
 
             document.getElementById('totalScore').innerText = `แต้มรวม: ${result.total}`;
             const label = document.getElementById('statusLabel');
@@ -205,9 +189,7 @@
             label.className = "result-label " + result.class;
 
             addToHistory();
-
             document.getElementById('rollBtn').style.display = "block";
-            document.getElementById('rollBtn').innerText = "เขย่าใหม่";
             document.getElementById('openBtn').style.display = "none";
         }
 
@@ -215,9 +197,12 @@
             const historyList = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
-            item.style.borderLeftColor = getComputedStyle(document.getElementById('statusLabel')).color;
+            
+            // สร้างประวัติแบบระบุสีเลข 1, 4
+            const formatVal = (v) => (v === 1 || v === 4) ? `<span class="red-text">${v}</span>` : v;
+            
             item.innerHTML = `
-                <span>[${result.d1}, ${result.d2}, ${result.d3}]</span>
+                <span>[${formatVal(result.d1)}, ${formatVal(result.d2)}, ${formatVal(result.d3)}]</span>
                 <strong class="${result.class}">${result.status}</strong>
                 <span>รวม: ${result.total}</span>
             `;
