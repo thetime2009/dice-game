@@ -200,7 +200,7 @@
             return new Promise((resolve) => {
                 const prefix = (currentMode === 'hilo') ? 'n' : 'a';
                 const audio = new Audio(`${prefix}${num}.mp3`);
-                audio.playbackRate = 1.5; // เร่งเสียงพูดไวขึ้น 1.5 เท่า
+                audio.playbackRate = 2; // เร่งเสียงพูดไวขึ้น 1.5 เท่า
                 audio.play().catch(() => resolve());
                 audio.onended = resolve;
                 setTimeout(resolve, 800); // ลดเวลาหน่วงระหว่างคำให้ไวขึ้น
