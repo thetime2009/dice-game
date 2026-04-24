@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v1.2.7</title>
+    <title>HILO & Fish-Prawn-Crab Pro - v1.3.1</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -16,7 +16,13 @@
 
         .version-tag { position: fixed; bottom: 5px; right: 10px; color: #333; font-size: 10px; }
 
-        .header { margin: 10px 0 20px 0; display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
+        /* ส่วนหัวและปุ่มสลับโหมด */
+        .header-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .mode-switcher { display: flex; background: #222; padding: 5px; border-radius: 15px; width: 100%; max-width: 300px; }
+        .mode-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; background: none; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .mode-btn.active { background: var(--primary-yellow); color: #111; }
+
+        .theme-switcher { display: flex; gap: 15px; background: #222; padding: 8px 20px; border-radius: 30px; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
 
         .container { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 500px; }
@@ -25,9 +31,11 @@
         .tod-section { text-align: center; width: 100%; max-width: 140px; }
         .tod-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: var(--primary-yellow); }
         .tod-row { background: #222; border-radius: 12px; padding: 8px; margin-bottom: 8px; display: flex; gap: 8px; justify-content: center; }
-        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
+        .tod-box { width: 45px; height: 45px; background: white; color: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .tod-box img { width: 100%; height: 100%; object-fit: cover; }
+        .tod-num { font-size: 22px; font-weight: bold; }
         .tod-box.hidden-tod { background: #333; color: var(--primary-yellow); }
-        .tod-box.hidden-tod::after { content: "?"; }
+        .tod-box.hidden-tod::after { content: "?"; font-size: 22px; }
 
         /* การ์ดเกมหลัก */
         .game-card {
@@ -36,47 +44,30 @@
             position: relative;
         }
 
-        /* พื้นที่วางลูกเต๋าและฝาครอบ */
-        .dice-area { 
-            position: relative; 
-            width: 100%; 
-            height: 180px; /* เพิ่มความสูงให้ครอบคลุมพื้นที่ */
-            margin-bottom: 15px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
-
-        /* ฝาครอบรูปเดียวขนาดใหญ่ */
+        .dice-area { position: relative; width: 100%; height: 180px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; }
+        
         #singleCover {
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%;
-            background-image: url('cover.jpg'); 
-            background-size: contain; 
-            background-repeat: no-repeat; 
-            background-position: center;
-            z-index: 20; /* อยู่หน้าสุด */
-            display: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('cover.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center;
+            z-index: 20; display: none;
         }
 
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; }
         .result-box { 
-            width: 80px; height: 80px; background: white; color: black; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 85px; height: 85px; background: white; color: black; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); overflow: hidden;
         }
+        .result-box img { width: 100%; height: 100%; object-fit: cover; }
+        .res-num { font-size: 50px; font-weight: bold; }
 
-        .red-num { color: var(--red-die) !important; }
+        .red-num { color: var(--red-die) !important; border: 3px solid var(--red-die) !important; }
 
         .status-text { font-size: 32px; font-weight: bold; margin-bottom: 15px; min-height: 48px; }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
         .btn-container { display: flex; gap: 10px; width: 100%; }
-        button { 
-            width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 20px; font-weight: bold;
-            cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif;
-        }
+        button { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif; }
         .btn-yellow { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 4px 0 #967a06; }
         .btn-open { background: #eee; color: #333; box-shadow: 0 4px 0 #bbb; }
         button:active { transform: translateY(3px); box-shadow: none; }
@@ -94,17 +85,22 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.2.7</div>
+    <div class="version-tag">VERSION 1.3.1</div>
 
-    <div class="header">
-        <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
-        <div class="dot" style="background: #1e3d2b;" onclick="changeBg('#1e3d2b')"></div>
-        <div class="dot" style="background: #2c3e50;" onclick="changeBg('#2c3e50')"></div>
-        <div class="dot" style="background: #4a1413;" onclick="changeBg('#4a1413')"></div>
+    <div class="header-container">
+        <div class="mode-switcher">
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
+        </div>
+        <div class="theme-switcher">
+            <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
+            <div class="dot" style="background: #1e3d2b;" onclick="changeBg('#1e3d2b')"></div>
+            <div class="dot" style="background: #2c3e50;" onclick="changeBg('#2c3e50')"></div>
+            <div class="dot" style="background: #4a1413;" onclick="changeBg('#4a1413')"></div>
+        </div>
     </div>
 
     <div class="container">
-        <!-- ฝั่งโต๊ด -->
         <div class="tod-section">
             <div class="tod-title">โต๊ด</div>
             <div id="todDisplay" class="tod-display-wrap">
@@ -114,16 +110,13 @@
             </div>
         </div>
 
-        <!-- กระดานหลัก -->
         <div class="game-card">
             <div class="dice-area">
-                <!-- ฝาครอบรูปเดียวขนาดใหญ่ (ซ่อนลูกเต๋าข้างหลัง) -->
                 <div id="singleCover"></div>
-                
                 <div id="diceGroup" class="main-results">
-                    <div id="d1" class="result-box">-</div>
-                    <div id="d2" class="result-box">-</div>
-                    <div id="d3" class="result-box">-</div>
+                    <div id="d1" class="result-box"><span class="res-num">-</span></div>
+                    <div id="d2" class="result-box"><span class="res-num">-</span></div>
+                    <div id="d3" class="result-box"><span class="res-num">-</span></div>
                 </div>
             </div>
 
@@ -148,75 +141,86 @@
     <audio id="openSound" src="open.mp3" preload="auto"></audio>
 
     <script>
+        let currentMode = 'hilo'; 
         let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
 
-        function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
-
-        function startShake() {
-            if (navigator.vibrate) navigator.vibrate(50);
-            const shakeAudio = document.getElementById('shakeSound');
-            shakeAudio.currentTime = 0;
-            shakeAudio.play().catch(() => {});
-
-            const cover = document.getElementById('singleCover');
-            const diceGroup = document.getElementById('diceGroup');
-            const statusLabel = document.getElementById('statusLabel');
-            
-            // 1. ซ่อนกลุ่มลูกเต๋าทั้งหมดทันที (Visibility hidden)
-            diceGroup.style.visibility = "hidden";
-
-            // 2. แสดงฝาครอบขนาดใหญ่และเริ่มเขย่า
-            cover.style.display = "block";
-            cover.classList.add('shaking-cover');
-            
-            document.getElementById('rollInitial').style.display = "none";
-            document.getElementById('rollSecondary').style.display = "none";
-            statusLabel.innerText = "กำลังเขย่า...";
-
-            // ล้างผลโต๊ด
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
+            document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
+            document.getElementById('statusLabel').innerText = mode === 'hilo' ? "พร้อมเขย่าไฮโล!" : "พร้อมเขย่าน้ำเต้า!";
+            document.querySelectorAll('.result-box').forEach(b => b.innerHTML = '<span class="res-num">-</span>');
             document.getElementById('todDisplay').innerHTML = `
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
                 <div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>
             `;
+        }
+
+        function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
+
+        function startShake() {
+            if (navigator.vibrate) navigator.vibrate(50);
+            document.getElementById('shakeSound').currentTime = 0;
+            document.getElementById('shakeSound').play().catch(() => {});
+
+            const cover = document.getElementById('singleCover');
+            const diceGroup = document.getElementById('diceGroup');
+            
+            diceGroup.style.visibility = "hidden";
+            cover.style.display = "block";
+            cover.classList.add('shaking-cover');
+            
+            document.getElementById('rollInitial').style.display = "none";
+            document.getElementById('rollSecondary').style.display = "none";
+            document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
 
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
-                
                 result.d1 = Math.floor(Math.random() * 6) + 1;
                 result.d2 = Math.floor(Math.random() * 6) + 1;
                 result.d3 = Math.floor(Math.random() * 6) + 1;
                 result.total = result.d1 + result.d2 + result.d3;
+                
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ (LOW)" : "สูง (HIGH)");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
-                statusLabel.innerText = "ปิดฝาแล้ว!";
+                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
             }, 1200);
         }
 
         function revealResults() {
             document.getElementById('openSound').play().catch(() => {});
-            
-            // 1. ซ่อนฝาครอบ
             document.getElementById('singleCover').style.display = "none";
-            // 2. แสดงกลุ่มลูกเต๋าคืนมา
             document.getElementById('diceGroup').style.visibility = "visible";
             
             const dice = [result.d1, result.d2, result.d3];
-            const isRed = (v) => (v === 1 || v === 4) ? 'red-num' : '';
             
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
-                box.innerText = val;
                 box.classList.remove('red-num');
-                if (val === 1 || val === 4) box.classList.add('red-num');
+                
+                if (currentMode === 'hilo') {
+                    box.innerHTML = `<span class="res-num ${ (val === 1 || val === 4) ? 'red-num' : '' }">${val}</span>`;
+                } else {
+                    box.innerHTML = `<img src="${val}.jpg" alt="dice">`;
+                    if (val === 1 || val === 4) box.classList.add('red-num'); // ใส่กรอบแดงถ้ารูปเป็น 1 หรือ 4
+                }
             });
 
+            // เฉลยโต๊ด
+            const getDisplay = (v) => {
+                if (currentMode === 'hilo') {
+                    return `<div class="tod-box"><span class="tod-num ${(v==1||v==4)?'red-num':''}">${v}</span></div>`;
+                }
+                return `<div class="tod-box ${(v==1||v==4)?'red-num':''}"><img src="${v}.jpg"></div>`;
+            };
+
             document.getElementById('todDisplay').innerHTML = `
-                <div class="tod-row"><div class="tod-box ${isRed(result.d1)}">${result.d1}</div><div class="tod-box ${isRed(result.d2)}">${result.d2}</div></div>
-                <div class="tod-row"><div class="tod-box ${isRed(result.d1)}">${result.d1}</div><div class="tod-box ${isRed(result.d3)}">${result.d3}</div></div>
-                <div class="tod-row"><div class="tod-box ${isRed(result.d2)}">${result.d2}</div><div class="tod-box ${isRed(result.d3)}">${result.d3}</div></div>
+                <div class="tod-row">${getDisplay(result.d1)}${getDisplay(result.d2)}</div>
+                <div class="tod-row">${getDisplay(result.d1)}${getDisplay(result.d3)}</div>
+                <div class="tod-row">${getDisplay(result.d2)}${getDisplay(result.d3)}</div>
             `;
 
             const label = document.getElementById('statusLabel');
@@ -232,8 +236,15 @@
             const list = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
-            const f = (v) => (v === 1 || v === 4) ? `<span class="red-num">${v}</span>` : v;
-            item.innerHTML = `<span>[${f(result.d1)}, ${f(result.d2)}, ${f(result.d3)}]</span><span class="${result.class}">${result.status}</span><span>${result.total}</span>`;
+            
+            const f = (v) => {
+                if (currentMode === 'hilo') return (v==1||v==4) ? `<span class="red-num">${v}</span>` : v;
+                // ในประวัติโหมดน้ำเต้า ใช้เป็นชื่อตัวอักษรแทนเพื่อให้ดูง่าย
+                const names = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
+                return (v==1||v==4) ? `<span class="red-num">${names[v]}</span>` : names[v];
+            };
+
+            item.innerHTML = `<span>[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span class="${result.class}">${result.status}</span><span>${result.total}</span>`;
             list.insertBefore(item, list.firstChild);
             if (list.children.length > 5) list.removeChild(list.lastChild);
         }
