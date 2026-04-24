@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v1.2.5</title>
+    <title>HILO Master Pro - v1.2.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --bg-color: #121212; --card-bg: #1a1a1a; --primary-yellow: #f1c40f; --red-die: #e74c3c; }
@@ -33,16 +33,31 @@
         .game-card {
             width: 100%; max-width: 340px; background: var(--card-bg); border: 2px solid var(--primary-yellow);
             border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative; overflow: hidden;
+            position: relative;
         }
 
-        .dice-area { position: relative; height: 120px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; }
+        /* พื้นที่วางลูกเต๋าและฝาครอบ */
+        .dice-area { 
+            position: relative; 
+            width: 100%; 
+            height: 180px; /* เพิ่มความสูงให้ครอบคลุมพื้นที่ */
+            margin-bottom: 15px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
 
-        /* ฝาครอบรูปเดียว */
+        /* ฝาครอบรูปเดียวขนาดใหญ่ */
         #singleCover {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('cover.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center;
-            z-index: 10; display: none; border-radius: 15px;
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            background-image: url('cover.jpg'); 
+            background-size: contain; 
+            background-repeat: no-repeat; 
+            background-position: center;
+            z-index: 20; /* อยู่หน้าสุด */
+            display: none;
         }
 
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; }
@@ -70,7 +85,7 @@
         .history-item { background: #1e1e1e; border-radius: 15px; padding: 12px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes shakeCover { 0%, 100% { transform: translate(0,0) rotate(0); } 20% { transform: translate(-3px, -2px) rotate(-1deg); } 40% { transform: translate(3px, -1px) rotate(1deg); } 60% { transform: translate(-3px, 1px) rotate(-1deg); } 80% { transform: translate(2px, 2px) rotate(1deg); } }
+        @keyframes shakeCover { 0%, 100% { transform: translate(0,0) rotate(0); } 20% { transform: translate(-4px, -3px) rotate(-2deg); } 40% { transform: translate(4px, -2px) rotate(2deg); } 60% { transform: translate(-4px, 2px) rotate(-2deg); } 80% { transform: translate(3px, 3px) rotate(2deg); } }
         .shaking-cover { animation: shakeCover 0.15s infinite; }
 
         @media (min-width: 480px) { .container { flex-direction: row; } .tod-section { width: 140px; } }
@@ -79,7 +94,7 @@
 </head>
 <body>
 
-    <div class="version-tag">VERSION 1.2.5</div>
+    <div class="version-tag">VERSION 1.2.7</div>
 
     <div class="header">
         <div class="dot" style="background: #121212;" onclick="changeBg('#121212')"></div>
@@ -102,10 +117,10 @@
         <!-- กระดานหลัก -->
         <div class="game-card">
             <div class="dice-area">
-                <!-- รูปฝาปิดอันเดียว -->
+                <!-- ฝาครอบรูปเดียวขนาดใหญ่ (ซ่อนลูกเต๋าข้างหลัง) -->
                 <div id="singleCover"></div>
                 
-                <div class="main-results">
+                <div id="diceGroup" class="main-results">
                     <div id="d1" class="result-box">-</div>
                     <div id="d2" class="result-box">-</div>
                     <div id="d3" class="result-box">-</div>
@@ -144,9 +159,13 @@
             shakeAudio.play().catch(() => {});
 
             const cover = document.getElementById('singleCover');
+            const diceGroup = document.getElementById('diceGroup');
             const statusLabel = document.getElementById('statusLabel');
             
-            // แสดงฝาครอบและเขย่า
+            // 1. ซ่อนกลุ่มลูกเต๋าทั้งหมดทันที (Visibility hidden)
+            diceGroup.style.visibility = "hidden";
+
+            // 2. แสดงฝาครอบขนาดใหญ่และเริ่มเขย่า
             cover.style.display = "block";
             cover.classList.add('shaking-cover');
             
@@ -179,8 +198,10 @@
         function revealResults() {
             document.getElementById('openSound').play().catch(() => {});
             
-            // ซ่อนฝาครอบ
+            // 1. ซ่อนฝาครอบ
             document.getElementById('singleCover').style.display = "none";
+            // 2. แสดงกลุ่มลูกเต๋าคืนมา
+            document.getElementById('diceGroup').style.visibility = "visible";
             
             const dice = [result.d1, result.d2, result.d3];
             const isRed = (v) => (v === 1 || v === 4) ? 'red-num' : '';
