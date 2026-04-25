@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Shake - v2.0.4</title>
+    <title>HILO Master PinThong - v2.0.5</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
-            --overlay-bg: rgba(45, 62, 9, 0.94); 
+            --overlay-bg: rgba(30, 61, 43, 0.7); 
             --card-bg: rgba(26, 26, 26, 0.95);
             --primary-yellow: #f1c40f; 
             --red-die: #e74c3c; 
@@ -22,24 +22,47 @@
             color: white; transition: 0.5s ease;
         }
 
+        /* --- Welcome Popup CSS --- */
+        #welcomePopup {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: 0.5s;
+        }
+        #welcomePopup.show { opacity: 1; visibility: visible; }
+        
+        .welcome-card {
+            background: rgba(30,30,30,0.9); width: 90%; max-width: 400px;
+            padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow);
+            text-align: center; box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
+            transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #welcomePopup.show .welcome-card { transform: scale(1); }
+
+        .welcome-icon { font-size: 50px; margin-bottom: 10px; }
+        .welcome-title { font-size: 28px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 5px; }
+        .welcome-subtitle { font-size: 18px; color: #ccc; margin-bottom: 15px; }
+        .welcome-brand { font-size: 40px; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--primary-yellow); margin-bottom: 20px; }
+        .welcome-msg { font-size: 16px; color: #aaa; margin-bottom: 30px; }
+        .btn-start {
+            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111;
+            border: none; padding: 15px 40px; border-radius: 20px; font-size: 20px;
+            font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s;
+        }
+        .btn-start:active { transform: translateY(3px); box-shadow: none; }
+
         /* --- Header & Controls --- */
         .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
         .mode-btn { flex: 1; padding: 10px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
         .mode-btn.active { background: var(--primary-yellow); color: #111; }
 
-        .control-panel { 
-            background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255,255,255,0.1); gap: 15px;
-        }
-
+        .control-panel { background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); gap: 15px; }
         .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
-
         .speed-area { display: flex; align-items: center; gap: 8px; }
         .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
-        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
         #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
         /* --- Game Card --- */
@@ -55,7 +78,7 @@
 
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; position: relative; z-index: 10; padding-top: 15px; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 170px; }
-        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; }
+        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
@@ -80,10 +103,22 @@
 </head>
 <body>
 
+    <!-- Popup ต้อนรับ -->
+    <div id="welcomePopup">
+        <div class="welcome-card">
+            <div class="welcome-icon">🌟</div>
+            <div class="welcome-title">ยินดีต้อนรับ</div>
+            <div class="welcome-subtitle">สู่เกมส์ทอยเต๋าพรีเมียม</div>
+            <div class="welcome-brand">ปิ่นทอง</div>
+            <div class="welcome-msg">ขอให้ทุกท่านสนุกกับการเล่นนะครับ!<br>โชคดีมีชัย รวยๆ ทุกท่านครับ</div>
+            <button class="btn-start" onclick="closeWelcome()">เริ่มเล่นกันเลย</button>
+        </div>
+    </div>
+
     <div class="header-container">
         <div class="mode-switcher">
-            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล (ปิ่นทอง)</button>
-            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
         </div>
 
         <div class="control-panel">
@@ -98,7 +133,7 @@
             </div>
             
             <div class="speed-area">
-                <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:bold; margin-right:5px;">V.2.0.4</div>
+                <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:bold;">V.2.0.5</div>
                 <div class="speed-control">
                     <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                     <span id="speedVal">1.3</span>
@@ -134,35 +169,34 @@
     <script>
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
         let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
-        let isShakingLogic = false; // ป้องกันการเขย่าซ้อน
+        let isShakingLogic = false;
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
-        // --- ระบบ Shake Detection ---
+        // --- Popup Functions ---
+        window.onload = () => {
+            resetUI();
+            document.getElementById('welcomePopup').classList.add('show');
+        };
+
+        function closeWelcome() {
+            document.getElementById('welcomePopup').classList.remove('show');
+            // ขออนุญาตเซนเซอร์เมื่อกดปิดป๊อปอัป (สำหรับ iOS)
+            requestMotionPermission();
+        }
+
         function requestMotionPermission() {
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission()
-                .then(response => { if (response == 'granted') { window.addEventListener('devicemotion', handleMotion); } })
-                .catch(console.error);
-            } else {
-                window.addEventListener('devicemotion', handleMotion);
-            }
+                DeviceMotionEvent.requestPermission().then(r => { if(r=='granted') window.addEventListener('devicemotion', handleMotion); });
+            } else { window.addEventListener('devicemotion', handleMotion); }
         }
 
         function handleMotion(event) {
             let acc = event.accelerationIncludingGravity;
             if (!acc) return;
             let totalAcc = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
-            
-            // ถ้าความแรงในการเขย่ามากกว่า 25 และอยู่ในสถานะที่พร้อมเขย่า
             if (totalAcc > 25 && !isShakingLogic) {
-                const initialBtn = document.getElementById('rollInitial');
-                const secondaryBtn = document.getElementById('rollSecondary');
-                
-                if (initialBtn.style.display !== 'none') {
-                    startShake('normal');
-                } else if (secondaryBtn.style.display !== 'none') {
-                    startShake('rinNak');
-                }
+                if (document.getElementById('rollInitial').style.display !== 'none') startShake('normal');
+                else if (document.getElementById('rollSecondary').style.display !== 'none') startShake('rinNak');
             }
         }
 
@@ -192,22 +226,17 @@
         function startShake(shakeType) {
             if (isShakingLogic) return;
             isShakingLogic = true;
-
             if (navigator.vibrate) navigator.vibrate(50);
             let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
             new Audio(sFile).play().catch(()=>{});
-            
             const cover = document.getElementById('singleCover');
             const statusLabel = document.getElementById('statusLabel');
             document.getElementById('diceGroup').style.opacity = "0";
             statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
-            
             cover.classList.remove('open'); cover.style.display = "block";
             setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
-            
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
-
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
@@ -221,18 +250,17 @@
                 }
                 statusLabel.innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
-                isShakingLogic = false; // จบการสั่นหนึ่งรอบ พร้อมเขย่ารินต่อได้
+                isShakingLogic = false;
             }, 1200);
         }
 
         async function revealResults() {
-            isShakingLogic = true; // ล็อกไม่ให้สั่นตอนเปิดฝา
+            isShakingLogic = true;
             document.getElementById('rollSecondary').style.display = "none";
             new Audio('open.mp3').play().catch(()=>{});
             document.getElementById('singleCover').classList.add('open');
             const dice = [result.d1, result.d2, result.d3];
             const isRed = (v) => (v === 1 || v === 4);
-            
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
                 const label = document.getElementById(`label${i+1}`);
@@ -242,21 +270,17 @@
                 label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
                 label.className = `item-label`;
             });
-
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
             const getT = (v) => `<div style="width:45px; height:45px; border:2px solid ${isRed(v)?'var(--red-die)':'transparent'}; background:white; border-radius:8px; overflow:hidden;"><img src="${currentMode==='hilo'?'h':''}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`;
             document.getElementById('todDisplay').innerHTML = `<div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d2)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d3)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d2)}${getT(result.d3)}</div>`;
-            
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
-            
             addToHistory();
-
             setTimeout(async () => {
                 for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
                 if (currentMode === 'hilo') { await playVoice(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); }
                 document.getElementById('rollInitial').style.display = "block";
-                isShakingLogic = false; // ปลดล็อกให้เขย่ารอบใหม่ได้
+                isShakingLogic = false;
             }, 600);
         }
 
@@ -277,7 +301,6 @@
                 setTimeout(resolve, 1100 / voiceSpeed);
             });
         }
-        window.onload = resetUI;
     </script>
 </body>
 </html>
