@@ -189,16 +189,27 @@
             fetch(GOOGLE_SHEET_URL + '?' + params.toString(), { mode: 'no-cors' });
         }
 
+               // --- ส่วนที่ปรับปรุงในฟังก์ชัน startShake ---
         function startShake(shakeType) {
             if (navigator.vibrate) navigator.vibrate(50);
-            const s = document.getElementById('shakeSound'); s.currentTime = 0; s.play().catch(()=>{});
+            
+            // เลือกเสียงตามประเภทการริน
+            let soundFile = 'shake.mp3'; // เสียงมาตรฐาน
+            if (shakeType === 'rinBao') {
+                soundFile = 'shake_light.mp3'; // เสียงรินเบา
+            } else if (shakeType === 'rinNak') {
+                soundFile = 'shake_heavy.mp3'; // เสียงรินหนัก
+            }
+            
+            const s = new Audio(soundFile);
+            s.currentTime = 0;
+            s.play().catch(()=>{});
             
             const cover = document.getElementById('singleCover');
             const statusLabel = document.getElementById('statusLabel');
             
             document.getElementById('diceGroup').style.opacity = "0";
             
-            // เปลี่ยนข้อความตามปุ่มที่กด
             if (shakeType === 'rinBao') {
                 statusLabel.innerText = "กำลังรินเบาๆ...";
             } else if (shakeType === 'rinNak') {
@@ -217,6 +228,7 @@
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 
+                // สุ่มใหม่เฉพาะ "เขย่าปกติ" หรือ "รินหนัก"
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
                     result.d1 = Math.floor(Math.random() * 6) + 1;
                     result.d2 = Math.floor(Math.random() * 6) + 1;
@@ -231,6 +243,7 @@
                 document.getElementById('rollSecondary').style.display = "flex";
             }, 1200);
         }
+
 
         async function revealResults() {
             document.getElementById('rollSecondary').style.display = "none";
