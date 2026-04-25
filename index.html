@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Ultimate - v1.8.6</title>
+    <title>HILO Master Ultimate - v1.8.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -38,17 +38,19 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.8); position: relative; margin-bottom: 20px; overflow: hidden;
         }
 
-        /* พื้นที่จานรองลูกเต๋า */
+        /* พื้นที่จานรองลูกเต๋า (plate.png) */
         .dice-area { 
             position: relative; width: 100%; height: 280px; margin-bottom: 10px; 
             display: flex; justify-content: center; align-items: center;
-            background-image: url('plate.png'); background-size: contain; background-repeat: no-repeat; background-position: center;
+            background-image: url('plate.png'); 
+            background-size: contain; background-repeat: no-repeat; background-position: center;
         }
 
-        /* ฝาครอบเลื่อนขึ้น (2 วินาที) */
+        /* ฝาครอบเลื่อนขึ้น (cover.png) */
         #singleCover { 
             position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
-            width: 260px; height: 260px; background-image: url('cover.jpg'); 
+            width: 260px; height: 260px; 
+            background-image: url('cover.png'); 
             background-size: contain; background-repeat: no-repeat; background-position: center; 
             z-index: 20; transition: transform 2s ease-in-out, opacity 1.5s ease-in-out; 
         }
@@ -82,6 +84,9 @@
         .tod-box { width: 42px; height: 42px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .tod-box img { width: 100%; height: 100%; object-fit: cover; }
 
+        .history-container { width: 100%; max-width: 500px; margin-top: 10px; padding-bottom: 50px; }
+        .history-item { background: rgba(30, 30, 30, 0.8); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; border-left: 5px solid var(--primary-yellow); backdrop-filter: blur(4px); }
+
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, 0); } 20% { transform: translate(-52%, -2px); } 60% { transform: translate(-48%, 2px); } }
         .shaking-cover { animation: shakeCover 0.15s infinite; }
@@ -101,7 +106,7 @@
                 <div class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></div>
                 <div class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></div>
             </div>
-            <div class="version-display">V. 1.8.6</div>
+            <div class="version-display">V. 1.8.7</div>
         </div>
     </div>
 
@@ -120,11 +125,13 @@
         <div class="tod-section"><div class="tod-title">โต๊ด</div><div id="todDisplay" class="tod-display-wrap"></div></div>
     </div>
 
+    <div class="history-container"><div id="historyList"></div></div>
+
     <audio id="shakeSound" src="shake.mp3"></audio>
     <audio id="openSound" src="open.mp3"></audio>
 
     <script>
-        // *** สำคัญ: แก้ไข URL ของคุณที่นี่ ***
+        // *** สำคัญ: ตรวจสอบ URL Apps Script ของคุณ ***
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
 
         let currentMode = 'hilo'; 
@@ -144,8 +151,9 @@
             document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
             document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; b.style.opacity = "0"; });
             document.getElementById('todDisplay').innerHTML = `<div class="tod-row"><div class="tod-box" style="background:#333; color:var(--primary-yellow)">?</div><div class="tod-box" style="background:#333; color:var(--primary-yellow)">?</div></div>`.repeat(3);
-            document.getElementById('singleCover').classList.remove('open');
-            document.getElementById('singleCover').style.display = "none";
+            const cover = document.getElementById('singleCover');
+            cover.classList.remove('open');
+            cover.style.display = "none";
         }
 
         function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
@@ -156,7 +164,6 @@
             if (currentMode === 'fish') { v1 = animalMap[result.d1]; v2 = animalMap[result.d2]; v3 = animalMap[result.d3]; }
             const params = new URLSearchParams({ mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา', d1: v1, d2: v2, d3: v3, total: result.total, status: result.status });
             fetch(GOOGLE_SHEET_URL + '?' + params.toString(), { mode: 'no-cors' });
-            console.log("Data sent to Google Sheet & Telegram...");
         }
 
         function startShake() {
@@ -179,9 +186,7 @@
                 result.total = result.d1 + result.d2 + result.d3;
                 result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
                 result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
-                
-                sendToGoogleSheet(); // บันทึกลง Sheet ทันทีที่เขย่าเสร็จ
-                
+                sendToGoogleSheet();
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
             }, 1200);
@@ -211,6 +216,7 @@
 
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').className = "status-text " + result.class;
+            addToHistory();
 
             setTimeout(async () => {
                 for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
@@ -219,7 +225,6 @@
                     await playVoice(sVoice);
                 }
                 document.getElementById('rollInitial').style.display = "block";
-                document.getElementById('rollInitial').querySelector('button').innerText = "เขย่ารอบใหม่";
             }, 500);
         }
 
@@ -231,6 +236,15 @@
             });
         }
 
+        function addToHistory() {
+            const list = document.getElementById('historyList');
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            const f = (v) => (v==1||v==4) ? `<span class="red-text">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
+            item.innerHTML = `<span>[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span class="${result.class}">${result.status}</span><span>${result.total}</span>`;
+            list.insertBefore(item, list.firstChild);
+            if (list.children.length > 5) list.removeChild(list.lastChild);
+        }
         window.onload = resetUI;
     </script>
 </body>
