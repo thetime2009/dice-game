@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro Ultimate - v1.9.6</title>
+    <title>HILO Master Ultimate - v1.9.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -22,81 +22,67 @@
             color: white; transition: 0.5s ease;
         }
 
-        /* ส่วนหัวและการจัดเรียงแถบควบคุมใหม่ */
+        /* Top Bar */
         .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 15px; }
-        
         .top-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            width: 100%; 
-            background: rgba(0,0,0,0.85); 
-            padding: 10px 20px; 
-            border-radius: 30px; 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; align-items: center; 
+            width: 100%; background: rgba(0,0,0,0.85); padding: 10px 20px; 
+            border-radius: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
         }
-
         .left-controls { display: flex; align-items: center; gap: 15px; }
         .theme-switcher { display: flex; gap: 10px; }
-        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid white; transition: 0.2s; }
-        .version-display { color: #fff; font-size: 15px; font-weight: bold; font-family: sans-serif; margin-left: 5px; }
-
-        .right-controls { display: flex; align-items: center; gap: 10px; }
+        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        .version-display { color: #fff; font-size: 15px; font-weight: bold; margin-left: 5px; }
         .speed-control { display: flex; align-items: center; gap: 8px; }
-        .speed-control label { font-size: 14px; color: #ccc; }
-        .speed-btn { background: #444; color: white; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
-        .speed-btn:active { background: var(--primary-yellow); color: black; }
+        .speed-btn { background: #444; color: white; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; }
         #speedVal { font-size: 16px; min-width: 30px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
         .mode-switcher { display: flex; background: rgba(34, 34, 34, 0.9); padding: 5px; border-radius: 15px; width: 100%; max-width: 350px; }
         .mode-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .mode-btn.active { background: var(--primary-yellow); color: #111; }
 
-        /* การ์ดเกมขยายกว้างรองรับ 150px */
+        /* Game Card */
         .game-card { 
             width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px);
             border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden;
         }
 
-        /* ขยายพื้นที่จานเป็น 480px */
         .dice-area { 
-            position: relative; width: 100%; height: 500px; margin-bottom: 10px; 
+            position: relative; width: 100%; height: 510px; margin-bottom: 10px; 
             display: flex; justify-content: center; align-items: center;
             background-image: url('plate.png'); background-size: 600px; 
             background-repeat: no-repeat; background-position: center;
         }
 
-        /* ฝาครอบครอบคลุมจานที่ใหญ่ขึ้น */
+        /* ฝาครอบ - แก้ไข Transition */
         #singleCover { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 530px; height: 530px; 
+            width: 520px; height: 520px; 
             background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; 
             z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; 
         }
         #singleCover.open { transform: translate(-50%, -160%); opacity: 0; pointer-events: none; }
 
+        /* ส่วนของการสั่น - บังคับไม่ให้มี transition ตอนสั่น */
+        .shaking-cover { 
+            animation: shakeCover 0.1s infinite !important; 
+            transition: none !important; 
+        }
+
+        @keyframes shakeCover {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-51%, -51%) rotate(-1.5deg); }
+            50% { transform: translate(-49%, -49%) rotate(1.5deg); }
+            75% { transform: translate(-52%, -50%) rotate(-1deg); }
+        }
+
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; position: relative; z-index: 10; padding-top: 15px; transition: 0.5s; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 170px; }
-        
-        .result-box { 
-            width: 150px; height: 150px; background: white; border-radius: 22px; 
-            display: flex; align-items: center; justify-content: center; overflow: hidden; 
-            border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
+        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* ปรับแต่ง Label ตามที่ขอ: 80px และสีเหลือง */
-        .item-label { 
-            font-size: 80px; 
-            font-weight: bold; 
-            min-height: 90px; 
-            color: var(--primary-yellow) !important; 
-            text-shadow: 2px 4px 8px rgba(0,0,0,0.8); 
-            line-height: 1.1; 
-        }
-        
+        .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
         .status-text { font-size: 32px; font-weight: bold; margin: 20px 0; min-height: 45px; text-shadow: 2px 2px 5px rgba(0,0,0,1); }
         .high { color: #2ecc71; } .low { color: #3498db; } .hilo { color: var(--red-die); animation: pulse 1s infinite; }
 
@@ -104,7 +90,7 @@
         button:not(.speed-btn) { border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif; border-radius: 15px; }
         .btn-dark { flex: 1; padding: 18px 5px; background: #333; color: white; box-shadow: 0 5px 0 #111; }
         .btn-light { flex: 1; padding: 18px 5px; background: #bbb; color: #222; box-shadow: 0 5px 0 #888; }
-        .btn-gold { flex: 1.4; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 6px 0 #967a06; }
+        .btn-gold { flex: 1.4; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 5px 0 #967a06; }
         button:active { transform: translateY(4px); box-shadow: none !important; }
 
         .tod-section { width: 100%; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; }
@@ -112,13 +98,11 @@
         .tod-display-wrap { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .tod-row { background: rgba(34, 34, 34, 0.8); border-radius: 15px; padding: 8px; display: flex; gap: 10px; }
         .tod-box { width: 50px; height: 50px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .tod-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
-        <!-- แถบควบคุมบนสุดที่จัดใหม่ -->
         <div class="top-bar">
             <div class="left-controls">
                 <div class="theme-switcher">
@@ -127,9 +111,8 @@
                     <div class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></div>
                     <div class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></div>
                 </div>
-                <div class="version-display">V. 1.9.6</div>
+                <div class="version-display">V. 1.9.7</div>
             </div>
-            
             <div class="right-controls">
                 <div class="speed-control">
                     <label>ความเร็วเสียง:</label>
@@ -139,7 +122,6 @@
                 </div>
             </div>
         </div>
-
         <div class="mode-switcher">
             <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
             <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
@@ -156,27 +138,10 @@
             </div>
         </div>
         <div id="statusLabel" class="status-text">-</div>
-        
-        <div id="rollInitial">
-            <div class="btn-group"><button class="btn-gold" style="width: 100%;" onclick="startShake('normal')">เขย่าลูกเต๋า</button></div>
-        </div>
-        
-        <div id="rollSecondary" style="display:none;">
-            <div class="btn-group">
-                <button class="btn-dark" onclick="startShake('rinBao')">รินเบา</button>
-                <button class="btn-light" onclick="startShake('rinNak')">รินหนัก</button>
-                <button id="openBtn" class="btn-gold" onclick="revealResults()">เปิดดูแต้ม</button>
-            </div>
-        </div>
-
-        <div class="tod-section">
-            <div class="tod-title">โต๊ด</div>
-            <div id="todDisplay" class="tod-display-wrap"></div>
-        </div>
+        <div id="rollInitial"><div class="btn-group"><button class="btn-gold" style="width: 100%;" onclick="startShake('normal')">เขย่าลูกเต๋า</button></div></div>
+        <div id="rollSecondary" style="display:none;"><div class="btn-group"><button class="btn-dark" onclick="startShake('rinBao')">รินเบา</button><button class="btn-light" onclick="startShake('rinNak')">รินหนัก</button><button id="openBtn" class="btn-gold" onclick="revealResults()">เปิดดูแต้ม</button></div></div>
+        <div class="tod-section"><div class="tod-title">โต๊ด</div><div id="todDisplay" class="tod-display-wrap"></div></div>
     </div>
-
-    <audio id="shakeSound" src="shake.mp3"></audio>
-    <audio id="openSound" src="open.mp3"></audio>
 
     <script>
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
@@ -200,7 +165,6 @@
 
         function resetUI() {
             document.getElementById('statusLabel').innerText = "-";
-            document.getElementById('statusLabel').className = "status-text";
             document.getElementById('diceGroup').style.opacity = "0";
             document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
             document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; });
@@ -225,19 +189,23 @@
             let sFile = 'shake.mp3';
             if (shakeType === 'rinBao') sFile = 'shake_light.mp3';
             if (shakeType === 'rinNak') sFile = 'shake_heavy.mp3';
-            const s = new Audio(sFile); s.play().catch(()=>{});
+            new Audio(sFile).play().catch(()=>{});
             
             const cover = document.getElementById('singleCover');
             const statusLabel = document.getElementById('statusLabel');
             document.getElementById('diceGroup').style.opacity = "0";
             
-            if (shakeType === 'rinBao') statusLabel.innerText = "กำลังรินเบาๆ...";
-            else if (shakeType === 'rinNak') statusLabel.innerText = "กำลังรินหนัก...";
-            else statusLabel.innerText = "กำลังเขย่า...";
+            statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
             
+            // สำคัญ: รีเซ็ตสถานะฝาและเริ่มสั่น
             cover.classList.remove('open');
             cover.style.display = "block";
-            cover.classList.add('shaking-cover');
+            
+            // ใช้ setTimeout เล็กน้อยเพื่อให้เบราว์เซอร์รับรู้การเปลี่ยนสไตล์ก่อนเริ่มสั่น
+            setTimeout(() => {
+                cover.classList.add('shaking-cover');
+            }, 10);
+            
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
 
@@ -283,11 +251,9 @@
             setTimeout(async () => {
                 for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
                 if (currentMode === 'hilo') {
-                    let sVoice = result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3");
-                    await playVoice(sVoice);
+                    await playVoice(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3"));
                 }
                 document.getElementById('rollInitial').style.display = "block";
-                document.getElementById('rollInitial').querySelector('button').innerText = "เขย่ารอบใหม่";
             }, 600);
         }
 
