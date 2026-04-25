@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.0.2</title>
+    <title>HILO Master Shake - v2.0.4</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
-            /* แก้ไขสีเริ่มต้นเป็นโทนสีเขียว */
             --overlay-bg: rgba(30, 61, 43, 0.7); 
             --card-bg: rgba(26, 26, 26, 0.95);
             --primary-yellow: #f1c40f; 
@@ -24,25 +23,23 @@
         }
 
         /* --- Header & Controls --- */
-        .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
-        
-        .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
-        .mode-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
+        .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+        .mode-btn { flex: 1; padding: 10px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
         .mode-btn.active { background: var(--primary-yellow); color: #111; }
 
-        /* ปรับให้ Theme และ Speed อยู่แถวเดียวกัน */
         .control-panel { 
-            background: rgba(0,0,0,0.8); border-radius: 25px; padding: 10px 15px; 
+            background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; 
             display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255,255,255,0.1); gap: 10px;
+            border: 1px solid rgba(255,255,255,0.1); gap: 15px;
         }
 
-        .theme-switcher { display: flex; gap: 6px; align-items: center; }
-        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.6); transition: 0.2s; }
-        .dot:hover { transform: scale(1.1); border-color: white; }
+        .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
 
-        .speed-control { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
-        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .speed-area { display: flex; align-items: center; gap: 8px; }
+        .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
+        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
         /* --- Game Card --- */
@@ -58,7 +55,7 @@
 
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; position: relative; z-index: 10; padding-top: 15px; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 170px; }
-        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
@@ -68,8 +65,7 @@
         /* --- History --- */
         .history-container { width: 100%; max-width: 600px; margin-top: 10px; padding-bottom: 50px; }
         .history-title { font-size: 20px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 10px; padding-left: 10px; border-left: 4px solid var(--primary-yellow); }
-        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; backdrop-filter: blur(5px); }
-        .red-num { color: var(--red-die); font-weight: bold; }
+        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
 
         @media (max-width: 600px) {
             .dice-area { height: 320px; background-size: 380px; }
@@ -77,8 +73,6 @@
             .dice-wrapper { width: 100px; gap: 5px; }
             .result-box { width: 90px; height: 90px; border-radius: 15px; }
             .item-label { font-size: 45px; min-height: 50px; }
-            .control-panel { padding: 8px 12px; border-radius: 20px; }
-            .dot { width: 18px; height: 18px; }
         }
 
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
@@ -88,11 +82,10 @@
 
     <div class="header-container">
         <div class="mode-switcher">
-            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
-            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
         </div>
 
-        <!-- Control Panel: Theme และ Speed ในแถวเดียวกัน -->
         <div class="control-panel">
             <div class="theme-switcher">
                 <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
@@ -104,8 +97,8 @@
                 <div class="dot" style="background: #3d2b1e;" onclick="changeBg('rgba(61,43,30,0.7)')"></div>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:bold;">V.2.0.2</div>
+            <div class="speed-area">
+                <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:bold; margin-right:5px;">V.2.0.4</div>
                 <div class="speed-control">
                     <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                     <span id="speedVal">1.3</span>
@@ -125,7 +118,7 @@
             </div>
         </div>
         <div id="statusLabel" style="font-size:26px; font-weight:bold; margin:10px 0;">-</div>
-        <div id="rollInitial"><button class="btn-gold" onclick="startShake('normal')">เขย่าลูกเต๋า</button></div>
+        <div id="rollInitial"><button class="btn-gold" onclick="startShake('normal'); requestMotionPermission();">เขย่าลูกเต๋า</button></div>
         <div id="rollSecondary" style="display:none;"><div class="btn-group"><button style="background:#333; color:#fff; flex:1; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinBao')">รินเบา</button><button style="background:#bbb; color:#111; flex:1; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinNak')">รินหนัก</button><button id="openBtn" class="btn-gold" style="flex:1.4;" onclick="revealResults()">เปิดดูแต้ม</button></div></div>
         <div id="todDisplay" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:20px;"></div>
     </div>
@@ -141,15 +134,41 @@
     <script>
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
         let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
+        let isShakingLogic = false; // ป้องกันการเขย่าซ้อน
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
-        function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
-        function switchMode(mode) { 
-            currentMode = mode; 
-            document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
-            document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
-            resetUI(); 
+        // --- ระบบ Shake Detection ---
+        function requestMotionPermission() {
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                .then(response => { if (response == 'granted') { window.addEventListener('devicemotion', handleMotion); } })
+                .catch(console.error);
+            } else {
+                window.addEventListener('devicemotion', handleMotion);
+            }
         }
+
+        function handleMotion(event) {
+            let acc = event.accelerationIncludingGravity;
+            if (!acc) return;
+            let totalAcc = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+            
+            // ถ้าความแรงในการเขย่ามากกว่า 25 และอยู่ในสถานะที่พร้อมเขย่า
+            if (totalAcc > 25 && !isShakingLogic) {
+                const initialBtn = document.getElementById('rollInitial');
+                const secondaryBtn = document.getElementById('rollSecondary');
+                
+                if (initialBtn.style.display !== 'none') {
+                    startShake('normal');
+                } else if (secondaryBtn.style.display !== 'none') {
+                    startShake('rinNak');
+                }
+            }
+        }
+
+        function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
+        function switchMode(mode) { currentMode = mode; document.getElementById('modeHilo').classList.toggle('active', mode==='hilo'); document.getElementById('modeFish').classList.toggle('active', mode==='fish'); resetUI(); }
+        
         function resetUI() {
             document.getElementById('statusLabel').innerText = "-";
             document.getElementById('diceGroup').style.opacity = "0";
@@ -157,8 +176,11 @@
             document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; });
             document.getElementById('todDisplay').innerHTML = "";
             const cover = document.getElementById('singleCover'); cover.classList.remove('open', 'shaking-cover'); cover.style.display = "none";
+            isShakingLogic = false;
         }
+
         function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
+
         function sendData() {
             if (!GOOGLE_SHEET_URL) return;
             let v1 = result.d1, v2 = result.d2, v3 = result.d3;
@@ -166,17 +188,26 @@
             const params = new URLSearchParams({ mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา', d1: v1, d2: v2, d3: v3, total: result.total, status: result.status });
             fetch(GOOGLE_SHEET_URL + '?' + params.toString(), { mode: 'no-cors' });
         }
+
         function startShake(shakeType) {
+            if (isShakingLogic) return;
+            isShakingLogic = true;
+
+            if (navigator.vibrate) navigator.vibrate(50);
             let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
             new Audio(sFile).play().catch(()=>{});
+            
             const cover = document.getElementById('singleCover');
             const statusLabel = document.getElementById('statusLabel');
             document.getElementById('diceGroup').style.opacity = "0";
             statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
+            
             cover.classList.remove('open'); cover.style.display = "block";
             setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+            
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
+
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
@@ -190,14 +221,18 @@
                 }
                 statusLabel.innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
+                isShakingLogic = false; // จบการสั่นหนึ่งรอบ พร้อมเขย่ารินต่อได้
             }, 1200);
         }
+
         async function revealResults() {
+            isShakingLogic = true; // ล็อกไม่ให้สั่นตอนเปิดฝา
             document.getElementById('rollSecondary').style.display = "none";
             new Audio('open.mp3').play().catch(()=>{});
             document.getElementById('singleCover').classList.add('open');
             const dice = [result.d1, result.d2, result.d3];
             const isRed = (v) => (v === 1 || v === 4);
+            
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
                 const label = document.getElementById(`label${i+1}`);
@@ -207,27 +242,34 @@
                 label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
                 label.className = `item-label`;
             });
+
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
             const getT = (v) => `<div style="width:45px; height:45px; border:2px solid ${isRed(v)?'var(--red-die)':'transparent'}; background:white; border-radius:8px; overflow:hidden;"><img src="${currentMode==='hilo'?'h':''}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`;
             document.getElementById('todDisplay').innerHTML = `<div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d2)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d3)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d2)}${getT(result.d3)}</div>`;
+            
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+            
             addToHistory();
+
             setTimeout(async () => {
                 for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
                 if (currentMode === 'hilo') { await playVoice(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); }
                 document.getElementById('rollInitial').style.display = "block";
+                isShakingLogic = false; // ปลดล็อกให้เขย่ารอบใหม่ได้
             }, 600);
         }
+
         function addToHistory() {
             const list = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
-            const f = (v) => (v==1||v==4) ? `<span class="red-num">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
-            item.innerHTML = `<span>[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span>${result.total}</span>`;
+            const f = (v) => (v==1||v==4) ? `<span style="color:var(--red-die); font-weight:bold;">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
+            item.innerHTML = `<span style="flex:1;">[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right;">${result.total}</span>`;
             list.insertBefore(item, list.firstChild);
             if (list.children.length > 5) list.removeChild(list.lastChild);
         }
+
         function playVoice(f) {
             return new Promise((resolve) => {
                 const a = new Audio(f); a.playbackRate = voiceSpeed;
