@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Responsive - v1.9.8</title>
+    <title>HILO Master Pro - v2.0.0</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -22,106 +22,123 @@
             color: white; transition: 0.5s ease;
         }
 
-        /* --- [1] ขนาดมาตรฐาน (สำหรับคอมพิวเตอร์และแท็บเล็ตแนวนอน) --- */
-        .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; background: rgba(0,0,0,0.85); padding: 10px 20px; border-radius: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        /* --- ส่วนหัวดีไซน์ใหม่ (Header Control Center) --- */
+        .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        
+        .mode-switcher { 
+            display: flex; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 20px; 
+            width: 100%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .mode-btn { 
+            flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; 
+            color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px;
+        }
+        .mode-btn.active { background: var(--primary-yellow); color: #111; box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3); }
+
+        .control-panel {
+            background: rgba(0,0,0,0.8); border-radius: 25px; padding: 12px 20px;
+            display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+        /* รายการสีพื้นหลัง 10 สี */
+        .theme-switcher { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .dot { 
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer; 
+            border: 2px solid rgba(255,255,255,0.5); transition: 0.2s; flex-shrink: 0;
+        }
+        .dot:hover { transform: scale(1.2); border-color: white; }
+
+        .speed-control { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 15px; }
+        .speed-btn { 
+            background: #444; color: white; border: none; width: 26px; height: 26px; 
+            border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
         #speedVal { font-size: 16px; min-width: 30px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
-        /* การ์ดเกม */
+        /* --- ตัวเกม --- */
         .game-card { 
-            width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px);
+            width: 100%; max-width: 600px; background: var(--card-bg); backdrop-filter: blur(10px);
             border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden;
         }
 
-        /* จานและฝาครอบ (ขนาดใหญ่) */
-        .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; }
-        #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; }
+        .dice-area { 
+            position: relative; width: 100%; height: 480px; margin-bottom: 10px; 
+            display: flex; justify-content: center; align-items: center;
+            background-image: url('plate.png'); background-size: 600px; 
+            background-repeat: no-repeat; background-position: center;
+        }
+
+        #singleCover { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 520px; height: 520px; 
+            background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; 
+            z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; 
+        }
         #singleCover.open { transform: translate(-50%, -160%); opacity: 0; pointer-events: none; }
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
 
-        /* ลูกเต๋าและตัวหนังสือ (ขนาดใหญ่) */
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; position: relative; z-index: 10; padding-top: 15px; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 170px; }
-        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
-        /* ส่วนโต๊ด */
-        .tod-row { background: rgba(34, 34, 34, 0.8); border-radius: 15px; padding: 8px; display: flex; gap: 10px; }
-        .tod-box { width: 70px; height: 70px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid transparent; }
-        .tod-box img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
+        .btn-group { display: flex; justify-content: center; gap: 10px; width: 100%; }
 
-        /* ปุ่มกด */
-        .btn-group { display: flex; justify-content: center; gap: 12px; width: 100%; max-width: 580px; margin: 0 auto; }
-        button:not(.speed-btn) { border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif; border-radius: 15px; }
-        .btn-gold { flex: 1.4; padding: 16px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 6px 0 #967a06; }
-
-        /* --- [2] สำหรับหน้าจอมือถือ (Responsive Mobile) --- */
         @media (max-width: 600px) {
-            .top-bar { padding: 8px 15px; border-radius: 20px; }
-            .game-card { padding: 15px; border-radius: 25px; }
-            
-            /* ย่อขนาดจานและฝาในมือถือ */
             .dice-area { height: 320px; background-size: 380px; }
             #singleCover { width: 340px; height: 340px; }
-            
-            /* ย่อขนาดลูกเต๋าและตัวหนังสือในมือถือ */
             .dice-wrapper { width: 100px; gap: 5px; }
-            .result-box { width: 90px; height: 90px; border-radius: 15px; border-width: 3px; }
+            .result-box { width: 90px; height: 90px; border-radius: 15px; }
             .item-label { font-size: 45px; min-height: 50px; }
-            
-            /* ย่อขนาดส่วนโต๊ด */
-            .tod-box { width: 45px; height: 45px; }
-            .tod-row { padding: 5px; gap: 5px; }
-            .tod-display-wrap { gap: 8px; }
-            
-            /* ปุ่มกด */
-            button:not(.speed-btn) { font-size: 16px; border-radius: 10px; }
-            .btn-group { gap: 8px; }
-            .status-text { font-size: 24px; margin: 10px 0; }
         }
 
-        /* แอนิเมชันสั่น */
-        @keyframes shakeCover {
-            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-            25% { transform: translate(-51%, -51%) rotate(-1deg); }
-            50% { transform: translate(-49%, -49%) rotate(1deg); }
-        }
+        @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
     </style>
 </head>
 <body>
-    <div class="mode2-container">
-    
- <div class="mode-switcher" style="display:flex; width:100%; max-width:350px; background:rgba(34,34,34,0.9); padding:5px; border-radius:15px;">
-     <button id="modeHilo" class="mode-btn active" style="flex:1; border:none; padding:10px; border-radius:10px; background:none; color:#aaa; font-weight:bold;" onclick="switchMode('hilo')">ไฮโล</button>
-            <button id="modeFish" class="mode-btn" style="flex:1; border:none; padding:10px; border-radius:10px; background:none; color:#aaa; font-weight:bold;" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
-    
-        </div> 
+
     <div class="header-container">
-        <!-- Top Bar: จุดสี (แนวนอน) + V.1.9.9 + Speed -->
-        <div class="top-bar">
-          <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="theme-switcher">
-                      <button class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></button>
-                     <button class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></button>
-                    <button class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></button>
-                     <button class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></button>
-                </div>
-                <div style="color:#fff; font-size:13px; font-weight:bold; opacity:0.8;">V.1.9.9</div>
-           </div>
-            
-            <div class="speed-control">
-                <span style="font-size:12px; color:#aaa;">Speed:</span>
-                <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
-                <span id="speedVal">1.3</span>
-                <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-            </div>
+        <!-- 1. เลือกโหมดเกม -->
+        <div class="mode-switcher">
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
         </div>
-</div>
-        
+
+        <!-- 2. แผงควบคุมดีไซน์ใหม่ -->
+        <div class="control-panel">
+            <div class="panel-row">
+                <div style="font-size: 13px; font-weight: bold; color: #888;">THEME COLORS</div>
+                <div style="color:#fff; font-size:12px; font-weight:bold; opacity:0.6;">V.2.0.0</div>
+            </div>
             
+            <!-- เพิ่มสีพื้นหลัง 10 สี -->
+            <div class="theme-switcher">
+                <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
+                <div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div>
+                <div class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></div>
+                <div class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></div>
+                <div class="dot" style="background: #3b1e3d;" onclick="changeBg('rgba(59,30,61,0.7)')"></div>
+                <div class="dot" style="background: #1e3d3d;" onclick="changeBg('rgba(30,61,61,0.7)')"></div>
+                <div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div>
+                <div class="dot" style="background: #3d2b1e;" onclick="changeBg('rgba(61,43,30,0.7)')"></div>
+                <div class="dot" style="background: #1e213d;" onclick="changeBg('rgba(30,33,61,0.7)')"></div>
+                <div class="dot" style="background: #3d3d1e;" onclick="changeBg('rgba(61,61,30,0.7)')"></div>
+            </div>
+
+            <div class="panel-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                <div style="font-size: 13px; font-weight: bold; color: #888;">VOICE SPEED</div>
+                <div class="speed-control">
+                    <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
+                    <span id="speedVal">1.3</span>
+                    <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -134,12 +151,10 @@
                 <div class="dice-wrapper"><div id="d3" class="result-box"></div><div id="label3" class="item-label"></div></div>
             </div>
         </div>
-        <div id="statusLabel" class="status-text" style="font-size:26px; font-weight:bold; margin:10px 0;">-</div>
-        <div id="rollInitial"><div class="btn-group"><button class="btn-gold" style="width: 100%;" onclick="startShake('normal')">เขย่าลูกเต๋า</button></div></div>
-        <div id="rollSecondary" style="display:none;"><div class="btn-group"><button style="background:#333; color:#fff; flex:1;" onclick="startShake('rinBao')">รินเบา</button><button style="background:#bbb; color:#111; flex:1;" onclick="startShake('rinNak')">รินหนัก</button><button id="openBtn" class="btn-gold" onclick="revealResults()">เปิดดูแต้ม</button></div></div>
-        <div class="tod-section" style="margin-top:20px; border-top:1px solid #333; padding-top:15px;">
-            <div id="todDisplay" class="tod-display-wrap" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;"></div>
-        </div>
+        <div id="statusLabel" style="font-size:26px; font-weight:bold; margin:10px 0;">-</div>
+        <div id="rollInitial"><button class="btn-gold" onclick="startShake('normal')">เขย่าลูกเต๋า</button></div>
+        <div id="rollSecondary" style="display:none;"><div class="btn-group"><button style="background:#333; color:#fff; flex:1; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinBao')">รินเบา</button><button style="background:#bbb; color:#111; flex:1; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinNak')">รินหนัก</button><button id="openBtn" class="btn-gold" style="flex:1.4;" onclick="revealResults()">เปิดดูแต้ม</button></div></div>
+        <div id="todDisplay" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:20px;"></div>
     </div>
 
     <audio id="shakeSound" src="shake.mp3"></audio>
@@ -153,10 +168,8 @@
         function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
         function switchMode(mode) { 
             currentMode = mode; 
-            document.getElementById('modeHilo').style.background = mode==='hilo'?'var(--primary-yellow)':'none';
-            document.getElementById('modeHilo').style.color = mode==='hilo'?'#111':'#aaa';
-            document.getElementById('modeFish').style.background = mode==='fish'?'var(--primary-yellow)':'none';
-            document.getElementById('modeFish').style.color = mode==='fish'?'#111':'#aaa';
+            document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
+            document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
             resetUI(); 
         }
         function resetUI() {
@@ -164,7 +177,7 @@
             document.getElementById('diceGroup').style.opacity = "0";
             document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
             document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; });
-            document.getElementById('todDisplay').innerHTML = `<div class="tod-row"><div class="tod-box" style="background:#333; color:var(--primary-yellow); width:45px; height:45px; border-radius:8px; display:flex; align-items:center; justify-content:center;">?</div><div class="tod-box" style="background:#333; color:var(--primary-yellow); width:45px; height:45px; border-radius:8px; display:flex; align-items:center; justify-content:center;">?</div></div>`.repeat(3);
+            document.getElementById('todDisplay').innerHTML = "";
             const cover = document.getElementById('singleCover'); cover.classList.remove('open', 'shaking-cover'); cover.style.display = "none";
         }
         function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
@@ -210,15 +223,15 @@
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
                 const label = document.getElementById(`label${i+1}`);
-                const prefix = (currentMode === 'hilo') ? 'h' : '';
+                const prefix = currentMode === 'hilo' ? 'h' : '';
                 box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`;
                 box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
-                label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
+                label.innerText = currentMode === 'hilo' ? val : animalMap[val];
                 label.className = `item-label`;
             });
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-            const getT = (v) => `<div class="tod-box" style="border:2px solid ${isRed(v)?'var(--red-die)':'transparent'}; background:white; overflow:hidden; display:flex; align-items:center; justify-content:center;"><img src="${currentMode==='hilo'?'h':''}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`;
-            document.getElementById('todDisplay').innerHTML = `<div class="tod-row" style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d2)}</div><div class="tod-row" style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d3)}</div><div class="tod-row" style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d2)}${getT(result.d3)}</div>`;
+            const getT = (v) => `<div style="width:45px; height:45px; border:2px solid ${isRed(v)?'var(--red-die)':'transparent'}; background:white; border-radius:8px; overflow:hidden;"><img src="${currentMode==='hilo'?'h':''}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`;
+            document.getElementById('todDisplay').innerHTML = `<div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d2)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d3)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d2)}${getT(result.d3)}</div>`;
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
             setTimeout(async () => {
