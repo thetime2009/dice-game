@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.0.0</title>
+    <title>HILO Master Pro - v2.0.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
-            --overlay-bg: rgba(0, 0, 0, 0.6); 
+            /* แก้ไขสีเริ่มต้นเป็นโทนสีเขียว */
+            --overlay-bg: rgba(30, 61, 43, 0.7); 
             --card-bg: rgba(26, 26, 26, 0.95);
             --primary-yellow: #f1c40f; 
             --red-die: #e74c3c; 
@@ -22,73 +23,53 @@
             color: white; transition: 0.5s ease;
         }
 
-        /* --- ส่วนหัวดีไซน์ใหม่ (Header Control Center) --- */
-        .header-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        /* --- Header & Controls --- */
+        .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
         
-        .mode-switcher { 
-            display: flex; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 20px; 
-            width: 100%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .mode-btn { 
-            flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; 
-            color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px;
-        }
-        .mode-btn.active { background: var(--primary-yellow); color: #111; box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3); }
+        .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+        .mode-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
+        .mode-btn.active { background: var(--primary-yellow); color: #111; }
 
-        .control-panel {
-            background: rgba(0,0,0,0.8); border-radius: 25px; padding: 12px 20px;
-            display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(255,255,255,0.1);
+        /* ปรับให้ Theme และ Speed อยู่แถวเดียวกัน */
+        .control-panel { 
+            background: rgba(0,0,0,0.8); border-radius: 25px; padding: 10px 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border: 1px solid rgba(255,255,255,0.1); gap: 10px;
         }
 
-        .panel-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .theme-switcher { display: flex; gap: 6px; align-items: center; }
+        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.6); transition: 0.2s; }
+        .dot:hover { transform: scale(1.1); border-color: white; }
 
-        /* รายการสีพื้นหลัง 10 สี */
-        .theme-switcher { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .dot { 
-            width: 24px; height: 24px; border-radius: 50%; cursor: pointer; 
-            border: 2px solid rgba(255,255,255,0.5); transition: 0.2s; flex-shrink: 0;
-        }
-        .dot:hover { transform: scale(1.2); border-color: white; }
+        .speed-control { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
+        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
-        .speed-control { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 15px; }
-        .speed-btn { 
-            background: #444; color: white; border: none; width: 26px; height: 26px; 
-            border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
-        #speedVal { font-size: 16px; min-width: 30px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
-
-        /* --- ตัวเกม --- */
+        /* --- Game Card --- */
         .game-card { 
-            width: 100%; max-width: 600px; background: var(--card-bg); backdrop-filter: blur(10px);
+            width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px);
             border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden;
         }
-
-        .dice-area { 
-            position: relative; width: 100%; height: 480px; margin-bottom: 10px; 
-            display: flex; justify-content: center; align-items: center;
-            background-image: url('plate.png'); background-size: 600px; 
-            background-repeat: no-repeat; background-position: center;
-        }
-
-        #singleCover { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 520px; height: 520px; 
-            background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; 
-            z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; 
-        }
+        .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; }
+        #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; }
         #singleCover.open { transform: translate(-50%, -160%); opacity: 0; pointer-events: none; }
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
 
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; position: relative; z-index: 10; padding-top: 15px; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 170px; }
-        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; }
+        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
         .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
         .btn-group { display: flex; justify-content: center; gap: 10px; width: 100%; }
+
+        /* --- History --- */
+        .history-container { width: 100%; max-width: 600px; margin-top: 10px; padding-bottom: 50px; }
+        .history-title { font-size: 20px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 10px; padding-left: 10px; border-left: 4px solid var(--primary-yellow); }
+        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; backdrop-filter: blur(5px); }
+        .red-num { color: var(--red-die); font-weight: bold; }
 
         @media (max-width: 600px) {
             .dice-area { height: 320px; background-size: 380px; }
@@ -96,6 +77,8 @@
             .dice-wrapper { width: 100px; gap: 5px; }
             .result-box { width: 90px; height: 90px; border-radius: 15px; }
             .item-label { font-size: 45px; min-height: 50px; }
+            .control-panel { padding: 8px 12px; border-radius: 20px; }
+            .dot { width: 18px; height: 18px; }
         }
 
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
@@ -104,35 +87,25 @@
 <body>
 
     <div class="header-container">
-        <!-- 1. เลือกโหมดเกม -->
         <div class="mode-switcher">
-            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
-            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
         </div>
 
-        <!-- 2. แผงควบคุมดีไซน์ใหม่ -->
+        <!-- Control Panel: Theme และ Speed ในแถวเดียวกัน -->
         <div class="control-panel">
-            <div class="panel-row">
-                <div style="font-size: 13px; font-weight: bold; color: #888;">THEME COLORS</div>
-                <div style="color:#fff; font-size:12px; font-weight:bold; opacity:0.6;">V.2.0.0</div>
-            </div>
-            
-            <!-- เพิ่มสีพื้นหลัง 10 สี -->
             <div class="theme-switcher">
                 <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
                 <div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div>
                 <div class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></div>
                 <div class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></div>
                 <div class="dot" style="background: #3b1e3d;" onclick="changeBg('rgba(59,30,61,0.7)')"></div>
-                <div class="dot" style="background: #1e3d3d;" onclick="changeBg('rgba(30,61,61,0.7)')"></div>
                 <div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div>
                 <div class="dot" style="background: #3d2b1e;" onclick="changeBg('rgba(61,43,30,0.7)')"></div>
-                <div class="dot" style="background: #1e213d;" onclick="changeBg('rgba(30,33,61,0.7)')"></div>
-                <div class="dot" style="background: #3d3d1e;" onclick="changeBg('rgba(61,61,30,0.7)')"></div>
             </div>
-
-            <div class="panel-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-                <div style="font-size: 13px; font-weight: bold; color: #888;">VOICE SPEED</div>
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:bold;">V.2.0.2</div>
                 <div class="speed-control">
                     <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                     <span id="speedVal">1.3</span>
@@ -155,6 +128,11 @@
         <div id="rollInitial"><button class="btn-gold" onclick="startShake('normal')">เขย่าลูกเต๋า</button></div>
         <div id="rollSecondary" style="display:none;"><div class="btn-group"><button style="background:#333; color:#fff; flex:1; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinBao')">รินเบา</button><button style="background:#bbb; color:#111; flex:1; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinNak')">รินหนัก</button><button id="openBtn" class="btn-gold" style="flex:1.4;" onclick="revealResults()">เปิดดูแต้ม</button></div></div>
         <div id="todDisplay" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:20px;"></div>
+    </div>
+
+    <div class="history-container">
+        <div class="history-title">ประวัติการทอย</div>
+        <div id="historyList"></div>
     </div>
 
     <audio id="shakeSound" src="shake.mp3"></audio>
@@ -226,7 +204,7 @@
                 const prefix = currentMode === 'hilo' ? 'h' : '';
                 box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`;
                 box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
-                label.innerText = currentMode === 'hilo' ? val : animalMap[val];
+                label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
                 label.className = `item-label`;
             });
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
@@ -234,11 +212,21 @@
             document.getElementById('todDisplay').innerHTML = `<div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d2)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d3)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d2)}${getT(result.d3)}</div>`;
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+            addToHistory();
             setTimeout(async () => {
                 for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
                 if (currentMode === 'hilo') { await playVoice(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); }
                 document.getElementById('rollInitial').style.display = "block";
             }, 600);
+        }
+        function addToHistory() {
+            const list = document.getElementById('historyList');
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            const f = (v) => (v==1||v==4) ? `<span class="red-num">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
+            item.innerHTML = `<span>[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span>${result.total}</span>`;
+            list.insertBefore(item, list.firstChild);
+            if (list.children.length > 5) list.removeChild(list.lastChild);
         }
         function playVoice(f) {
             return new Promise((resolve) => {
