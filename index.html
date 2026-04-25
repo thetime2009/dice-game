@@ -129,33 +129,48 @@
 
     <audio id="shakeSound" src="shake.mp3"></audio>
     <audio id="openSound" src="open.mp3"></audio>
-<script>
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzX21IzoycDNdXkUTP58b-qsRQQQ3bgW0oOG6rmigzYkeRXJIsLLNiquAUztpSAzssrcQ/exec';
 
-// 🔥 TELEGRAM CONFIG
-const TELEGRAM_TOKEN = "7585980788:AAHLOxDXYwR668-iThdCk_RI7a7LiWKb0NE";
-const CHAT_ID = "5020123278";
-let lastSentKey = "";
-const SEND_ONLY_11 = true;
+    <script>
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzX21IzoycDNdXkUTP58b-qsRQQQ3bgW0oOG6rmigzYkeRXJIsLLNiquAUztpSAzssrcQ/exec'; // ใส่ URL ของคุณ
+        
+        let currentMode = 'hilo'; 
+        let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
+        const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
-let currentMode = 'hilo'; 
-let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
-const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
+            document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
+            resetUI();
+        }
 
-// ✅ SWITCH MODE (แก้เป็น tiger)
-function switchMode(mode) {
-    currentMode = mode;
-    document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
-    document.getElementById('modeFish').classList.toggle('active', mode === 'tiger');
-    resetUI();
-}
+        function resetUI() {
+            document.getElementById('statusLabel').innerText = "-";
+            document.getElementById('statusLabel').className = "status-text";
+            document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
+            document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; });
+            document.getElementById('todDisplay').innerHTML = `<div class="tod-row"><div class="tod-box hidden-tod"></div><div class="tod-box hidden-tod"></div></div>`.repeat(3);
+        }
 
-// ✅ GOOGLE SHEET
+        function changeBg(color) { document.documentElement.style.setProperty('--bg-color', color); }
+
+      //  function sendToGoogleSheet() {
+      //      const params = new URLSearchParams({
+      //          mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา',
+      //          d1: result.d1, d2: result.d2, d3: result.d3,
+      //          total: result.total, status: result.status
+      //      });
+     //       const img = new Image();
+     //       img.src = GOOGLE_SHEET_URL + '?' + params.toString();
+    //    }
+
+
 function sendToGoogleSheet() {
-    if (!GOOGLE_SHEET_URL) return;
+    // ตรวจสอบว่ามี URL และไม่ใช่ตัวอย่าง
+    if (!GOOGLE_SHEET_URL || GOOGLE_SHEET_URL === "" || GOOGLE_SHEET_URL.includes("YOUR_URL")) return;
 
     const params = new URLSearchParams({
-        mode: currentMode === 'hilo' ? 'ไฮโล' : 'เสือ',
+        mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา',
         d1: result.d1,
         d2: result.d2,
         d3: result.d3,
@@ -163,85 +178,117 @@ function sendToGoogleSheet() {
         status: result.status
     });
 
-    fetch(GOOGLE_SHEET_URL + "?" + params.toString(), { mode: 'no-cors' });
+    // ใช้ fetch พร้อมโหมด no-cors เพื่อให้ส่งผ่านได้ทุกเครื่องโดยไม่ติดเรื่องความปลอดภัย
+    fetch(GOOGLE_SHEET_URL + "?" + params.toString(), {
+        mode: 'no-cors'
+    })
+    .then(() => console.log("บันทึกสำเร็จ (เครื่องอื่นส่งได้แน่นอน)"))
+    .catch(err => console.error("Error:", err));
 }
 
-// 🚀 TELEGRAM
-function sendToTelegram() {
-    if (!TELEGRAM_TOKEN || !CHAT_ID) return;
 
-    if (SEND_ONLY_11 && result.total !== 11) return;
 
-    const key = `${result.d1}-${result.d2}-${result.d3}-${result.total}`;
-    if (key === lastSentKey) return;
-    lastSentKey = key;
 
-    const modeText = currentMode === 'hilo' ? '🎲 ไฮโล' : '🐯 เสือ';
 
-    const text = `
-${modeText}
-ผล: ${result.d1}, ${result.d2}, ${result.d3}
-รวม: ${result.total}
-สถานะ: ${result.status}
-`;
 
-    fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: text
-        })
-    });
-}
 
-// 🎲 SHAKE
-function startShake() {
-    document.getElementById('diceGroup').style.visibility = "hidden";
-    const cover = document.getElementById('singleCover');
-    cover.style.display = "block";
-    cover.classList.add('shaking-cover');
 
-    document.getElementById('rollInitial').style.display = "none";
-    document.getElementById('rollSecondary').style.display = "none";
-    document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
 
-    setTimeout(() => {
-        cover.classList.remove('shaking-cover');
 
-        result.d1 = Math.floor(Math.random() * 6) + 1;
-        result.d2 = Math.floor(Math.random() * 6) + 1;
-        result.d3 = Math.floor(Math.random() * 6) + 1;
-        result.total = result.d1 + result.d2 + result.d3;
 
-        result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
-        result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
 
-        // 🔥 ยิงทันที
-        sendToGoogleSheet();
-        sendToTelegram();
 
-        document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
-        document.getElementById('rollSecondary').style.display = "block";
-    }, 1200);
-}
 
-// 👇 ที่เหลือใช้ของเดิมได้เลย
-function resetUI() {
-    document.getElementById('statusLabel').innerText = "-";
-}
+        
+        function startShake() {
+            if (navigator.vibrate) navigator.vibrate(50);
+            const s = document.getElementById('shakeSound'); s.currentTime = 0; s.play().catch(()=>{});
+            
+            document.getElementById('diceGroup').style.visibility = "hidden";
+            const cover = document.getElementById('singleCover');
+            cover.style.display = "block";
+            cover.classList.add('shaking-cover');
+            
+            document.getElementById('rollInitial').style.display = "none";
+            document.getElementById('rollSecondary').style.display = "none";
+            document.getElementById('statusLabel').innerText = "กำลังเขย่า...";
+            document.getElementById('statusLabel').className = "status-text";
+            resetUI();
 
-window.onload = resetUI;
-</script>
-    
+            setTimeout(() => {
+                cover.classList.remove('shaking-cover');
+                result.d1 = Math.floor(Math.random() * 6) + 1;
+                result.d2 = Math.floor(Math.random() * 6) + 1;
+                result.d3 = Math.floor(Math.random() * 6) + 1;
+                result.total = result.d1 + result.d2 + result.d3;
+                result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
+                result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
+
+                sendToGoogleSheet();
+
+                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+                document.getElementById('rollSecondary').style.display = "block";
+                document.getElementById('openBtn').disabled = false; // ปลดล็อกปุ่มเปิด
+            }, 1200);
+        }
+
+        async function revealResults() {
+            // ปิดปุ่มเปิดดูทันที (One-time click)
+            document.getElementById('rollSecondary').style.display = "none";
+            
+            const op = document.getElementById('openSound'); op.currentTime = 0; op.play().catch(()=>{});
+            document.getElementById('singleCover').style.display = "none";
+            document.getElementById('diceGroup').style.visibility = "visible";
+            
+            const dice = [result.d1, result.d2, result.d3];
+            const isRed = (v) => (v === 1 || v === 4);
+            
+            dice.forEach((val, i) => {
+                const box = document.getElementById(`d${i+1}`);
+                const label = document.getElementById(`label${i+1}`);
+                const prefix = (currentMode === 'hilo') ? 'h' : '';
+                box.innerHTML = `<img src="${prefix}${val}.jpg">`;
+                box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
+                label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
+                label.className = `item-label ${isRed(val) ? 'red-text' : 'yellow-text'}`;
+            });
+
+            const getT = (v) => `<div class="tod-box" style="border-color:${isRed(v)?'var(--red-die)':'transparent'}"><img src="${currentMode==='hilo'?'h':''}${v}.jpg"></div>`;
+            document.getElementById('todDisplay').innerHTML = `<div class="tod-row">${getT(result.d1)}${getT(result.d2)}</div><div class="tod-row">${getT(result.d1)}${getT(result.d3)}</div><div class="tod-row">${getT(result.d2)}${getT(result.d3)}</div>`;
+
+            document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
+            document.getElementById('statusLabel').className = "status-text " + result.class;
+            addToHistory();
+
+            for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
+            if (currentMode === 'hilo') {
+                let sVoice = result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3");
+                await playVoice(sVoice);
+            }
+
+            document.getElementById('rollInitial').style.display = "block";
+            document.getElementById('rollInitial').querySelector('button').innerText = "เขย่ารอบใหม่";
+        }
+
+        function playVoice(f) {
+            return new Promise((resolve) => {
+                const a = new Audio(f); a.playbackRate = 1.5;
+                a.play().catch(() => resolve()); a.onended = resolve;
+                setTimeout(resolve, 800);
+            });
+        }
+
+        function addToHistory() {
+            const list = document.getElementById('historyList');
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            const f = (v) => (v==1||v==4) ? `<span class="red-num">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
+            item.innerHTML = `<span>[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span class="${result.class}">${result.status}</span><span>${result.total}</span>`;
+            list.insertBefore(item, list.firstChild);
+            if (list.children.length > 5) list.removeChild(list.lastChild);
+        }
+        
+        window.onload = resetUI;
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
