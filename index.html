@@ -224,10 +224,15 @@
         }
 
         function triggerPowderPopup() {
-            if (isShakingLogic) return;
-            pendingPowder = true;
-            showPopup("✨", "เตรียมขอหวย", "กำลังจะลงแป้งปิ่นทอง...", "ตั้งจิตอธิษฐานขอกับปิ่นทองนะครับ", "เริ่มทาแป้ง");
-        }
+    if (isShakingLogic) return;
+    pendingPowder = true;
+    
+    //เล่นเสียง powder_popup.mp3 ทันทีที่ Popup ขึ้น
+    const popupSound = new Audio('powder_popup.mp3');
+    popupSound.play().catch(e => console.log("Audio play failed"));
+
+    showPopup("✨", "เตรียมขอหวย", "กำลังจะลงแป้งปิ่นทอง...", "ตั้งจิตอธิษฐานขอกับปิ่นทองนะครับ", "เริ่มทาแป้ง");
+}
 
         function applyPowderLogic() {
             isShakingLogic = true;
