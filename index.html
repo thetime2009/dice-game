@@ -237,35 +237,40 @@
         }
 
         function startShake(shakeType) {
-            if (isShakingLogic) return;
-            isShakingLogic = true;
-            document.getElementById('diceGroup').style.opacity = "0";
-            document.getElementById('bottomTray').style.display = "none"; 
-            let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
-            new Audio(sFile).play().catch(()=>{});
-            const cover = document.getElementById('singleCover');
-            document.getElementById('statusLabel').innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
-            cover.classList.remove('open'); cover.style.display = "block";
-            setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
-            document.getElementById('rollInitial').style.display = "none";
-            document.getElementById('rollSecondary').style.display = "none";
-            setTimeout(() => {
-                cover.classList.remove('shaking-cover');
-                if (shakeType === 'normal' || shakeType === 'rinNak') {
-                    result.d1 = Math.floor(Math.random() * 6) + 1;
-                    result.d2 = Math.floor(Math.random() * 6) + 1;
-                    result.d3 = Math.floor(Math.random() * 6) + 1;
-                    result.total = result.d1 + result.d2 + result.d3;
-                    result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
-                    result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
-                    const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status });
-                    fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' });
-                }
-                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
-                document.getElementById('rollSecondary').style.display = "flex";
-                isShakingLogic = false;
-            }, 1200);
+    if (isShakingLogic) return;
+    isShakingLogic = true;
+    document.getElementById('diceGroup').style.opacity = "0";
+    document.getElementById('bottomTray').style.display = "none"; 
+    let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
+    new Audio(sFile).play().catch(()=>{});
+    const cover = document.getElementById('singleCover');
+    document.getElementById('statusLabel').innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
+    cover.classList.remove('open'); cover.style.display = "block";
+    setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+    document.getElementById('rollInitial').style.display = "none";
+    document.getElementById('rollSecondary').style.display = "none";
+    setTimeout(() => {
+        cover.classList.remove('shaking-cover');
+        if (shakeType === 'normal' || shakeType === 'rinNak') {
+            
+            // --- แก้ไขจุดสุ่มให้กระจายตัวมากขึ้น (ใช้ Crypto API แบบบรรทัดเดียว) ---
+            result.d1 = (window.crypto.getRandomValues(new Uint32Array(1))[0] % 6) + 1;
+            result.d2 = (window.crypto.getRandomValues(new Uint32Array(1))[0] % 6) + 1;
+            result.d3 = (window.crypto.getRandomValues(new Uint32Array(1))[0] % 6) + 1;
+            // -----------------------------------------------------------
+
+            result.total = result.d1 + result.d2 + result.d3;
+            result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
+            result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
+            const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status });
+            fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' });
         }
+        document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+        document.getElementById('rollSecondary').style.display = "flex";
+        isShakingLogic = false;
+    }, 1200);
+}
+
 
         async function revealResults() {
             isShakingLogic = true;
