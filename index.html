@@ -93,7 +93,7 @@
             <div id="popupTitle" class="welcome-title">ยินดีต้อนรับ</div>
             <div id="popupSubtitle" class="welcome-subtitle">สู่เกมส์ทอยเต๋าพรีเมียม</div>
             <div class="welcome-brand">ปิ่นทอง</div>
-            <div id="popupMsg" class="welcome-msg">ขอให้สนุกกับการเล่นนะครับ!</div>
+            <div id="popupMsg" class="welcome-msg">ขอให้สนุกกับการเล่นนะคะ!</div>
             <button id="btnPopupAction" class="btn-start" onclick="handlePopupClose()">เริ่มเล่นกันเลย</button>
         </div>
     </div>
@@ -112,6 +112,7 @@
                 <div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div>
             </div>
             <div class="speed-control">
+                <label>ปรับความเร็วเสียงขาน:</label>
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
@@ -163,7 +164,7 @@
 
         window.onload = () => { 
             resetUI(); 
-            showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะครับ!", "เริ่มเล่นกันเลย");
+            showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะคะ!", "เริ่มเล่นกันเลย");
         };
 
         function showPopup(icon, title, subtitle, msg, btnText) {
