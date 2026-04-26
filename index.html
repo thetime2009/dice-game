@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.1</title>
+    <title>HILO Master Pro - v2.1.6.R</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -29,9 +29,7 @@
         #welcomePopup.show .welcome-card { transform: scale(1); }
         .welcome-icon { font-size: 50px; margin-bottom: 10px; }
         .welcome-title { font-size: 28px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 5px; }
-        .welcome-subtitle { font-size: 18px; color: #ccc; margin-bottom: 10px; }
         .welcome-brand { font-size: 45px; font-weight: bold; color: #fff; text-shadow: 0 0 15px var(--primary-yellow); margin-bottom: 20px; }
-        .welcome-msg { font-size: 16px; color: #aaa; margin-bottom: 30px; line-height: 1.5; }
         .btn-start { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; border: none; padding: 15px 40px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
 
         /* --- Header & Controls --- */
@@ -66,8 +64,8 @@
         /* --- Bottom Tray --- */
         .bottom-section { margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; justify-content: center; }
         .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .mini-dice-box { width: 38px; height: 38px; background: white; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; }
-        .btn-powder-small { background: #fff !important; color: #111 !important; padding: 8px 18px !important; border-radius: 12px !important; font-size: 16px !important; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; }
+        .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; }
+        .btn-powder-small { background: #fff !important; color: #111 !important; padding: 10px 25px !important; border-radius: 15px !important; font-size: 18px !important; font-weight: bold; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; border: none; }
 
         /* --- History --- */
         .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 50px; }
@@ -82,6 +80,8 @@
             .dice-wrapper { width: 100px; gap: 5px; }
             .result-box { width: 90px; height: 90px; }
             .item-label { font-size: 45px; }
+            .mini-dice-box { width: 45px; height: 45px; }
+            .btn-powder-small { font-size: 16px !important; padding: 8px 15px !important; }
         }
     </style>
 </head>
@@ -100,8 +100,8 @@
 
     <div class="header-container">
         <div class="mode-switcher">
-            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
-            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
         </div>
         <div class="control-panel">
             <div class="theme-switcher">
@@ -112,11 +112,10 @@
                 <div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div>
             </div>
             <div class="speed-control">
-                <label>ปรับความเร็วเสียง:</label>
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.1</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.1.6.R</span>
             </div>
         </div>
     </div>
@@ -199,7 +198,7 @@
             const btnS = document.getElementById('btnMainShake');
             document.getElementById('diceGroup').style.opacity = "0";
             btnP.disabled = true; btnS.disabled = true;
-            document.getElementById('statusLabel').innerText = "กำลังทาแป้งขอหวย...";
+            document.getElementById('statusLabel').innerText = "กำลังรินแป้งขอหวย...";
             diceArea.style.backgroundImage = "url('powder.png')";
             diceArea.style.backgroundSize = "500px";
             diceArea.classList.add('shaking-plate');
@@ -215,7 +214,12 @@
         }
 
         function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
-        function switchMode(mode) { currentMode = mode; document.getElementById('modeHilo').classList.toggle('active', mode==='hilo'); document.getElementById('modeFish').classList.toggle('active', mode==='fish'); resetUI(); }
+        function switchMode(mode) { 
+            currentMode = mode; 
+            document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo');
+            document.getElementById('modeFish').classList.toggle('active', mode === 'fish');
+            resetUI(); 
+        }
         function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
 
         function resetUI() {
@@ -286,7 +290,6 @@
                     a.playbackRate = voiceSpeed; a.play().catch(()=>{});
                     await new Promise(r => setTimeout(r, 1100 / voiceSpeed));
                 }
-                // --- แก้ไขจุดนี้: ขานสูง/ต่ำ เฉพาะโหมดไฮโล ---
                 if (currentMode === 'hilo') {
                     const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3"));
                     fin.playbackRate = voiceSpeed; fin.play().catch(()=>{});
