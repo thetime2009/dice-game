@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master PinThong - v2.0.7</title>
+    <title>HILO Master Pro - v2.0.6</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
-            --overlay-bg: rgb(6, 67, 0); 
+            --overlay-bg: rgba(30, 61, 43, 0.7); 
             --card-bg: rgba(26, 26, 26, 0.95);
             --primary-yellow: #f1c40f; 
             --red-die: #e74c3c; 
@@ -22,47 +22,19 @@
             color: white; transition: 0.5s ease;
         }
 
-        /* --- Welcome Popup CSS --- */
-        #welcomePopup {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: 0.5s;
-        }
+        /* --- Welcome Popup --- */
+        #welcomePopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.5s; }
         #welcomePopup.show { opacity: 1; visibility: visible; }
-        
-        .welcome-card {
-            background: rgba(30,30,30,0.9); width: 90%; max-width: 400px;
-            padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow);
-            text-align: center; box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
-            transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .welcome-card { background: rgba(30,30,30,0.9); width: 90%; max-width: 400px; padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow); text-align: center; transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #welcomePopup.show .welcome-card { transform: scale(1); }
 
-        .welcome-icon { font-size: 50px; margin-bottom: 10px; }
-        .welcome-title { font-size: 28px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 5px; }
-        .welcome-subtitle { font-size: 18px; color: #ccc; margin-bottom: 15px; }
-        .welcome-brand { font-size: 40px; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--primary-yellow); margin-bottom: 20px; }
-        .welcome-msg { font-size: 16px; color: #aaa; margin-bottom: 30px; }
-        .btn-start {
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111;
-            border: none; padding: 15px 40px; border-radius: 20px; font-size: 20px;
-            font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s;
-        }
-        .btn-start:active { transform: translateY(3px); box-shadow: none; }
-
-        /* --- Header & Controls --- */
+        /* --- Top Bar --- */
         .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
-        .mode-btn { flex: 1; padding: 10px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
-        .mode-btn.active { background: var(--primary-yellow); color: #111; }
-
         .control-panel { background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); gap: 15px; }
-        .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
-        .speed-area { display: flex; align-items: center; gap: 8px; }
+        .theme-switcher { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex: 1; }
+        .dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
         .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
-        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .speed-btn { background: #444; color: white; border: none; width: 22px; height: 22px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; }
         #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
         /* --- Game Card --- */
@@ -72,6 +44,21 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden;
         }
         .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; }
+        
+        /* ภาพทาแป้ง (Powder Overlay) */
+        #powderOverlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80%; height: 80%; background-image: url('powder.png');
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            z-index: 25; pointer-events: none; opacity: 0;
+        }
+        .powder-anim { animation: powderFade 2.5s ease-out forwards; }
+        @keyframes powderFade { 
+            0% { opacity: 0; transform: translate(-50%, -40%) scale(0.8); }
+            30% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -55%) scale(1.2); }
+        }
+
         #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; }
         #singleCover.open { transform: translate(-50%, -160%); opacity: 0; pointer-events: none; }
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
@@ -82,12 +69,31 @@
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
-        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
-        .btn-group { display: flex; justify-content: center; gap: 10px; width: 100%; }
+        /* ปุ่ม 3 ปุ่ม ปรับขนาดตัวหนังสือให้เท่ากัน */
+        .btn-group { display: flex; justify-content: center; gap: 10px; width: 100%; max-width: 580px; margin: 0 auto; }
+        button:not(.speed-btn) { border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif; border-radius: 15px; }
+        .btn-dark { flex: 1; padding: 18px 5px; background: #333; color: white; box-shadow: 0 5px 0 #111; }
+        .btn-light { flex: 1; padding: 18px 5px; background: #bbb; color: #222; box-shadow: 0 5px 0 #888; }
+        .btn-gold { flex: 1.4; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 6px 0 #967a06; }
+        button:active { transform: translateY(4px); box-shadow: none !important; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        /* --- ส่วนล่าง: ผลล่าสุด + ทาแป้ง --- */
+        .bottom-section { 
+            margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 15px;
+        }
+        .last-results-wrap { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; }
+        .last-title { font-size: 14px; color: #aaa; font-weight: bold; }
+        .mini-dice-box { width: 35px; height: 35px; background: white; border-radius: 5px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .btn-powder { 
+            background: #fff; color: #333; padding: 10px 25px; border-radius: 50px; font-size: 18px !important;
+            box-shadow: 0 4px 10px rgba(255,255,255,0.2); 
+        }
 
         /* --- History --- */
-        .history-container { width: 100%; max-width: 600px; margin-top: 10px; padding-bottom: 50px; }
-        .history-title { font-size: 20px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 10px; padding-left: 10px; border-left: 4px solid var(--primary-yellow); }
+        .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 50px; }
+        .history-title { font-size: 18px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 10px; }
         .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
 
         @media (max-width: 600px) {
@@ -96,6 +102,7 @@
             .dice-wrapper { width: 100px; gap: 5px; }
             .result-box { width: 90px; height: 90px; border-radius: 15px; }
             .item-label { font-size: 45px; min-height: 50px; }
+            button:not(.speed-btn) { font-size: 16px; }
         }
 
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
@@ -103,48 +110,40 @@
 </head>
 <body>
 
-    <!-- Popup ต้อนรับ -->
     <div id="welcomePopup">
         <div class="welcome-card">
-            <div class="welcome-icon">🌟</div>
             <div class="welcome-title">ยินดีต้อนรับ</div>
-            <div class="welcome-subtitle">สู่เกมส์ทอยเต๋าพรีเมียม</div>
-            <div class="welcome-brand">ปิ่นทอง</div>
-            <div class="welcome-msg">ขอให้ทุกท่านสนุกกับการเล่นนะครับ!<br>โชคดีมีชัย รวยๆ ทุกท่านครับ</div>
-            <button class="btn-start" onclick="closeWelcome()">เริ่มเล่นกันเลย</button>
+            <div style="font-size: 40px; font-weight: bold; color: #fff; margin: 10px 0;">ปิ่นทอง</div>
+            <div style="font-size: 16px; color: #aaa; margin-bottom: 25px;">ขอให้สนุกกับการทอยเต๋านะครับ</div>
+            <button class="btn-start" onclick="closeWelcome()">เริ่มเล่นเลย</button>
         </div>
     </div>
 
     <div class="header-container">
         <div class="mode-switcher">
-            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
-            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
         </div>
-
         <div class="control-panel">
             <div class="theme-switcher">
-                <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
                 <div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div>
+                <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
                 <div class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></div>
                 <div class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></div>
-                <div class="dot" style="background: #3b1e3d;" onclick="changeBg('rgba(59,30,61,0.7)')"></div>
                 <div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div>
-                <div class="dot" style="background: #3d2b1e;" onclick="changeBg('rgba(61,43,30,0.7)')"></div>
             </div>
-            
-            <div class="speed-area">
-                <div style="color:rgba(255,255,255,0.4); font-size:10px; font-weight:bold;">V.2.0.7</div>
-                <div class="speed-control">
-                    <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
-                    <span id="speedVal">1.3</span>
-                    <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                </div>
+            <div class="speed-control">
+                <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
+                <span id="speedVal">1.3</span>
+                <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.0.6</span>
             </div>
         </div>
     </div>
 
     <div class="game-card">
         <div class="dice-area">
+            <div id="powderOverlay"></div>
             <div id="singleCover"></div>
             <div id="diceGroup" class="main-results" style="opacity: 0;">
                 <div class="dice-wrapper"><div id="d1" class="result-box"></div><div id="label1" class="item-label"></div></div>
@@ -153,13 +152,35 @@
             </div>
         </div>
         <div id="statusLabel" style="font-size:26px; font-weight:bold; margin:10px 0;">-</div>
-        <div id="rollInitial"><button class="btn-gold" onclick="startShake('normal'); requestMotionPermission();">เขย่าลูกเต๋า</button></div>
-        <div id="rollSecondary" style="display:none;"><div class="btn-group"><button style="background:#333; color:#fff; flex:1.4; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinBao')">รินเบา</button><button style="background:#bbb; color:#111; flex:1.4; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="startShake('rinNak')">รินหนัก</button><button id="openBtn" class="btn-gold" style="flex:1.4;" onclick="revealResults()">เปิดดูแต้ม</button></div></div>
-        <div id="todDisplay" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:20px;"></div>
+        
+        <div id="rollInitial">
+            <button class="btn-gold" style="width: 100%;" onclick="startShake('normal'); requestMotionPermission();">เขย่าลูกเต๋า</button>
+        </div>
+        
+        <div id="rollSecondary" style="display:none;">
+            <div class="btn-group">
+                <button class="btn-dark" onclick="startShake('rinBao')">รินเบา</button>
+                <button class="btn-light" onclick="startShake('rinNak')">รินหนัก</button>
+                <button id="openBtn" class="btn-gold" onclick="revealResults()">เปิดดูแต้ม</button>
+            </div>
+        </div>
+
+        <!-- ส่วนใหม่: ผลล่าสุด + ปุ่มทาแป้ง -->
+        <div class="bottom-section">
+            <div class="last-results-wrap">
+                <span class="last-title">ผลล่าสุด:</span>
+                <div id="lastDiceRow" style="display:flex; gap:8px;">
+                    <div class="mini-dice-box">?</div>
+                    <div class="mini-dice-box">?</div>
+                    <div class="mini-dice-box">?</div>
+                </div>
+                <button id="btnTaPang" class="btn-powder" onclick="applyPowder()">ทาแป้ง</button>
+            </div>
+        </div>
     </div>
 
     <div class="history-container">
-        <div class="history-title">ประวัติการทอย</div>
+        <div class="history-title">ประวัติ 5 รอบหลัง</div>
         <div id="historyList"></div>
     </div>
 
@@ -172,17 +193,8 @@
         let isShakingLogic = false;
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
-        // --- Popup Functions ---
-        window.onload = () => {
-            resetUI();
-            document.getElementById('welcomePopup').classList.add('show');
-        };
-
-        function closeWelcome() {
-            document.getElementById('welcomePopup').classList.remove('show');
-            // ขออนุญาตเซนเซอร์เมื่อกดปิดป๊อปอัป (สำหรับ iOS)
-            requestMotionPermission();
-        }
+        window.onload = () => { resetUI(); document.getElementById('welcomePopup').classList.add('show'); };
+        function closeWelcome() { document.getElementById('welcomePopup').classList.remove('show'); requestMotionPermission(); }
 
         function requestMotionPermission() {
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -200,43 +212,43 @@
             }
         }
 
+        function applyPowder() {
+            const overlay = document.getElementById('powderOverlay');
+            overlay.classList.remove('powder-anim');
+            void overlay.offsetWidth; // Trigger reflow
+            overlay.classList.add('powder-anim');
+            if (navigator.vibrate) navigator.vibrate(100);
+        }
+
         function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
         function switchMode(mode) { currentMode = mode; document.getElementById('modeHilo').classList.toggle('active', mode==='hilo'); document.getElementById('modeFish').classList.toggle('active', mode==='fish'); resetUI(); }
-        
+        function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
+
         function resetUI() {
             document.getElementById('statusLabel').innerText = "-";
             document.getElementById('diceGroup').style.opacity = "0";
             document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
-            document.querySelectorAll('.result-box').forEach(b => { b.innerHTML = ""; b.style.borderColor = "transparent"; });
-            document.getElementById('todDisplay').innerHTML = "";
-            const cover = document.getElementById('singleCover'); cover.classList.remove('open', 'shaking-cover'); cover.style.display = "none";
+            document.getElementById('singleCover').classList.remove('open', 'shaking-cover');
+            document.getElementById('singleCover').style.display = "none";
+            document.getElementById('btnTaPang').disabled = false; // ปลดล็อคทาแป้งเมื่อเริ่มรอบใหม่จริง
             isShakingLogic = false;
-        }
-
-        function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
-
-        function sendData() {
-            if (!GOOGLE_SHEET_URL) return;
-            let v1 = result.d1, v2 = result.d2, v3 = result.d3;
-            if (currentMode === 'fish') { v1 = animalMap[result.d1]; v2 = animalMap[result.d2]; v3 = animalMap[result.d3]; }
-            const params = new URLSearchParams({ mode: currentMode === 'hilo' ? 'ไฮโล' : 'น้ำเต้าปูปลา', d1: v1, d2: v2, d3: v3, total: result.total, status: result.status });
-            fetch(GOOGLE_SHEET_URL + '?' + params.toString(), { mode: 'no-cors' });
         }
 
         function startShake(shakeType) {
             if (isShakingLogic) return;
             isShakingLogic = true;
-            if (navigator.vibrate) navigator.vibrate(50);
+            document.getElementById('btnTaPang').disabled = true; // ล็อคปุ่มทาแป้งทันทีเมื่อเริ่มเขย่า
+
             let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
             new Audio(sFile).play().catch(()=>{});
+            
             const cover = document.getElementById('singleCover');
-            const statusLabel = document.getElementById('statusLabel');
-            document.getElementById('diceGroup').style.opacity = "0";
-            statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
+            document.getElementById('statusLabel').innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
             cover.classList.remove('open'); cover.style.display = "block";
             setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
+
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
@@ -246,9 +258,11 @@
                     result.total = result.d1 + result.d2 + result.d3;
                     result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
                     result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
-                    sendData();
+                    
+                    const params = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status });
+                    fetch(GOOGLE_SHEET_URL + '?' + params.toString(), { mode: 'no-cors' });
                 }
-                statusLabel.innerText = "ปิดฝาแล้ว!";
+                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
                 isShakingLogic = false;
             }, 1200);
@@ -259,26 +273,37 @@
             document.getElementById('rollSecondary').style.display = "none";
             new Audio('open.mp3').play().catch(()=>{});
             document.getElementById('singleCover').classList.add('open');
+            
             const dice = [result.d1, result.d2, result.d3];
             const isRed = (v) => (v === 1 || v === 4);
+            const prefix = currentMode === 'hilo' ? 'h' : '';
+
             dice.forEach((val, i) => {
                 const box = document.getElementById(`d${i+1}`);
-                const label = document.getElementById(`label${i+1}`);
-                const prefix = currentMode === 'hilo' ? 'h' : '';
                 box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`;
                 box.style.borderColor = isRed(val) ? "var(--red-die)" : "transparent";
-                label.innerText = (currentMode === 'hilo') ? val : animalMap[val];
-                label.className = `item-label`;
+                document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val];
             });
+
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-            const getT = (v) => `<div style="width:45px; height:45px; border:2px solid ${isRed(v)?'var(--red-die)':'transparent'}; background:white; border-radius:8px; overflow:hidden;"><img src="${currentMode==='hilo'?'h':''}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`;
-            document.getElementById('todDisplay').innerHTML = `<div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d2)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d1)}${getT(result.d3)}</div><div style="background:rgba(34,34,34,0.8); padding:8px; border-radius:12px; display:flex; gap:8px;">${getT(result.d2)}${getT(result.d3)}</div>`;
+
+            // อัปเดตผลล่าสุด 3 ลูกตรงกลางด้านล่าง
+            document.getElementById('lastDiceRow').innerHTML = dice.map(v => `<div class="mini-dice-box" style="border:1px solid ${isRed(v)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`).join('');
+
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+            
             addToHistory();
+
             setTimeout(async () => {
-                for (let val of dice) { await playVoice(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); }
-                if (currentMode === 'hilo') { await playVoice(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); }
+                for (let val of dice) { 
+                    const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`);
+                    a.playbackRate = voiceSpeed; a.play().catch(()=>{});
+                    await new Promise(r => setTimeout(r, 1100 / voiceSpeed));
+                }
+                const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3"));
+                fin.playbackRate = voiceSpeed; fin.play().catch(()=>{});
+                
                 document.getElementById('rollInitial').style.display = "block";
                 isShakingLogic = false;
             }, 600);
@@ -292,14 +317,6 @@
             item.innerHTML = `<span style="flex:1;">[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right;">${result.total}</span>`;
             list.insertBefore(item, list.firstChild);
             if (list.children.length > 5) list.removeChild(list.lastChild);
-        }
-
-        function playVoice(f) {
-            return new Promise((resolve) => {
-                const a = new Audio(f); a.playbackRate = voiceSpeed;
-                a.play().catch(() => resolve()); a.onended = resolve;
-                setTimeout(resolve, 1100 / voiceSpeed);
-            });
         }
     </script>
 </body>
