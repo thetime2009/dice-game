@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.0.6</title>
+    <title>HILO Master Pro - v2.0.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -31,7 +31,7 @@
         /* --- Top Bar --- */
         .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .control-panel { background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); gap: 15px; }
-        .theme-switcher { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex: 1; }
+        .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
         .dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
         .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
         .speed-btn { background: #444; color: white; border: none; width: 22px; height: 22px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; }
@@ -43,20 +43,14 @@
             border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden;
         }
-        .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; }
         
-        /* ภาพทาแป้ง (Powder Overlay) */
-        #powderOverlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 80%; height: 80%; background-image: url('powder.png');
-            background-size: contain; background-repeat: no-repeat; background-position: center;
-            z-index: 25; pointer-events: none; opacity: 0;
-        }
-        .powder-anim { animation: powderFade 2.5s ease-out forwards; }
-        @keyframes powderFade { 
-            0% { opacity: 0; transform: translate(-50%, -40%) scale(0.8); }
-            30% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
-            100% { opacity: 0; transform: translate(-50%, -55%) scale(1.2); }
+        /* พื้นที่จาน (เปลี่ยนพื้นหลังผ่าน JS ได้) */
+        .dice-area { 
+            position: relative; width: 100%; height: 480px; margin-bottom: 10px; 
+            display: flex; justify-content: center; align-items: center; 
+            background-image: url('plate.png'); 
+            background-size: 600px; background-repeat: no-repeat; background-position: center;
+            transition: background-image 0.3s ease;
         }
 
         #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; }
@@ -64,19 +58,21 @@
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
 
         .main-results { display: flex; justify-content: center; gap: 10px; width: 100%; position: relative; z-index: 10; padding-top: 15px; }
-        .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 170px; }
+        .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 160px; }
         .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Label สีทอง 80px */
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
-        /* ปุ่ม 3 ปุ่ม ปรับขนาดตัวหนังสือให้เท่ากัน */
+        /* ปุ่มกด ปรับขนาดตัวหนังสือ 20px เท่ากัน */
         .btn-group { display: flex; justify-content: center; gap: 10px; width: 100%; max-width: 580px; margin: 0 auto; }
         button:not(.speed-btn) { border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif; border-radius: 15px; }
         .btn-dark { flex: 1; padding: 18px 5px; background: #333; color: white; box-shadow: 0 5px 0 #111; }
         .btn-light { flex: 1; padding: 18px 5px; background: #bbb; color: #222; box-shadow: 0 5px 0 #888; }
-        .btn-gold { flex: 1.4; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 6px 0 #967a06; }
-        button:active { transform: translateY(4px); box-shadow: none !important; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        .btn-gold { flex: 1.4; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 5px 0 #967a06; }
+        button:active:not(:disabled) { transform: translateY(4px); box-shadow: none !important; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
         /* --- ส่วนล่าง: ผลล่าสุด + ทาแป้ง --- */
         .bottom-section { 
@@ -86,9 +82,10 @@
         .last-results-wrap { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; }
         .last-title { font-size: 14px; color: #aaa; font-weight: bold; }
         .mini-dice-box { width: 35px; height: 35px; background: white; border-radius: 5px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        
         .btn-powder { 
             background: #fff; color: #333; padding: 10px 25px; border-radius: 50px; font-size: 18px !important;
-            box-shadow: 0 4px 10px rgba(255,255,255,0.2); 
+            box-shadow: 0 4px 10px rgba(255,255,255,0.2); transition: 0.3s;
         }
 
         /* --- History --- */
@@ -136,14 +133,13 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.0.6</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.0.7</span>
             </div>
         </div>
     </div>
 
     <div class="game-card">
-        <div class="dice-area">
-            <div id="powderOverlay"></div>
+        <div id="diceArea" class="dice-area">
             <div id="singleCover"></div>
             <div id="diceGroup" class="main-results" style="opacity: 0;">
                 <div class="dice-wrapper"><div id="d1" class="result-box"></div><div id="label1" class="item-label"></div></div>
@@ -165,7 +161,6 @@
             </div>
         </div>
 
-        <!-- ส่วนใหม่: ผลล่าสุด + ปุ่มทาแป้ง -->
         <div class="bottom-section">
             <div class="last-results-wrap">
                 <span class="last-title">ผลล่าสุด:</span>
@@ -174,6 +169,7 @@
                     <div class="mini-dice-box">?</div>
                     <div class="mini-dice-box">?</div>
                 </div>
+                <!-- ปุ่มทาแป้ง -->
                 <button id="btnTaPang" class="btn-powder" onclick="applyPowder()">ทาแป้ง</button>
             </div>
         </div>
@@ -191,6 +187,7 @@
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
         let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
         let isShakingLogic = false;
+        let powderActive = false; // สถานะการทาแป้ง
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
         window.onload = () => { resetUI(); document.getElementById('welcomePopup').classList.add('show'); };
@@ -212,12 +209,28 @@
             }
         }
 
+        // --- ฟังก์ชันทาแป้งแบบใหม่ตามโจทย์ ---
         function applyPowder() {
-            const overlay = document.getElementById('powderOverlay');
-            overlay.classList.remove('powder-anim');
-            void overlay.offsetWidth; // Trigger reflow
-            overlay.classList.add('powder-anim');
-            if (navigator.vibrate) navigator.vibrate(100);
+            if (isShakingLogic) return;
+            
+            const diceArea = document.getElementById('diceArea');
+            const btn = document.getElementById('btnTaPang');
+            
+            powderActive = true;
+            btn.disabled = true; // ล็อคปุ่มชั่วคราวระหว่างเปลี่ยนภาพ
+            
+            // 1. เปลี่ยนภาพเป็น powder.png (เปรียบเสมือนซ่อน plate เพราะภาพทับกัน)
+            diceArea.style.backgroundImage = "url('powder.png')";
+            
+            if (navigator.vibrate) navigator.vibrate(150);
+
+            // 2. รอ 3 วินาที แล้วเปลี่ยนกลับ
+            setTimeout(() => {
+                diceArea.style.backgroundImage = "url('plate.png')";
+                powderActive = false;
+                // ถ้ายังไม่ได้เริ่มเขย่า ให้ปลดล็อคปุ่ม
+                if (!isShakingLogic) btn.disabled = false;
+            }, 3000);
         }
 
         function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
@@ -230,14 +243,17 @@
             document.querySelectorAll('.item-label').forEach(el => el.innerText = "");
             document.getElementById('singleCover').classList.remove('open', 'shaking-cover');
             document.getElementById('singleCover').style.display = "none";
-            document.getElementById('btnTaPang').disabled = false; // ปลดล็อคทาแป้งเมื่อเริ่มรอบใหม่จริง
+            document.getElementById('btnTaPang').disabled = false; // พร้อมให้ทาแป้งรอบใหม่
+            document.getElementById('diceArea').style.backgroundImage = "url('plate.png')";
             isShakingLogic = false;
         }
 
         function startShake(shakeType) {
             if (isShakingLogic) return;
             isShakingLogic = true;
-            document.getElementById('btnTaPang').disabled = true; // ล็อคปุ่มทาแป้งทันทีเมื่อเริ่มเขย่า
+            
+            // ล็อคปุ่มทาแป้งทันทีเมื่อเริ่มกิจกรรมเขย่า
+            document.getElementById('btnTaPang').disabled = true;
 
             let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
             new Audio(sFile).play().catch(()=>{});
@@ -287,7 +303,7 @@
 
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
 
-            // อัปเดตผลล่าสุด 3 ลูกตรงกลางด้านล่าง
+            // อัปเดตผลล่าสุด 3 ลูก
             document.getElementById('lastDiceRow').innerHTML = dice.map(v => `<div class="mini-dice-box" style="border:1px solid ${isRed(v)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`).join('');
 
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
