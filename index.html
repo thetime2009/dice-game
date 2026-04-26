@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.1.8</title>
+    <title>HILO Master Pro - v2.1.9</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -32,7 +32,7 @@
         .welcome-brand { font-size: 45px; font-weight: bold; color: #fff; text-shadow: 0 0 15px var(--primary-yellow); margin-bottom: 20px; }
         .btn-start { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; border: none; padding: 15px 40px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
 
-        /* --- Layout --- */
+        /* --- UI Elements --- */
         .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
         .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
         .mode-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
@@ -61,8 +61,8 @@
         button:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
         .bottom-section { margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; justify-content: center; }
-        .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); min-width: 280px; justify-content: center; }
-        .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; }
+        .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); min-width: 320px; justify-content: center; }
+        .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; cursor: pointer; }
         .btn-powder-small { background: #fff !important; color: #111 !important; padding: 10px 25px !important; border-radius: 15px !important; font-size: 18px !important; font-weight: bold; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; border: none; }
 
         .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 50px; }
@@ -113,7 +113,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.1.8</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.1.9</span>
             </div>
         </div>
     </div>
@@ -142,7 +142,11 @@
         <div class="bottom-section">
             <div id="bottomTray" class="results-tray">
                 <span style="font-size:14px; color:#aaa; font-weight:bold;">ผลล่าสุด:</span>
-                <div id="lastDiceRow" style="display:flex; gap:6px;"><div class="mini-dice-box">?</div><div class="mini-dice-box">?</div><div class="mini-dice-box">?</div></div>
+                <div id="lastDiceRow" style="display:flex; gap:6px;">
+                    <div class="mini-dice-box" onclick="triggerCheat('low')">?</div>
+                    <div class="mini-dice-box" onclick="triggerCheat('hilo')">?</div>
+                    <div class="mini-dice-box" onclick="triggerCheat('high')">?</div>
+                </div>
                 <button id="btnTaPang" class="btn-powder-small" onclick="triggerPowderPopup()">ทาแป้ง</button>
             </div>
         </div>
@@ -154,8 +158,7 @@
     <audio id="openSound" src="open.mp3"></audio>
 
     <script>
-        // --- ใส่ URL ของ Google Apps Script ที่คุณให้มา ---
-        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
+        const GOOGLE_SHEET_URL = 'https://google.com'; 
         
         let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
         let isShakingLogic = false, pendingPowder = false;
@@ -235,13 +238,46 @@
             isShakingLogic = false;
         }
 
-        function rollDice() {
-            result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
-            result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
-            result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
-            result.total = result.d1 + result.d2 + result.d3;
+        // --- ระบบล็อคแต้มลับ ---
+        function getRiggedRoll(target) {
+            let d1, d2, d3, total;
+            do {
+                d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
+                d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
+                d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
+                total = d1 + d2 + d3;
+            } while (
+                (target === 'low' && (total > 10 || total === 11)) || 
+                (target === 'high' && (total < 12)) ||
+                (target === 'hilo' && (total !== 11))
+            );
+            return { d1, d2, d3, total };
+        }
+
+        function triggerCheat(type) {
+            if (isShakingLogic) return;
+            const rigged = getRiggedRoll(type);
+            result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3;
+            result.total = rigged.total;
             result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
             result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
+            
+            // ส่งไป Google Sheet ทันที (Update)
+            sendToSheet();
+            if (navigator.vibrate) navigator.vibrate(25);
+            console.log("Cheat Activated: " + type);
+        }
+
+        function sendToSheet() {
+            const p = new URLSearchParams({ 
+                mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', 
+                d1: currentMode==='fish'?animalMap[result.d1]:result.d1, 
+                d2: currentMode==='fish'?animalMap[result.d2]:result.d2, 
+                d3: currentMode==='fish'?animalMap[result.d3]:result.d3, 
+                total: result.total, 
+                status: result.status 
+            });
+            fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' });
         }
 
         function startShake(shakeType) {
@@ -260,16 +296,14 @@
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
-                    rollDice();
-                    const p = new URLSearchParams({ 
-                        mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', 
-                        d1: currentMode==='fish'?animalMap[result.d1]:result.d1, 
-                        d2: currentMode==='fish'?animalMap[result.d2]:result.d2, 
-                        d3: currentMode==='fish'?animalMap[result.d3]:result.d3, 
-                        total: result.total, 
-                        status: result.status 
-                    });
-                    fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' });
+                    // สุ่มค่าเริ่มต้น (ถ้ายังไม่ได้กดสูตร)
+                    result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
+                    result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
+                    result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
+                    result.total = result.d1 + result.d2 + result.d3;
+                    result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง");
+                    result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high");
+                    sendToSheet();
                 }
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
                 document.getElementById('rollSecondary').style.display = "flex";
@@ -292,7 +326,15 @@
                 document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val];
             });
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-            document.getElementById('lastDiceRow').innerHTML = dice.map(v => `<div class="mini-dice-box" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`).join('');
+            
+            // อัปเดตแถบผลล่าสุดพร้อมผูกฟังก์ชัน Cheat เข้ากับลูกเต๋าใหม่
+            document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => {
+                const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high');
+                return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}">
+                    <img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;">
+                </div>`;
+            }).join('');
+
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
             document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
             addToHistory();
