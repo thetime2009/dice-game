@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.1.7</title>
+    <title>HILO Master Pro - v2.1.6</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
-            --overlay-bg: rgb(0, 88, 31); 
+            --overlay-bg: rgba(30, 61, 43, 0.7); 
             --card-bg: rgba(26, 26, 26, 0.95);
             --primary-yellow: #f1c40f; 
             --red-die: #e74c3c; 
@@ -22,45 +22,24 @@
             color: white; transition: 0.5s ease;
         }
 
-        /* --- Welcome Popup CSS --- */
-        #welcomePopup {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: 0.5s;
-        }
+        /* --- Welcome Popup --- */
+        #welcomePopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.5s; }
         #welcomePopup.show { opacity: 1; visibility: visible; }
-        
-        .welcome-card {
-            background: rgba(30,30,30,0.95); width: 90%; max-width: 400px;
-            padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow);
-            text-align: center; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
-            transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .welcome-card { background: rgba(30,30,30,0.95); width: 90%; max-width: 400px; padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow); text-align: center; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3); transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #welcomePopup.show .welcome-card { transform: scale(1); }
         .welcome-icon { font-size: 50px; margin-bottom: 10px; }
         .welcome-title { font-size: 28px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 5px; }
         .welcome-subtitle { font-size: 18px; color: #ccc; margin-bottom: 10px; }
         .welcome-brand { font-size: 45px; font-weight: bold; color: #fff; text-shadow: 0 0 15px var(--primary-yellow); margin-bottom: 20px; }
         .welcome-msg { font-size: 16px; color: #aaa; margin-bottom: 30px; line-height: 1.5; }
-        .btn-start {
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111;
-            border: none; padding: 15px 40px; border-radius: 20px; font-size: 22px;
-            font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s;
-        }
-        .btn-start:active { transform: translateY(3px); box-shadow: none; }
+        .btn-start { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; border: none; padding: 15px 40px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
 
-        /* --- Top Bar & Controls --- */
+        /* --- Header & Controls --- */
         .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
         .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
         .mode-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
         .mode-btn.active { background: var(--primary-yellow); color: #111; }
-
-        .control-panel { 
-            background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255,255,255,0.1); gap: 15px; width: 100%;
-        }
+        .control-panel { background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); gap: 15px; width: 100%; }
         .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
         .dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
         .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
@@ -68,21 +47,9 @@
         #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
         /* --- Game Card --- */
-        .game-card { 
-            width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px);
-            border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden;
-        }
-        
-        .dice-area { 
-            position: relative; width: 100%; height: 480px; margin-bottom: 10px; 
-            display: flex; justify-content: center; align-items: center; 
-            background-image: url('plate.png'); 
-            background-size: 600px; background-repeat: no-repeat; background-position: center;
-            transition: 0.3s;
-        }
+        .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
+        .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; transition: 0.3s; }
         .shaking-plate { animation: shakePlate 0.1s infinite !important; }
-
         #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 2.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; display: none; }
         #singleCover.open { transform: translate(-50%, -160%); opacity: 0; pointer-events: none; }
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
@@ -93,10 +60,7 @@
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
-        /* --- Buttons --- */
-        .btn-group { display: flex; justify-content: center; gap: 10px; width: 100%; max-width: 580px; margin: 0 auto; }
-        button:not(.speed-btn) { border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.1s; font-family: 'Kanit', sans-serif; border-radius: 15px; }
-        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; box-shadow: 0 6px 0 #967a06; }
+        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
         button:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
         /* --- Bottom Tray --- */
@@ -118,20 +82,18 @@
             .dice-wrapper { width: 100px; gap: 5px; }
             .result-box { width: 90px; height: 90px; }
             .item-label { font-size: 45px; }
-            button:not(.speed-btn) { font-size: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Popup ต้อนรับ & อเนกประสงค์ -->
     <div id="welcomePopup">
         <div class="welcome-card">
             <div id="popupIcon" class="welcome-icon">🌟</div>
             <div id="popupTitle" class="welcome-title">ยินดีต้อนรับ</div>
-            <div id="popupSubtitle" class="welcome-subtitle">สู่เกมส์ทอยเต๋าพรีเมียม V.2.1.7</div>
+            <div id="popupSubtitle" class="welcome-subtitle">สู่เกมส์ทอยเต๋าพรีเมียม</div>
             <div class="welcome-brand">ปิ่นทอง</div>
-            <div id="popupMsg" class="welcome-msg">ขอให้ทุกท่านสนุกกับการเล่นนะครับ!<br>โชคดีมีชัย รวยๆ ทุกท่านครับ</div>
+            <div id="popupMsg" class="welcome-msg">ขอให้สนุกกับการเล่นนะครับ!</div>
             <button id="btnPopupAction" class="btn-start" onclick="handlePopupClose()">เริ่มเล่นกันเลย</button>
         </div>
     </div>
@@ -153,7 +115,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.1.7</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.1.6</span>
             </div>
         </div>
     </div>
@@ -201,10 +163,9 @@
 
         window.onload = () => { 
             resetUI(); 
-            showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้ทุกท่านสนุกกับการเล่นนะครับ!<br>โชคดีมีชัย รวยๆ ทุกท่านครับ", "เริ่มเล่นกันเลย");
+            showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะครับ!", "เริ่มเล่นกันเลย");
         };
 
-        // --- Popup System ---
         function showPopup(icon, title, subtitle, msg, btnText) {
             document.getElementById('popupIcon').innerText = icon;
             document.getElementById('popupTitle').innerText = title;
@@ -224,43 +185,34 @@
         }
 
         function triggerPowderPopup() {
-    if (isShakingLogic) return;
-    pendingPowder = true;
-    
-    //เล่นเสียง powder_popup.mp3 ทันทีที่ Popup ขึ้น
-    const popupSound = new Audio('powder_popup.mp3');
-    popupSound.play().catch(e => console.log("Audio play failed"));
-
-    showPopup("✨", "เตรียมขอหวย", "กำลังจะลงแป้งปิ่นทอง...", "ตั้งจิตอธิษฐานขอกับปิ่นทองนะครับ", "เริ่มทาแป้ง");
-}
+            if (isShakingLogic) return;
+            pendingPowder = true;
+            new Audio('powder_popup.mp3').play().catch(()=>{});
+            showPopup("✨", "เตรียมขอหวย", "กำลังจะลงแป้งปิ่นทอง...", "ตั้งจิตอธิษฐานขอกับปิ่นทองนะครับ", "เริ่มทาแป้ง");
+        }
 
         function applyPowderLogic() {
             isShakingLogic = true;
             const diceArea = document.getElementById('diceArea');
-            const statusLabel = document.getElementById('statusLabel');
             const btnP = document.getElementById('btnTaPang');
             const btnS = document.getElementById('btnMainShake');
-
             document.getElementById('diceGroup').style.opacity = "0";
             btnP.disabled = true; btnS.disabled = true;
-            statusLabel.innerText = "กำลังทาแป้งขอหวย...";
-
+            document.getElementById('statusLabel').innerText = "กำลังรินแป้งขอหวย...";
             diceArea.style.backgroundImage = "url('powder.png')";
             diceArea.style.backgroundSize = "500px";
             diceArea.classList.add('shaking-plate');
             new Audio('shake_light.mp3').play().catch(()=>{});
-
             setTimeout(() => {
                 diceArea.classList.remove('shaking-plate');
                 diceArea.style.backgroundImage = "url('plate.png')";
                 diceArea.style.backgroundSize = window.innerWidth < 600 ? "380px" : "600px"; 
-                statusLabel.innerText = "ทาแป้งเรียบร้อย!";
+                document.getElementById('statusLabel').innerText = "ทาแป้งเรียบร้อย!";
                 btnP.disabled = false; btnS.disabled = false;
                 isShakingLogic = false;
             }, 3000);
         }
 
-        // --- Game Logic ---
         function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
         function switchMode(mode) { currentMode = mode; document.getElementById('modeHilo').classList.toggle('active', mode==='hilo'); document.getElementById('modeFish').classList.toggle('active', mode==='fish'); resetUI(); }
         function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
@@ -291,7 +243,6 @@
             setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
-
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
@@ -334,8 +285,11 @@
                     a.playbackRate = voiceSpeed; a.play().catch(()=>{});
                     await new Promise(r => setTimeout(r, 1100 / voiceSpeed));
                 }
-                const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3"));
-                fin.playbackRate = voiceSpeed; fin.play().catch(()=>{});
+                // --- แก้ไขจุดนี้: ขานสูง/ต่ำ เฉพาะโหมดไฮโล ---
+                if (currentMode === 'hilo') {
+                    const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3"));
+                    fin.playbackRate = voiceSpeed; fin.play().catch(()=>{});
+                }
                 document.getElementById('rollInitial').style.display = "block";
                 document.getElementById('bottomTray').style.display = "flex";
                 isShakingLogic = false;
@@ -346,7 +300,7 @@
             const list = document.getElementById('historyList');
             const item = document.createElement('div');
             item.className = 'history-item';
-            const f = (v) => (v==1||v==4) ? `<span style="color:var(--red-die); font-weight:bold;">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
+            const f = (v) => (v===1||v===4) ? `<span style="color:var(--red-die); font-weight:bold;">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
             item.innerHTML = `<span style="flex:1;">[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right;">${result.total}</span>`;
             list.insertBefore(item, list.firstChild);
             if (list.children.length > 5) list.removeChild(list.lastChild);
