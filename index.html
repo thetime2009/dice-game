@@ -7,7 +7,7 @@
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
-            --overlay-bg: rgba(30, 61, 43, 0.7); 
+            --overlay-bg: rgb(0, 88, 31); 
             --card-bg: rgba(26, 26, 26, 0.95);
             --primary-yellow: #f1c40f; 
             --red-die: #e74c3c; 
@@ -100,8 +100,8 @@
 
     <div class="header-container">
         <div class="mode-switcher">
-            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮโล</button>
-            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้าปูปลา</button>
+            <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
+            <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
         </div>
         <div class="control-panel">
             <div class="theme-switcher">
@@ -198,7 +198,7 @@
             const btnS = document.getElementById('btnMainShake');
             document.getElementById('diceGroup').style.opacity = "0";
             btnP.disabled = true; btnS.disabled = true;
-            document.getElementById('statusLabel').innerText = "กำลังรินแป้งขอหวย...";
+            document.getElementById('statusLabel').innerText = "กำลังทาแป้งขอหวย...";
             diceArea.style.backgroundImage = "url('powder.png')";
             diceArea.style.backgroundSize = "500px";
             diceArea.classList.add('shaking-plate');
