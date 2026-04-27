@@ -71,45 +71,52 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
         
-                      @media (max-width: 600px) { 
+                              @media (max-width: 600px) { 
             .dice-area { 
                 height: 320px !important; 
-                background-size: 360px !important; /* ลดขนาดจานลงนิดหนึ่งให้ดูสมส่วนกับฝา */
+                background-size: 380px !important; /* ขนาดจาน */
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             } 
 
             #singleCover { 
-                /* --- จุดที่ต้องแก้ --- */
-                width: 250px !important;   /* ลองปรับเป็น 250px เพื่อให้เห็นขอบจานชัดขึ้น */
-                height: 250px !important; 
-                background-size: contain !important; /* บังคับให้รูปสานไม้ไผ่อยู่ในกรอบ 250px */
-                background-repeat: no-repeat !important;
+                /* 1. กำหนดขนาดใหม่ที่นี่ */
+                width: 280px !important;   /* ปรับตัวเลขนี้ตามใจชอบครับ (เช่น 250px หรือ 300px) */
+                height: 280px !important; 
                 
-                /* การจัดวางกึ่งกลาง */
+                /* 2. บังคับให้รูปสานไม้ไผ่อยู่ในกรอบที่กำหนด */
+                background-size: contain !important; 
+                background-repeat: no-repeat !important;
+                background-position: center !important;
+
+                /* 3. จัดกึ่งกลางจาน (ห้ามลบ translate -50% นะครับ) */
                 top: 50% !important;
                 left: 50% !important;
                 transform: translate(-50%, -50%) !important; 
-                
-                /* ใช้ opacity แทน display:none เพื่อให้ขนาดถูกบังคับใช้จริง */
-                display: block !important; 
-                opacity: 0; /* ซ่อนไว้ด้วยความโปร่งใส แทนการสั่งไม่ให้แสดงผล */
+
+                /* 4. ป้องกัน Logic อื่นมาสั่งปิด/เปิด จนขนาดเพี้ยน */
+                opacity: 0; /* เริ่มต้นให้จางไว้ */
             } 
 
-            /* เมื่อ JavaScript สั่งให้ฝาปรากฏ (ตอนปิดฝาแล้ว) */
-            #singleCover[style*="display: block"], 
-            #singleCover[style*="display: inline"] {
+            /* คำสั่งพิเศษ: เมื่อ JavaScript สั่งให้ฝาแสดงผล (ตอนเขย่า/ปิดฝา) */
+            #singleCover[style*="display: block"] {
                 opacity: 1 !important;
             }
 
+            /* ปรับตำแหน่งตอนเปิดฝา (ถ้าฝาเล็กลง ต้องดันขึ้นไปสูงๆ ให้พ้นลูกเต๋า) */
             #singleCover.open { 
-                transform: translate(-50%, -160%) !important; 
+                transform: translate(-50%, -180%) !important; 
                 opacity: 0 !important; 
-                transition: transform 1s, opacity 0.5s !important;
+                transition: transform 1.2s, opacity 0.5s !important;
             }
 
+            /* ปรับขนาดลูกเต๋าและแต้มในมือถือให้พอดี */
             .dice-wrapper { width: 100px !important; } 
             .result-box { width: 90px !important; height: 90px !important; } 
             .item-label { font-size: 45px !important; } 
         }
+
 
     </style>
 </head>
