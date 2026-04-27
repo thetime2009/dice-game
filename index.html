@@ -19,153 +19,282 @@
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
             background: linear-gradient(var(--overlay-bg), var(--overlay-bg)), url('board.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
-            color: white; transition: 0.5s ease;
+            color: white; overflow-x: hidden;
         }
 
-        #welcomePopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.5s; }
+        /* --- Popup System --- */
+        #welcomePopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.5s; }
         #welcomePopup.show { opacity: 1; visibility: visible; }
-        .welcome-card { background: rgba(30,30,30,0.95); width: 90%; max-width: 400px; padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow); text-align: center; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3); transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .welcome-card { background: rgba(30,30,30,0.95); width: 90%; max-width: 400px; padding: 40px 20px; border-radius: 40px; border: 2px solid var(--primary-yellow); text-align: center; transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #welcomePopup.show .welcome-card { transform: scale(1); }
-        .welcome-icon { font-size: 50px; margin-bottom: 10px; }
-        .welcome-title { font-size: 28px; font-weight: bold; color: var(--primary-yellow); margin-bottom: 5px; }
-        .welcome-brand { font-size: 45px; font-weight: bold; color: #fff; text-shadow: 0 0 15px var(--primary-yellow); margin-bottom: 20px; }
-        .btn-start { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; border: none; padding: 15px 40px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #967a06; transition: 0.1s; }
+        .btn-start { background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; border: none; padding: 18px 45px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #967a06; active: transform: translateY(4px); }
 
-        .header-container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
-        .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
-        .mode-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; color: #aaa; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
+        /* --- Header & Layout --- */
+        .header-container { width: 100%; max-width: 600px; z-index: 100; margin-bottom: 15px; }
+        .mode-switcher { display: flex; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 20px; margin-bottom: 10px; }
+        .mode-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; background: none; color: #aaa; font-weight: bold; font-size: 16px; cursor: pointer; }
         .mode-btn.active { background: var(--primary-yellow); color: #111; }
-        .control-panel { background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); gap: 15px; width: 100%; }
-        .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
-        .dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
-        .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
-        .speed-btn { background: #444; color: white; border: none; width: 22px; height: 22px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
+        
+        .control-panel { background: rgba(0,0,0,0.8); border-radius: 20px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .speed-control { display: flex; align-items: center; gap: 8px; }
+        .speed-btn { background: #444; color: white; border: none; width: 28px; height: 28px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
-        .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
-        .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; transition: 0.3s; }
-        .shaking-plate { animation: shakePlate 0.1s infinite !important; }
-        #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 4.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; display: none; }
-        #singleCover.open { transform: translate(-50%, -160%); opacity: 1; pointer-events: none; }
-        .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
+        /* --- Game Core --- */
+        .game-card { width: 100%; max-width: 600px; background: var(--card-bg); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 20px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; z-index: 50; }
+        .dice-area { position: relative; width: 100%; height: 400px; display: flex; justify-content: center; align-items: center; background: url('plate.png') no-repeat center; background-size: contain; margin-bottom: 15px; }
+        
+        #singleCover { position: absolute; width: 90%; height: 90%; background: url('cover.png') no-repeat center; background-size: contain; z-index: 100; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+        #singleCover.open { transform: translateY(-120%); opacity: 0.8; }
 
-        /* จัดเรียงลูกเต๋าแบบสามเหลี่ยมตามภาพ */
-        .main-results { display: flex; flex-wrap: wrap; justify-content: center; gap: 120px; width: 100%; max-width: 450px; position: relative; z-index: 10; padding-top: 15px; opacity: 0; transition: opacity 0.3s; }
-        .dice-wrapper { display: flex; flex-direction: column; align-items: center; width: 140px; }
-        .dice-wrapper:nth-child(1) { width: 100%; margin-bottom: -170px; }
-        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; }
+        .main-results { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; width: 100%; opacity: 0; transition: 0.3s; z-index: 80; }
+        .result-box { width: 100px; height: 100px; background: white; border-radius: 15px; overflow: hidden; border: 3px solid transparent; }
         .result-box img { width: 100%; height: 100%; object-fit: cover; }
-        .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
+        .item-label { font-size: 32px; font-weight: bold; color: var(--primary-yellow); margin-top: 5px; }
 
-        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
-        .bottom-section { margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; justify-content: center; }
-        .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); min-width: 320px; justify-content: center; }
-        .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; cursor: pointer; }
-        .btn-powder-small { background: #fff !important; color: #111 !important; padding: 10px 25px !important; border-radius: 15px !important; font-size: 18px !important; font-weight: bold; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; border: none; }
-        .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 50px; }
-        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+        /* --- Buttons Section --- */
+        .button-group { position: relative; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+        .btn-gold { width: 100%; padding: 20px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 22px; font-weight: bold; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
+        .btn-gold:active { transform: translateY(3px); box-shadow: 0 2px 0 #967a06; }
 
-        @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
-        @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
-        @media (max-width: 600px) { .dice-area { height: 320px; background-size: 380px; } #singleCover { width: 340px; height: 340px; } .dice-wrapper { width: 100px; } .result-box { width: 90px; height: 90px; } .item-label { font-size: 45px; } }
+        .tray-section { margin-top: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-around; }
+        .mini-box { width: 50px; height: 50px; background: #fff; color: #111; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+
+        /* --- History --- */
+        .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 40px; }
+        .history-item { background: rgba(0,0,0,0.5); padding: 12px; margin-bottom: 8px; border-radius: 12px; display: flex; justify-content: space-between; border-left: 4px solid var(--primary-yellow); }
+
+        /* --- Animations --- */
+        .shaking { animation: shake 0.1s infinite; }
+        @keyframes shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 50% { transform: translate(-1px, -2px) rotate(-1deg); } 100% { transform: translate(1px, 2px) rotate(1deg); } }
+        
+        @media (max-width: 500px) { .dice-area { height: 300px; } .result-box { width: 80px; height: 80px; } }
     </style>
 </head>
 <body>
-    <div id="welcomePopup"><div class="welcome-card"><div id="popupIcon" class="welcome-icon">🌟</div><div id="popupTitle" class="welcome-title">ยินดีต้อนรับ</div><div id="popupSubtitle" class="welcome-subtitle">สู่เกมส์ทอยเต๋าพรีเมียม</div><div class="welcome-brand">ปิ่นทอง</div><div id="popupMsg" class="welcome-msg">ขอให้สนุกกับการเล่นนะคะ!</div><button id="btnPopupAction" class="btn-start" onclick="handlePopupClose()">เริ่มเล่นกันเลย</button></div></div>
-    <div class="header-container"><div class="mode-switcher"><button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button><button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button></div><div class="control-panel"><div class="theme-switcher"><div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div><div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div><div class="dot" style="background: #2c3e50;" onclick="changeBg('rgba(44,62,80,0.7)')"></div><div class="dot" style="background: #4a1413;" onclick="changeBg('rgba(74,20,19,0.7)')"></div><div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div></div><div class="speed-control"><label>ปรับความเร็วเสียงขาน:</label><button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button><span id="speedVal">1.3</span><button class="speed-btn" onclick="adjustSpeed(0.1)">+</button><span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.1.9</span></div></div></div>
-    <div class="game-card"><div id="diceArea" class="dice-area"><div id="singleCover"></div><div id="diceGroup" class="main-results"><div class="dice-wrapper"><div id="d1" class="result-box"></div><div id="label1" class="item-label"></div></div><div class="dice-wrapper"><div id="d2" class="result-box"></div><div id="label2" class="item-label"></div></div><div class="dice-wrapper"><div id="d3" class="result-box"></div><div id="label3" class="item-label"></div></div></div></div><div id="statusLabel" style="font-size:26px; font-weight:bold; margin:10px 0;">-</div><div id="rollInitial"><button id="btnMainShake" class="btn-gold" onclick="startShake('normal'); requestMotionPermission();">เขย่าลูกเต๋า</button></div><div id="rollSecondary" style="display:none; gap:10px; justify-content:center;"><button style="background:#333; color:#fff; flex:1; border:none; border-radius:15px; font-weight:bold; cursor:pointer;" onclick="startShake('rinBao')">รินเบา</button><button style="background:#bbb; color:#111; flex:1; border:none; border-radius:15px; font-weight:bold; cursor:pointer;" onclick="startShake('rinNak')">รินหนัก</button><button class="btn-gold" style="flex:1.4;" onclick="revealResults()">เปิดดูแต้ม</button></div><div class="bottom-section"><div id="bottomTray" class="results-tray"><span style="font-size:20px; color:#aaa; font-weight:bold;">ผลล่าสุด:</span><div id="lastDiceRow" style="display:flex; gap:6px;"><div class="mini-dice-box" onclick="triggerCheat('low')">?</div><div class="mini-dice-box" onclick="triggerCheat('hilo')">?</div><div class="mini-dice-box" onclick="triggerCheat('high')">?</div></div><button id="btnTaPang" class="btn-powder-small" onclick="triggerPowderPopup()">ทาแป้ง</button></div></div></div>
+
+    <div id="welcomePopup" class="show">
+        <div class="welcome-card">
+            <div class="welcome-icon">🌟</div>
+            <div class="welcome-title">ยินดีต้อนรับ</div>
+            <div class="welcome-brand">ปิ่นทอง Master Pro</div>
+            <p>กรุณากดปุ่มด้านล่างเพื่อเริ่มระบบ</p>
+            <button class="btn-start" onclick="unlockSystem()">เริ่มเล่นกันเลย</button>
+        </div>
+    </div>
+
+    <div class="header-container">
+        <div class="mode-switcher">
+            <button id="btnHilo" class="mode-btn active" onclick="setMode('hilo')">ไฮ-โล</button>
+            <button id="btnFish" class="mode-btn" onclick="setMode('fish')">น้ำเต้าปูปลา</button>
+        </div>
+        <div class="control-panel">
+            <div class="speed-control">
+                <span>ความเร็วเสียง:</span>
+                <button class="speed-btn" onclick="changeSpeed(-0.1)">-</button>
+                <span id="speedVal">1.3</span>
+                <button class="speed-btn" onclick="changeSpeed(0.1)">+</button>
+            </div>
+            <span style="opacity: 0.5; font-size: 12px;">V.2.1.9</span>
+        </div>
+    </div>
+
+    <div class="game-card">
+        <div id="diceArea" class="dice-area">
+            <div id="singleCover"></div>
+            <div id="diceGroup" class="main-results">
+                <div class="dice-wrapper"><div id="d1" class="result-box"></div><div id="l1" class="item-label"></div></div>
+                <div class="dice-wrapper"><div id="d2" class="result-box"></div><div id="l2" class="item-label"></div></div>
+                <div class="dice-wrapper"><div id="d3" class="result-box"></div><div id="l3" class="item-label"></div></div>
+            </div>
+        </div>
+
+        <div id="statusLabel" style="font-size:24px; margin-bottom:15px; font-weight:bold; color:var(--primary-yellow);">-</div>
+
+        <div class="button-group">
+            <div id="boxInitial">
+                <button class="btn-gold" onclick="startShake('normal')">เขย่าลูกเต๋า</button>
+            </div>
+            <div id="boxSecondary" style="display:none; gap:10px;">
+                <button style="flex:1; background:#444; color:#fff; border-radius:15px; border:none; font-weight:bold;" onclick="startShake('rin')">ริน</button>
+                <button class="btn-gold" style="flex:2;" onclick="openCover()">เปิดดูแต้ม</button>
+            </div>
+        </div>
+
+        <div class="tray-section">
+            <div class="mini-box" onclick="cheat('low')">ต่ำ</div>
+            <div class="mini-box" onclick="cheat('hilo')">11</div>
+            <div class="mini-box" onclick="cheat('high')">สูง</div>
+            <button onclick="applyPowder()" style="background:#fff; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">ทาแป้ง</button>
+        </div>
+    </div>
+
     <div class="history-container" id="historyList"></div>
-    <audio id="shakeSound" src="shake.mp3"></audio>
-    <audio id="openSound" src="open.mp3"></audio>
 
     <script>
-        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
-        let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
-        let isShakingLogic = false, pendingPowder = false;
+        let currentMode = 'hilo', voiceSpeed = 1.3, isBusy = false;
+        let result = { d1: 1, d2: 1, d3: 1, total: 3, status: "ต่ำ" };
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
-        window.onload = () => { resetUI(); showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะคะ!", "เริ่มเล่นกันเลย"); };
-        function showPopup(icon, title, subtitle, msg, btnText) {
-            document.getElementById('popupIcon').innerText = icon; document.getElementById('popupTitle').innerText = title;
-            document.getElementById('popupSubtitle').innerText = subtitle; document.getElementById('popupMsg').innerHTML = msg;
-            document.getElementById('btnPopupAction').innerText = btnText; document.getElementById('welcomePopup').classList.add('show');
-        }
-        function handlePopupClose() {
+        // --- 1. ปลดล็อกระบบสำหรับมือถือ ---
+        function unlockSystem() {
             document.getElementById('welcomePopup').classList.remove('show');
-            if (pendingPowder) { pendingPowder = false; applyPowderLogic(); }
-            requestMotionPermission();
-        }
-        function triggerPowderPopup() { if (isShakingLogic) return; pendingPowder = true; new Audio('powder_popup.mp3').play().catch(()=>{}); showPopup("✨", "เตรียมขอหวย", "กำลังจะลงแป้งปิ่นทอง...", "ตั้งจิตอธิษฐานขอกับปิ่นทองนะครับ", "เริ่มทาแป้ง"); }
-        function applyPowderLogic() {
-            isShakingLogic = true; const diceArea = document.getElementById('diceArea'); const btnP = document.getElementById('btnTaPang'); const btnS = document.getElementById('btnMainShake');
-            document.getElementById('diceGroup').style.opacity = "0"; btnP.style.display = "none"; btnS.disabled = true; document.getElementById('statusLabel').innerText = "กำลังทาแป้งขอหวย...";
-            diceArea.style.backgroundImage = "url('powder.png')"; diceArea.style.backgroundSize = "500px"; diceArea.classList.add('shaking-plate'); new Audio('shake_light.mp3').play().catch(()=>{});
-            setTimeout(() => { diceArea.classList.remove('shaking-plate'); diceArea.style.backgroundImage = "url('plate.png')"; diceArea.style.backgroundSize = window.innerWidth < 600 ? "380px" : "600px"; document.getElementById('statusLabel').innerText = "ทาแป้งเรียบร้อย!"; btnP.style.display = "block"; btnS.disabled = false; isShakingLogic = false; }, 3000);
-        }
-        function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
-        function switchMode(mode) { currentMode = mode; document.getElementById('modeHilo').classList.toggle('active', mode === 'hilo'); document.getElementById('modeFish').classList.toggle('active', mode === 'fish'); resetUI(); }
-        function changeBg(rgbaColor) { document.documentElement.style.setProperty('--overlay-bg', rgbaColor); }
-        function resetUI() { document.getElementById('statusLabel').innerText = "-"; document.getElementById('diceGroup').style.opacity = "0"; document.querySelectorAll('.item-label').forEach(el => el.innerText = ""); document.getElementById('singleCover').classList.remove('open', 'shaking-cover'); document.getElementById('singleCover').style.display = "none"; document.getElementById('diceArea').style.backgroundImage = "url('plate.png')"; document.getElementById('rollInitial').style.display = "block"; document.getElementById('rollSecondary').style.display = "none"; document.getElementById('btnTaPang').style.display = "block"; isShakingLogic = false; }
+            // ปลดล็อก Audio Context
+            const silent = new Audio('shake.mp3');
+            silent.muted = true;
+            silent.play().then(() => { silent.pause(); silent.muted = false; });
 
-        function getRiggedRoll(target) {
-            let d1, d2, d3, total;
-            do { d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; total = d1 + d2 + d3; }
-            while ((target === 'low' && (total > 10 || total === 11)) || (target === 'high' && (total < 12)) || (target === 'hilo' && (total !== 11)));
-            return { d1, d2, d3, total };
-        }
-        function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
-        function sendToSheet() { const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status }); fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' }); }
-
-        async function startShake(shakeType) {
-            if (isShakingLogic) return; isShakingLogic = true;
-            const cover = document.getElementById('singleCover'); const diceGroup = document.getElementById('diceGroup'); const statusLabel = document.getElementById('statusLabel');
-            if (currentMode === 'hilo') {
-                statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
-                for (let i = 1; i <= 3; i++) { const box = document.getElementById(`d${i}`); box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; box.style.borderColor = "var(--red-die)"; document.getElementById(`label${i}`).innerText = ""; }
-                diceGroup.style.opacity = "1"; await new Promise(resolve => setTimeout(resolve, 500));
+            // ขอสิทธิ์ Sensor (iOS)
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(permission => {
+                    if(permission === 'granted') initMotion();
+                });
+            } else {
+                initMotion();
             }
-            diceGroup.style.opacity = "0"; document.getElementById('btnTaPang').style.display = "none"; 
-            let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
-            new Audio(sFile).play().catch(()=>{}); statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
-            cover.classList.remove('open'); cover.style.display = "block"; setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
-            document.getElementById('rollInitial').style.display = "none"; document.getElementById('rollSecondary').style.display = "none";
+        }
+
+        function initMotion() {
+            window.addEventListener('devicemotion', (e) => {
+                let acc = e.accelerationIncludingGravity;
+                if (acc && Math.abs(acc.x) + Math.abs(acc.y) > 25 && !isBusy) startShake('normal');
+            });
+        }
+
+        // --- 2. ฟังก์ชันเกมหลัก ---
+        function setMode(m) {
+            currentMode = m;
+            document.getElementById('btnHilo').classList.toggle('active', m === 'hilo');
+            document.getElementById('btnFish').classList.toggle('active', m === 'fish');
+            resetUI();
+        }
+
+        function resetUI() {
+            document.getElementById('diceGroup').style.opacity = "0";
+            document.getElementById('singleCover').classList.remove('open');
+            document.getElementById('singleCover').style.display = "none";
+            document.getElementById('boxInitial').style.display = "block";
+            document.getElementById('boxSecondary').style.display = "none";
+            document.getElementById('statusLabel').innerText = "-";
+            isBusy = false;
+        }
+
+        function startShake(type) {
+            if (isBusy) return;
+            isBusy = true;
+
+            const cover = document.getElementById('singleCover');
+            const status = document.getElementById('statusLabel');
+            
+            cover.style.display = "block";
+            cover.classList.remove('open');
+            cover.classList.add('shaking');
+            document.getElementById('diceArea').classList.add('shaking');
+            
+            status.innerText = type === 'rin' ? "กำลังริน..." : "กำลังเขย่า...";
+            new Audio(type === 'rin' ? 'shake_light.mp3' : 'shake.mp3').play().catch(()=>{});
+
             setTimeout(() => {
-                cover.classList.remove('shaking-cover');
-                if (result.d1 === 0) { result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; result.total = result.d1 + result.d2 + result.d3; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); }
-                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; document.getElementById('rollSecondary').style.display = "flex"; isShakingLogic = false;
+                cover.classList.remove('shaking');
+                document.getElementById('diceArea').classList.remove('shaking');
+                status.innerText = "ปิดฝาแล้ว!";
+                
+                // สุ่มถ้ายังไม่มีการ Cheat
+                if (isBusy) {
+                    const d1 = Math.floor(Math.random() * 6) + 1;
+                    const d2 = Math.floor(Math.random() * 6) + 1;
+                    const d3 = Math.floor(Math.random() * 6) + 1;
+                    setResult(d1, d2, d3);
+                }
+
+                document.getElementById('boxInitial').style.display = "none";
+                document.getElementById('boxSecondary').style.display = "flex";
+                isBusy = false;
             }, 1200);
         }
 
-        async function revealResults() {
-            if (isShakingLogic) return; isShakingLogic = true;
-            document.getElementById('rollSecondary').style.display = "none"; new Audio('open.mp3').play().catch(()=>{});
+        function setResult(d1, d2, d3) {
+            const sum = d1 + d2 + d3;
+            result = {
+                d1, d2, d3, total: sum,
+                status: sum === 11 ? "11 ไฮโล" : (sum > 11 ? "สูง" : "ต่ำ")
+            };
+        }
+
+        async function openCover() {
+            if (isBusy) return;
+            isBusy = true;
+            
             document.getElementById('singleCover').classList.add('open');
-            const dice = [result.d1, result.d2, result.d3]; const prefix = currentMode === 'hilo' ? 'h' : '';
-            dice.forEach((val, i) => { const box = document.getElementById(`d${i+1}`); box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; });
-            setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-            document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; }).join('');
+            new Audio('open.mp3').play().catch(()=>{});
+
+            // แสดงผล
+            const prefix = currentMode === 'hilo' ? 'h' : '';
+            [result.d1, result.d2, result.d3].forEach((v, i) => {
+                const box = document.getElementById(`d${i+1}`);
+                box.innerHTML = `<img src="${prefix}${v}.jpg">`;
+                box.style.borderColor = (v===1 || v===4) ? "var(--red-die)" : "transparent";
+                document.getElementById(`l${i+1}`).innerText = currentMode === 'hilo' ? v : animalMap[v];
+            });
+
+            setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 200);
             document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
-            document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+
             addToHistory();
+
+            // ขานเสียง
             setTimeout(async () => {
-                for (let val of dice) { const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); a.playbackRate = voiceSpeed; a.play().catch(()=>{}); await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); }
-                if (currentMode === 'hilo') { const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); fin.playbackRate = voiceSpeed; fin.play().catch(()=>{}); }
-                document.getElementById('rollInitial').style.display = "block"; document.getElementById('btnTaPang').style.display = "block";
-                result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; isShakingLogic = false;
-            }, 600);
+                const dice = [result.d1, result.d2, result.d3];
+                for (let v of dice) {
+                    const sound = new Audio(`${currentMode === 'hilo' ? 'n' : 'a'}${v}.mp3`);
+                    sound.playbackRate = voiceSpeed;
+                    sound.play().catch(()=>{});
+                    await new Promise(r => setTimeout(r, 1000 / voiceSpeed));
+                }
+                document.getElementById('boxInitial').style.display = "block";
+                document.getElementById('boxSecondary').style.display = "none";
+                isBusy = false;
+            }, 500);
+        }
+
+        function cheat(type) {
+            let d1, d2, d3, sum;
+            do {
+                d1 = Math.floor(Math.random() * 6) + 1;
+                d2 = Math.floor(Math.random() * 6) + 1;
+                d3 = Math.floor(Math.random() * 6) + 1;
+                sum = d1 + d2 + d3;
+            } while (
+                (type === 'low' && (sum > 10 || sum === 11)) ||
+                (type === 'high' && (sum < 12)) ||
+                (type === 'hilo' && sum !== 11)
+            );
+            setResult(d1, d2, d3);
+            if (navigator.vibrate) navigator.vibrate(40);
+            document.getElementById('statusLabel').innerText = "พร้อมแล้ว!";
+        }
+
+        function applyPowder() {
+            document.getElementById('statusLabel').innerText = "กำลังลงแป้งปิ่นทอง...";
+            document.getElementById('diceArea').style.filter = "brightness(1.5) sepia(0.5)";
+            new Audio('shake_light.mp3').play().catch(()=>{});
+            setTimeout(() => {
+                document.getElementById('diceArea').style.filter = "none";
+                document.getElementById('statusLabel').innerText = "ทาแป้งเสร็จแล้ว!";
+            }, 2000);
         }
 
         function addToHistory() {
-            const list = document.getElementById('historyList'); const item = document.createElement('div'); item.className = 'history-item';
-            const f = (v) => (v===1||v===4) ? `<span style="color:var(--red-die); font-weight:bold;">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
-            item.innerHTML = `<span style="flex:1;">[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right;">${result.total}</span>`;
-            list.insertBefore(item, list.firstChild); if (list.children.length > 5) list.removeChild(list.lastChild);
+            const h = document.getElementById('historyList');
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.innerHTML = `<span>[${result.d1}, ${result.d2}, ${result.d3}]</span> <b>${result.status}</b> <span>${result.total}</span>`;
+            h.prepend(item);
+            if (h.children.length > 5) h.removeChild(h.lastChild);
         }
 
-        function requestMotionPermission() {
-            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission().then(r => { if(r=='granted') { window.addEventListener('devicemotion', (e) => { let acc = e.accelerationIncludingGravity; if (!acc) return; let totalAcc = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z); if (totalAcc > 25 && !isShakingLogic) { if (document.getElementById('rollInitial').style.display !== 'none') startShake('normal'); else if (document.getElementById('rollSecondary').style.display !== 'none') startShake('rinNak'); } }); } });
-            }
+        function changeSpeed(v) {
+            voiceSpeed = Math.min(Math.max(voiceSpeed + v, 0.8), 2.2);
+            document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1);
         }
     </script>
 </body>
