@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.3.1</title>
+    <title>HILO Master Pro - v2.3.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -155,7 +155,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.3.1</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.3.2</span>
             </div>
         </div>
     </div>
@@ -316,7 +316,7 @@
 
 
 
-                               async function startShake(shakeType) {
+                                      async function startShake(shakeType) {
             if (isShakingLogic) return; isShakingLogic = true;
             const cover = document.getElementById('singleCover'); 
             const diceGroup = document.getElementById('diceGroup'); 
@@ -345,16 +345,13 @@
             cover.classList.remove('shaking-cover');
 
             if (shakeType === 'rinBao') {
-                // รินเบา: เอียง 20 องศา (ไม่สั่น)
                 let deg = (Math.random() > 0.5 ? 20 : -20);
                 cover.style.setProperty('transform', `translate(-50%, -50%) rotate(${deg}deg)`, 'important');
             } else if (shakeType === 'rinNak') {
-                // รินหนัก: เอียง 40 องศา + สั่น (ใช้ setTimeout เล็กน้อยเพื่อให้ Rotate ทำงานก่อน)
                 let deg = (Math.random() > 0.5 ? 40 : -40);
                 cover.style.setProperty('transform', `translate(-50%, -50%) rotate(${deg}deg)`, 'important');
                 setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             } else {
-                // เขย่าปกติ: ตั้งตรง + สั่น
                 cover.style.setProperty('transform', `translate(-50%, -50%) rotate(0deg)`, 'important');
                 setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             }
@@ -364,7 +361,10 @@
 
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
-                cover.style.transform = ""; // ล้างค่าเพื่อให้เปิดฝาได้ปกติ
+                
+                // --- จุดสำคัญที่แก้ไข: ล้างค่า property ที่เป็น important ออกให้หมด ---
+                cover.style.removeProperty('transform'); 
+                cover.style.transform = ""; 
 
                 if (shakeType === 'normal' || shakeType === 'rinNak') { 
                     result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
@@ -381,6 +381,7 @@
                 isShakingLogic = false;
             }, 1200);
         }
+
 
 
 
