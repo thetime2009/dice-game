@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.7</title>
+    <title>HILO Master Pro - v2.2.8</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -155,7 +155,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.7</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.8</span>
             </div>
         </div>
     </div>
@@ -270,18 +270,89 @@
             }, 1200);
         }
 
-                        async function revealResults() {
+                                async function startShake(shakeType) {
             if (isShakingLogic) return; isShakingLogic = true;
+            const cover = document.getElementById('singleCover'); 
+            const diceGroup = document.getElementById('diceGroup'); 
+            const statusLabel = document.getElementById('statusLabel');
+
+            // 1. เตรียมลูก 4-4-4: ทำเฉพาะกด "เขย่าปกติ" (normal) เท่านั้น
+            // ถ้าเป็น 'rinBao' หรือ 'rinNak' จะข้ามส่วนนี้ไปทันที
+            if (currentMode === 'hilo' && shakeType === 'normal') {
+                statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
+                for (let i = 1; i <= 3; i++) { 
+                    const box = document.getElementById(`d${i}`); 
+                    box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
+                    box.style.borderColor = "var(--red-die)"; 
+                    document.getElementById(`label${i}`).innerText = ""; 
+                }
+                diceGroup.style.opacity = "1"; 
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            diceGroup.style.opacity = "0"; 
+            document.getElementById('btnTaPang').style.display = "none"; 
+            let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
+            new Audio(sFile).play().catch(()=>{}); 
+            statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
+
+            // 2. จัดการฝาครอบและการเอียง
+            cover.classList.remove('open'); 
+            cover.style.display = "block"; 
+            cover.classList.remove('shaking-cover');
+
+            if (shakeType === 'rinBao') {
+                // รินเบา: เอียงสุ่ม 20 องศา (แต้มไม่เปลี่ยน)
+                let deg = (Math.random() > 0.5 ? 20 : -20);
+                cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
+            } else if (shakeType === 'rinNak') {
+                // รินหนัก: เอียงสุ่ม 40 องศา + สั่น (สุ่มแต้มใหม่)
+                let deg = (Math.random() > 0.5 ? 40 : -40);
+                cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
+                setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+            } else {
+                // เขย่าปกติ: ตั้งตรง + สั่น
+                cover.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+                setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+            }
+
+            document.getElementById('rollInitial').style.display = "none"; 
+            document.getElementById('rollSecondary').style.display = "none";
+
+            setTimeout(() => {
+                cover.classList.remove('shaking-cover');
+                // ล้างค่าหมุนเฉพาะกิจ เพื่อให้ปุ่มเปิดทำงานได้ แต่ยังค้างตำแหน่งปิดไว้
+                if (shakeType === 'normal' || shakeType === 'rinNak') { 
+                    result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+                    result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+                    result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+                    result.total = result.d1 + result.d2 + result.d3; 
+                    result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); 
+                    result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); 
+                    sendToSheet(); 
+                }
+                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
+                document.getElementById('rollSecondary').style.display = "flex"; 
+                isShakingLogic = false;
+            }, 1200);
+        }
+
+        async function revealResults() {
+            if (isShakingLogic) return; isShakingLogic = true;
+            
+            const cover = document.getElementById('singleCover');
             document.getElementById('rollSecondary').style.display = "none"; 
             
-            // 1. เล่นเสียงและเริ่มเปิดฝา
+            // --- จุดสำคัญ: ล้างค่า transform (องศาที่เอียง) ออก เพื่อให้แอนิเมชัน open ทำงานได้ ---
+            cover.style.transform = ""; 
+            
             new Audio('open.mp3').play().catch(()=>{});
-            document.getElementById('singleCover').classList.add('open');
+            cover.classList.add('open');
 
             const dice = [result.d1, result.d2, result.d3]; 
             const prefix = currentMode === 'hilo' ? 'h' : '';
 
-            // 2. อัปเดตลูกเต๋าบนจานทันที (ไม่ต้องรอ 800ms)
+            // 1. อัปเดตลูกเต๋าบนจานทันที
             dice.forEach((val, i) => { 
                 const box = document.getElementById(`d${i+1}`); 
                 box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
@@ -289,24 +360,20 @@
                 document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
             });
 
-            // 3. แสดงกลุ่มลูกเต๋าบนจานให้เริ่มปรากฏ (ใช้ 150ms ตามของเดิม)
             setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
 
-            // 4. รอให้ฝาเปิดจนสุด (800ms) แล้วค่อยอัปเดตผลสรุปและขานเสียง
+            // 2. รอเปิดฝาสุด แล้วค่อยอัปเดตสรุปผลและเสียงขาน
             setTimeout(async () => {
-                // --- อัปเดตผลล่าสุดด้านล่าง (ถาดเล็ก) ---
                 document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
                     const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
                     return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
                 }).join('');
 
-                // --- อัปเดตสถานะ สูง/ต่ำ ---
                 document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
                 document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
                 
                 addToHistory();
 
-                // --- เริ่มขานเสียงแต้ม ---
                 for (let val of dice) { 
                     const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
                     a.playbackRate = voiceSpeed; 
@@ -326,8 +393,9 @@
                 result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
                 isShakingLogic = false;
 
-            }, 1800); // จังหวะที่ฝาเปิดสุดพอดี
+            }, 800); 
         }
+
 
 
 
