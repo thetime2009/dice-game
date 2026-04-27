@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.2</title>
+    <title>HILO Master Pro - v2.2.3</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -155,7 +155,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.1</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.3</span>
             </div>
         </div>
     </div>
@@ -270,24 +270,62 @@
             }, 1200);
         }
 
-        async function revealResults() {
+                async function revealResults() {
             if (isShakingLogic) return; isShakingLogic = true;
-            document.getElementById('rollSecondary').style.display = "none"; new Audio('open.mp3').play().catch(()=>{});
+            document.getElementById('rollSecondary').style.display = "none"; 
+            new Audio('open.mp3').play().catch(()=>{});
             document.getElementById('singleCover').classList.add('open');
-            const dice = [result.d1, result.d2, result.d3]; const prefix = currentMode === 'hilo' ? 'h' : '';
-            dice.forEach((val, i) => { const box = document.getElementById(`d${i+1}`); box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; });
-            setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-            document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; }).join('');
-            document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
-            document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
-            addToHistory();
+
+            const dice = [result.d1, result.d2, result.d3]; 
+            const prefix = currentMode === 'hilo' ? 'h' : '';
+
+            // หน่วงเวลา 800ms (0.8 วินาที) ให้ฝาเปิดพ้นจานก่อนค่อยโชว์แต้มใหม่
             setTimeout(async () => {
-                for (let val of dice) { const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); a.playbackRate = voiceSpeed; a.play().catch(()=>{}); await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); }
-                if (currentMode === 'hilo') { const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); fin.playbackRate = voiceSpeed; fin.play().catch(()=>{}); }
-                document.getElementById('rollInitial').style.display = "block"; document.getElementById('btnTaPang').style.display = "block";
-                result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; isShakingLogic = false;
-            }, 600);
+                // 1. อัปเดตลูกเต๋าบนจาน
+                dice.forEach((val, i) => { 
+                    const box = document.getElementById(`d${i+1}`); 
+                    box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
+                    box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
+                    document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
+                });
+                
+                // 2. แสดงลูกเต๋าบนจานให้ปรากฏขึ้น
+                document.getElementById('diceGroup').style.opacity = "1";
+
+                // 3. อัปเดตผลล่าสุดด้านล่าง (ถาดเล็ก)
+                document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
+                    const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
+                    return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
+                }).join('');
+
+                // 4. อัปเดตสถานะ สูง/ต่ำ
+                document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
+                document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+                
+                addToHistory();
+
+                // 5. เริ่มขานเสียงแต้ม
+                setTimeout(async () => {
+                    for (let val of dice) { 
+                        const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
+                        a.playbackRate = voiceSpeed; 
+                        a.play().catch(()=>{}); 
+                        await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
+                    }
+                    if (currentMode === 'hilo') { 
+                        const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
+                        fin.playbackRate = voiceSpeed; 
+                        fin.play().catch(()=>{}); 
+                    }
+                    document.getElementById('rollInitial').style.display = "block"; 
+                    document.getElementById('btnTaPang').style.display = "block";
+                    result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
+                    isShakingLogic = false;
+                }, 200); // เว้นจังหวะนิดนึงก่อนขานเสียง
+
+            }, 800); // 800ms คือจังหวะที่ฝาเปิดจนสุดพอดี
         }
+
 
         function addToHistory() {
             const list = document.getElementById('historyList'); const item = document.createElement('div'); item.className = 'history-item';
