@@ -71,28 +71,39 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
         
-                @media (max-width: 600px) { 
+                      @media (max-width: 600px) { 
             .dice-area { 
                 height: 320px !important; 
-                background-size: 380px !important; 
+                background-size: 360px !important; /* ลดขนาดจานลงนิดหนึ่งให้ดูสมส่วนกับฝา */
             } 
 
-            /* แก้ไขส่วนนี้ */
             #singleCover { 
-                width: 280px !important;   /* ปรับขนาดตามต้องการ (ลองเริ่มที่ 280px) */
-                height: 280px !important; 
+                /* --- จุดที่ต้องแก้ --- */
+                width: 250px !important;   /* ลองปรับเป็น 250px เพื่อให้เห็นขอบจานชัดขึ้น */
+                height: 250px !important; 
+                background-size: contain !important; /* บังคับให้รูปสานไม้ไผ่อยู่ในกรอบ 250px */
+                background-repeat: no-repeat !important;
+                
+                /* การจัดวางกึ่งกลาง */
                 top: 50% !important;
                 left: 50% !important;
-                /* สำคัญมาก: ต้องคงค่า translate ไว้เพื่อให้ฝาอยู่ตรงกลางจาน */
                 transform: translate(-50%, -50%) !important; 
-                background-size: contain !important;
-                display: none; /* ซ่อนไว้ก่อนตาม Logic เดิม */
+                
+                /* ใช้ opacity แทน display:none เพื่อให้ขนาดถูกบังคับใช้จริง */
+                display: block !important; 
+                opacity: 0; /* ซ่อนไว้ด้วยความโปร่งใส แทนการสั่งไม่ให้แสดงผล */
             } 
 
-            /* ปรับตำแหน่งตอนเปิดฝาให้สัมพันธ์กับขนาดใหม่ */
+            /* เมื่อ JavaScript สั่งให้ฝาปรากฏ (ตอนปิดฝาแล้ว) */
+            #singleCover[style*="display: block"], 
+            #singleCover[style*="display: inline"] {
+                opacity: 1 !important;
+            }
+
             #singleCover.open { 
-                transform: translate(-50%, -150%) !important; 
-                opacity: 0 !important; /* ให้จางหายไปเลยเพื่อความเนียน */
+                transform: translate(-50%, -160%) !important; 
+                opacity: 0 !important; 
+                transition: transform 1s, opacity 0.5s !important;
             }
 
             .dice-wrapper { width: 100px !important; } 
