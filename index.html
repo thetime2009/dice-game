@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.7</title>
+    <title>HILO Master Pro - v2.2.8</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -155,7 +155,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.7</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.8</span>
             </div>
         </div>
     </div>
@@ -251,24 +251,79 @@
         function sendToSheet() { const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status }); fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' }); }
 
         async function startShake(shakeType) {
-            if (isShakingLogic) return; isShakingLogic = true;
-            const cover = document.getElementById('singleCover'); const diceGroup = document.getElementById('diceGroup'); const statusLabel = document.getElementById('statusLabel');
-            if (currentMode === 'hilo') {
-                statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
-                for (let i = 1; i <= 3; i++) { const box = document.getElementById(`d${i}`); box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; box.style.borderColor = "var(--red-die)"; document.getElementById(`label${i}`).innerText = ""; }
-                diceGroup.style.opacity = "1"; await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            diceGroup.style.opacity = "0"; document.getElementById('btnTaPang').style.display = "none"; 
-            let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
-            new Audio(sFile).play().catch(()=>{}); statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
-            cover.classList.remove('open'); cover.style.display = "block"; setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
-            document.getElementById('rollInitial').style.display = "none"; document.getElementById('rollSecondary').style.display = "none";
-            setTimeout(() => {
-                cover.classList.remove('shaking-cover');
-                if (result.d1 === 0) { result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; result.total = result.d1 + result.d2 + result.d3; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); }
-                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; document.getElementById('rollSecondary').style.display = "flex"; isShakingLogic = false;
-            }, 1200);
+    if (isShakingLogic) return; isShakingLogic = true;
+    const cover = document.getElementById('singleCover'); 
+    const diceGroup = document.getElementById('diceGroup'); 
+    const statusLabel = document.getElementById('statusLabel');
+
+    // 1. เตรียมลูก 4-4-4: ทำเฉพาะ 'normal' (เขย่าครั้งแรก) เท่านั้น
+    if (currentMode === 'hilo' && shakeType === 'normal') {
+        statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
+        for (let i = 1; i <= 3; i++) { 
+            const box = document.getElementById(`d${i}`); 
+            box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
+            box.style.borderColor = "var(--red-die)"; 
+            document.getElementById(`label${i}`).innerText = ""; 
         }
+        diceGroup.style.opacity = "1"; 
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    // 2. จัดการเสียงและข้อความสถานะ
+    diceGroup.style.opacity = "0"; 
+    document.getElementById('btnTaPang').style.display = "none"; 
+    let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
+    new Audio(sFile).play().catch(()=>{}); 
+    statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
+
+    // 3. จัดการแอนิเมชันฝาครอบและการเอียง
+    cover.classList.remove('open'); 
+    cover.style.display = "block"; 
+    
+    // รีเซ็ตการสั่นเดิมก่อน
+    cover.classList.remove('shaking-cover');
+
+    if (shakeType === 'rinBao') {
+        // รินเบา: เอียงสุ่ม 20 องศา (ซ้าย/ขวา)
+        let deg = (Math.random() > 0.5 ? 20 : -20);
+        cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
+    } else if (shakeType === 'rinNak') {
+        // รินหนัก: เอียงสุ่ม 30 องศา (ซ้าย/ขวา) + สั่นฝา
+        let deg = (Math.random() > 0.5 ? 30 : -30);
+        cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
+        setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+    } else {
+        // เขย่าปกติ: ตั้งตรง 0 องศา + สั่นฝา
+        cover.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+        setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+    }
+
+    document.getElementById('rollInitial').style.display = "none"; 
+    document.getElementById('rollSecondary').style.display = "none";
+
+    // 4. สิ้นสุดการเขย่า/ริน และจัดการเรื่องแต้ม
+    setTimeout(() => {
+        cover.classList.remove('shaking-cover');
+        cover.style.transform = `translate(-50%, -50%) rotate(0deg)`; // กลับมาตั้งตรง
+
+        // เงื่อนไขการสุ่มแต้ม: สุ่มใหม่ถ้าเป็น 'normal' หรือ 'rinNak'
+        // ถ้าเป็น 'rinBao' จะข้ามส่วนนี้ไป (ทำให้แต้มไม่เปลี่ยน)
+        if (shakeType === 'normal' || shakeType === 'rinNak') { 
+            result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+            result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+            result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+            result.total = result.d1 + result.d2 + result.d3; 
+            result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); 
+            result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); 
+            sendToSheet(); 
+        }
+
+        document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
+        document.getElementById('rollSecondary').style.display = "flex"; 
+        isShakingLogic = false;
+    }, 1200);
+}
+
 
                         async function revealResults() {
             if (isShakingLogic) return; isShakingLogic = true;
