@@ -71,17 +71,35 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
         
-        @media (max-width: 600px) { 
-            .dice-area { height: 320px; background-size: 380px; } 
+                @media (max-width: 600px) { 
+            .dice-area { 
+                height: 320px !important; 
+                background-size: 380px !important; 
+            } 
+
+            /* แก้ไขส่วนนี้ */
             #singleCover { 
-        width: 50px !important;  /* ลองเพิ่มเป็น 320 และใส่ !important */
-        height: 50px !important; 
-        background-size: 100% 100% !important; /* บังคับให้รูปเต็มกรอบ */
-    } 
-            .dice-wrapper { width: 100px; } 
-            .result-box { width: 90px; height: 90px; } 
-            .item-label { font-size: 45px; } 
+                width: 280px !important;   /* ปรับขนาดตามต้องการ (ลองเริ่มที่ 280px) */
+                height: 280px !important; 
+                top: 50% !important;
+                left: 50% !important;
+                /* สำคัญมาก: ต้องคงค่า translate ไว้เพื่อให้ฝาอยู่ตรงกลางจาน */
+                transform: translate(-50%, -50%) !important; 
+                background-size: contain !important;
+                display: none; /* ซ่อนไว้ก่อนตาม Logic เดิม */
+            } 
+
+            /* ปรับตำแหน่งตอนเปิดฝาให้สัมพันธ์กับขนาดใหม่ */
+            #singleCover.open { 
+                transform: translate(-50%, -150%) !important; 
+                opacity: 0 !important; /* ให้จางหายไปเลยเพื่อความเนียน */
+            }
+
+            .dice-wrapper { width: 100px !important; } 
+            .result-box { width: 90px !important; height: 90px !important; } 
+            .item-label { font-size: 45px !important; } 
         }
+
     </style>
 </head>
 <body>
