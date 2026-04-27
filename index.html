@@ -91,14 +91,14 @@
                 top: 50% !important; 
                 left: 50% !important; 
                 transform: translate(-50%, -50%) !important; 
-                opacity: 0; 
+                opacity: 1; 
                 z-index: 50 !important; /* ให้ฝาอยู่บนสุด */
             } 
             #singleCover[style*="display: block"] { opacity: 1 !important; }
             #singleCover.open { 
                 transform: translate(-50%, -180%) !important; 
                 opacity: 0 !important; 
-                transition: transform 1.2s, opacity 0.5s !important; 
+                transition: transform 3s, opacity 0.5s !important; 
             }
 
             /* --- ส่วนที่แก้ไขให้ลูกเต๋าลงมาอยู่ในจาน --- */
@@ -110,7 +110,7 @@
                 display: flex !important; 
                 flex-wrap: wrap !important; 
                 justify-content: center !important; 
-                gap: 10px !important; 
+                gap: 50px !important; 
                 width: 100% !important; 
                 max-width: 250px !important; 
                 padding: 0 !important;
