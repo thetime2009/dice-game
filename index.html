@@ -45,23 +45,7 @@
         .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
         .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; transition: 0.3s; }
         .shaking-plate { animation: shakePlate 0.1s infinite !important; }
-        
-        #singleCover { 
-    position: absolute; 
-    top: 50%; left: 50%; 
-    transform: translate(-50%, -50%); 
-    width: 520px; height: 520px; 
-    background-image: url('cover.png'); 
-    background-size: contain; 
-    background-repeat: no-repeat; 
-    background-position: center; 
-    z-index: 30; 
-    display: none; /* ใส่ไว้เหมือนเดิมเพื่อให้ซ่อนตอนเริ่มเกม */
-    cursor: grab; 
-    touch-action: none; 
-    /* หมายเหตุ: เราเอา transition ออกจากตรงนี้ เพราะเราจะไปคุมด้วย JavaScript แทนเพื่อให้ลากได้ลื่นไหลครับ */
-}
-
+        #singleCover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; height: 520px; background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 30; transition: transform 4.0s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1.5s; display: none; }
         #singleCover.open { transform: translate(-50%, -160%); opacity: 1; pointer-events: none; }
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
 
@@ -99,63 +83,6 @@
         let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
         let isShakingLogic = false, pendingPowder = false;
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
-        
-        // เพิ่ม JavaScript (ระบบลากเปิด)
-let isDragging = false;
-let startY = 0;
-const cover = document.getElementById('singleCover');
-
-// เริ่มแตะ/กด
-cover.addEventListener('mousedown', startDrag);
-cover.addEventListener('touchstart', startDrag);
-
-// ขณะลาก
-window.addEventListener('mousemove', drag);
-window.addEventListener('touchmove', drag);
-
-// ปล่อยมือ
-window.addEventListener('mouseup', endDrag);
-window.addEventListener('touchend', endDrag);
-
-function startDrag(e) {
-    // จะลากได้ก็ต่อเมื่อเขย่าเสร็จแล้ว (มีปุ่มเปิดดูแต้มโชว์อยู่)
-    if (document.getElementById('rollSecondary').style.display === 'none') return;
-    
-    isDragging = true;
-    startY = e.pageY || e.touches[0].pageY;
-    cover.style.transition = 'none'; // ปิด transition เพื่อให้ลากลื่นตามมือ
-}
-
-function drag(e) {
-    if (!isDragging) return;
-    
-    let currentY = e.pageY || e.touches[0].pageY;
-    let diffY = currentY - startY;
-
-    // ถ้าลากขึ้น (diffY เป็นลบ)
-    if (diffY < 0) {
-        // จำกัดไม่ให้ลากลงต่ำกว่าจุดเริ่มต้น และลากขึ้นได้สูงสุดแค่ไหน
-        let moveY = Math.max(diffY, -400); 
-        cover.style.transform = `translate(-50%, calc(-50% + ${moveY}px))`;
-        
-        // ถ้าลากขึ้นไปเกิน 150px ให้ถือว่า "เปิดฝา" โดยอัตโนมัติ
-        if (moveY < -150) {
-            revealResults(); // เรียกฟังก์ชันเปิดฝาเดิมของคุณ
-            isDragging = false;
-        }
-    }
-}
-
-function endDrag() {
-    if (!isDragging) return;
-    isDragging = false;
-    
-    // ถ้าปล่อยมือแล้วยังเปิดไม่สุด ให้ฝาวิ่งกลับมาปิดที่เดิม
-    cover.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    cover.style.transform = 'translate(-50%, -50%)';
-}
-
-
 
         window.onload = () => { resetUI(); showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะคะ!", "เริ่มเล่นกันเลย"); };
         function showPopup(icon, title, subtitle, msg, btnText) {
@@ -210,59 +137,23 @@ function endDrag() {
         }
 
         async function revealResults() {
-    if (isShakingLogic) return; 
-    isShakingLogic = true;
-
-    // --- ส่วนที่แทรกใหม่: คุมความนุ่มนวลของฝาครอบตอนเปิด ---
-    const cover = document.getElementById('singleCover');
-    cover.style.transition = 'transform 0.8s ease-out'; 
-    cover.classList.add('open');
-    // ----------------------------------------------
-
-    document.getElementById('rollSecondary').style.display = "none"; 
-    new Audio('open.mp3').play().catch(()=>{});
-
-    const dice = [result.d1, result.d2, result.d3]; 
-    const prefix = currentMode === 'hilo' ? 'h' : '';
-
-    dice.forEach((val, i) => { 
-        const box = document.getElementById(`d${i+1}`); 
-        box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
-        box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
-        document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
-    });
-
-    setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-
-    document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
-        const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
-        return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
-    }).join('');
-
-    document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
-    document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
-    
-    addToHistory();
-
-    setTimeout(async () => {
-        for (let val of dice) { 
-            const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
-            a.playbackRate = voiceSpeed; 
-            a.play().catch(()=>{}); 
-            await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
+            if (isShakingLogic) return; isShakingLogic = true;
+            document.getElementById('rollSecondary').style.display = "none"; new Audio('open.mp3').play().catch(()=>{});
+            document.getElementById('singleCover').classList.add('open');
+            const dice = [result.d1, result.d2, result.d3]; const prefix = currentMode === 'hilo' ? 'h' : '';
+            dice.forEach((val, i) => { const box = document.getElementById(`d${i+1}`); box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; });
+            setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
+            document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; }).join('');
+            document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
+            document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+            addToHistory();
+            setTimeout(async () => {
+                for (let val of dice) { const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); a.playbackRate = voiceSpeed; a.play().catch(()=>{}); await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); }
+                if (currentMode === 'hilo') { const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); fin.playbackRate = voiceSpeed; fin.play().catch(()=>{}); }
+                document.getElementById('rollInitial').style.display = "block"; document.getElementById('btnTaPang').style.display = "block";
+                result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; isShakingLogic = false;
+            }, 600);
         }
-        if (currentMode === 'hilo') { 
-            const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
-            fin.playbackRate = voiceSpeed; 
-            fin.play().catch(()=>{}); 
-        }
-        document.getElementById('rollInitial').style.display = "block"; 
-        document.getElementById('btnTaPang').style.display = "block";
-        result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
-        isShakingLogic = false;
-    }, 600);
-}
-
 
         function addToHistory() {
             const list = document.getElementById('historyList'); const item = document.createElement('div'); item.className = 'history-item';
