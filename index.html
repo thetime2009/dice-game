@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.1</title>
+    <title>HILO Master Pro - v2.2.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -76,15 +76,62 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
         
-        @media (max-width: 600px) { 
-            .dice-area { height: 320px !important; background-size: 380px !important; display: flex !important; justify-content: center !important; align-items: center !important; } 
-            #singleCover { width: 280px !important; height: 280px !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; opacity: 0; } 
+                @media (max-width: 600px) { 
+            .dice-area { 
+                height: 320px !important; 
+                background-size: 380px !important; 
+                display: flex !important; 
+                justify-content: center !important; 
+                align-items: center !important; 
+                position: relative !important; /* เพิ่มเพื่อให้ลูกเต๋าอ้างอิงตำแหน่งจาน */
+            } 
+            #singleCover { 
+                width: 280px !important; 
+                height: 280px !important; 
+                top: 50% !important; 
+                left: 50% !important; 
+                transform: translate(-50%, -50%) !important; 
+                opacity: 0; 
+                z-index: 50 !important; /* ให้ฝาอยู่บนสุด */
+            } 
             #singleCover[style*="display: block"] { opacity: 1 !important; }
-            #singleCover.open { transform: translate(-50%, -180%) !important; opacity: 0 !important; transition: transform 1.2s, opacity 0.5s !important; }
-            .dice-wrapper { width: 100px !important; } 
-            .result-box { width: 90px !important; height: 90px !important; } 
-            .item-label { font-size: 45px !important; } 
+            #singleCover.open { 
+                transform: translate(-50%, -180%) !important; 
+                opacity: 0 !important; 
+                transition: transform 1.2s, opacity 0.5s !important; 
+            }
+
+            /* --- ส่วนที่แก้ไขให้ลูกเต๋าลงมาอยู่ในจาน --- */
+            .main-results { 
+                position: absolute !important; /* สั่งให้ลอยทับจาน */
+                top: 50% !important; 
+                left: 50% !important; 
+                transform: translate(-50%, -50%) !important; /* จัดให้อยู่กลางจานเป๊ะ */
+                display: flex !important; 
+                flex-wrap: wrap !important; 
+                justify-content: center !important; 
+                gap: 10px !important; 
+                width: 100% !important; 
+                max-width: 250px !important; 
+                padding: 0 !important;
+                z-index: 10 !important;
+            }
+            .dice-wrapper { width: 80px !important; margin: 0 !important; } 
+            .dice-wrapper:nth-child(1) { 
+                width: 100% !important; 
+                margin-bottom: -15px !important; /* ดันลูกแรกเข้าหากลุ่ม */
+            }
+            .result-box { 
+                width: 75px !important; 
+                height: 75px !important; 
+                border-radius: 12px !important; 
+            } 
+            .item-label { 
+                font-size: 32px !important; 
+                min-height: 35px !important; 
+            } 
         }
+
     </style>
 </head>
 <body>
