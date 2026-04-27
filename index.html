@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.9</title>
+    <title>HILO Master Pro - v2.2.8</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -155,7 +155,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.9</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.8</span>
             </div>
         </div>
     </div>
@@ -270,14 +270,13 @@
             }, 1200);
         }
 
-                                async function startShake(shakeType) {
+                                        async function startShake(shakeType) {
             if (isShakingLogic) return; isShakingLogic = true;
             const cover = document.getElementById('singleCover'); 
             const diceGroup = document.getElementById('diceGroup'); 
             const statusLabel = document.getElementById('statusLabel');
 
-            // 1. เตรียมลูก 4-4-4: ทำเฉพาะกด "เขย่าปกติ" (normal) เท่านั้น
-            // ถ้าเป็น 'rinBao' หรือ 'rinNak' จะข้ามส่วนนี้ไปทันที
+            // 1. เตรียมลูก 4-4-4: ทำเฉพาะ 'normal' (เขย่าครั้งแรก) เท่านั้น
             if (currentMode === 'hilo' && shakeType === 'normal') {
                 statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
                 for (let i = 1; i <= 3; i++) { 
@@ -296,22 +295,19 @@
             new Audio(sFile).play().catch(()=>{}); 
             statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
 
-            // 2. จัดการฝาครอบและการเอียง
             cover.classList.remove('open'); 
             cover.style.display = "block"; 
             cover.classList.remove('shaking-cover');
 
+            // --- ส่วนการเอียงฝา ---
             if (shakeType === 'rinBao') {
-                // รินเบา: เอียงสุ่ม 20 องศา (แต้มไม่เปลี่ยน)
                 let deg = (Math.random() > 0.5 ? 20 : -20);
                 cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
             } else if (shakeType === 'rinNak') {
-                // รินหนัก: เอียงสุ่ม 40 องศา + สั่น (สุ่มแต้มใหม่)
                 let deg = (Math.random() > 0.5 ? 40 : -40);
                 cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
                 setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             } else {
-                // เขย่าปกติ: ตั้งตรง + สั่น
                 cover.style.transform = `translate(-50%, -50%) rotate(0deg)`;
                 setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             }
@@ -319,9 +315,13 @@
             document.getElementById('rollInitial').style.display = "none"; 
             document.getElementById('rollSecondary').style.display = "none";
 
+            // --- จบการริน/เขย่า ---
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
-                // ล้างค่าหมุนเฉพาะกิจ เพื่อให้ปุ่มเปิดทำงานได้ แต่ยังค้างตำแหน่งปิดไว้
+                
+                // แก้ไขจุดนี้: ให้ฝากลับมาที่ 0 องศาทันทีหลังจากรินเสร็จ
+                cover.style.transform = "translate(-50%, -50%) rotate(0deg)"; 
+
                 if (shakeType === 'normal' || shakeType === 'rinNak') { 
                     result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
                     result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
@@ -334,8 +334,9 @@
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
                 document.getElementById('rollSecondary').style.display = "flex"; 
                 isShakingLogic = false;
-            }, 1200);
+            }, 1600);
         }
+
 
         async function revealResults() {
             if (isShakingLogic) return; isShakingLogic = true;
