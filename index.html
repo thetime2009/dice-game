@@ -282,23 +282,49 @@
             fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' });
         }
 
-        function startShake(shakeType) {
+                async function startShake(shakeType) { // เติม async เพื่อให้ใช้ await (หยุดรอ) ได้
             if (isShakingLogic) return;
             isShakingLogic = true;
-            document.getElementById('diceGroup').style.opacity = "0";
+
+            const cover = document.getElementById('singleCover');
+            const diceGroup = document.getElementById('diceGroup');
+            const statusLabel = document.getElementById('statusLabel');
+
+            // --- ส่วนที่แทรกใหม่: แสดงเลข 4-4-4 ก่อน 3 วินาที (เฉพาะโหมดไฮโล) ---
+            if (currentMode === 'hilo') {
+                statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
+                // ตั้งค่าหน้าตาเต๋าเป็นเลข 4 ทั้งหมด
+                for (let i = 1; i <= 3; i++) {
+                    const box = document.getElementById(`d${i}`);
+                    box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`;
+                    box.style.borderColor = "var(--red-die)"; // สีแดงสำหรับเลข 4
+                    document.getElementById(`label${i}`).innerText = "4";
+                }
+                diceGroup.style.opacity = "1"; // แสดงให้เห็นลูกเต๋าเลข 4
+                await new Promise(resolve => setTimeout(resolve, 3000)); // หยุดรอ 3 วินาที
+            }
+            // -----------------------------------------------------------
+
+            diceGroup.style.opacity = "0"; // ซ่อนลูกเต๋าก่อนเริ่มเขย่าจริง
             document.getElementById('btnTaPang').style.display = "none"; 
+            
             let sFile = shakeType === 'rinBao' ? 'shake_light.mp3' : (shakeType === 'rinNak' ? 'shake_heavy.mp3' : 'shake.mp3');
             new Audio(sFile).play().catch(()=>{});
-            const cover = document.getElementById('singleCover');
-            document.getElementById('statusLabel').innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
-            cover.classList.remove('open'); cover.style.display = "block";
+            
+            statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
+            
+            cover.classList.remove('open'); 
+            cover.style.display = "block";
+            
             setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
+            
             document.getElementById('rollInitial').style.display = "none";
             document.getElementById('rollSecondary').style.display = "none";
+
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
                 if (shakeType === 'normal' || shakeType === 'rinNak') {
-                    // สุ่มค่าเริ่มต้น (ถ้ายังไม่ได้กดสูตร)
+                    // สุ่มค่าเริ่มต้นจริง (ถ้ายังไม่ได้กดสูตร)
                     result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
                     result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
                     result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1;
@@ -312,6 +338,7 @@
                 isShakingLogic = false;
             }, 1200);
         }
+
 
         async function revealResults() {
             if (isShakingLogic) return;
