@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.97</title>
+    <title>HILO Master Pro - v2.5.0</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -217,27 +217,6 @@
 }
 
 
-       /* ทำให้กลุ่มปุ่ม Toggle และ Control Panel ดูเป็นชุดเดียวกัน */
-.toggle-container {
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-#toggleBtn {
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 8px 8px 0 0;
-    padding: 2px 15px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.control-panel {
-    /* เพิ่ม transition ถ้าอยากให้มันค่อยๆ หายไป (ต้องใช้คู่กับ opacity/height) */
-    transition: all 0.3s ease;
-}
-
 
     </style>
 </head>
@@ -249,11 +228,6 @@
             <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
             <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
         </div>
-        <div class="toggle-container">
-                <button id="toggleBtn" onclick="toggleSettings()">^</button>
-                <div id="settingsBar" class="settings-bar">
-                </div>
-            </div>
         <div class="control-panel">
             <div class="theme-switcher">
                 <div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div>
@@ -575,21 +549,6 @@ function toggleLabels() {
     btn.innerText = labelsVisible ? '👁️ ปิดแต้ม' : '👁️ เปิดแต้ม';
     btn.style.background = labelsVisible ? '#444' : 'var(--primary-yellow)';
     btn.style.color = labelsVisible ? 'white' : '#111';
-}
-
-        function toggleSettings() {
-    // เลือกตัว control-panel (แถบเครื่องมือทั้งหมด)
-    const panel = document.querySelector('.control-panel');
-    const btn = document.getElementById('toggleBtn');
-    
-    // ตรวจสอบสถานะการซ่อน
-    if (panel.style.display === "none") {
-        panel.style.display = "block"; // หรือ "flex" ตามที่คุณตั้งค่าไว้
-        btn.innerText = "^";
-    } else {
-        panel.style.display = "none";
-        btn.innerText = "v";
-    }
 }
 
 
