@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.5.0</title>
+    <title>HILO Master Pro - v2.5.1</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -216,6 +216,15 @@
     }
 }
 
+        /* เมื่อโดนใส่คลาส dimmed จะทำให้จางลง */
+.dice-area.dimmed {
+    opacity: 0.5 !important; /* ปรับค่าได้ตามชอบ 0.1 (จางมาก) - 0.9 (จางน้อย) */
+}
+
+/* เพิ่ม Transition ให้จาน เพื่อให้ตอนจาง/ตอนกลับมาเข้ม ดูนุ่มนวลขึ้น */
+.dice-area {
+    transition: opacity 0.5s ease-in-out !important;
+}
 
 
     </style>
@@ -447,6 +456,9 @@
             setTimeout(() => {
                 isShakingLogic = true; // ล็อคป้องกันการกดซ้ำระหว่างเปิด
                 
+                // --- [เพิ่มบรรทัดนี้] สั่งให้จานจางลงทันทีที่เริ่มเปิดฝา ---
+                document.querySelector('.dice-area').classList.add('dimmed');
+                
                 new Audio('open.mp3').play().catch(()=>{});
                 
                 // สั่งเปิดฝาและขยับมือขึ้นพร้อมกัน
@@ -510,6 +522,8 @@
                         }
                     }, 500);
 
+                    // --- [เพิ่มบรรทัดนี้] ก่อนจบฟังก์ชัน ให้จานกลับมาเข้มเหมือนเดิม ---
+                    document.querySelector('.dice-area').classList.remove('dimmed');
                     result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
                     isShakingLogic = false;
 
