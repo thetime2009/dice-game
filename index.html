@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.5.8</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-
+    <title>HILO Master Pro - v2.4.93</title>
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
             --overlay-bg: rgb(0, 88, 31);
@@ -42,48 +38,53 @@
         .mode-btn.active { background: var(--primary-yellow); color: #111; }
         .control-panel { background: rgba(0,0,0,0.85); border-radius: 25px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); gap: 15px; width: 100%; }
         .theme-switcher { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; }
-        .dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); transition: 0.2s; }
-        .dot:hover { transform: scale(1.1); border-color: #fff; }
+        .dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.4); }
         .speed-control { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; }
-        .speed-btn { background: #444; color: white; border: none; width: 24px; height: 24px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .speed-btn { background: #444; color: white; border: none; width: 22px; height: 22px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold; }
         #speedVal { font-size: 14px; min-width: 25px; text-align: center; color: var(--primary-yellow); font-weight: bold; }
 
         /* --- Game Area --- */
-        .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 15px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
-        
+        .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
+                /* --- ส่วนของจานและพื้นที่เล่น --- */
+                /* --- ส่วนของจานและพื้นที่เล่น --- */
         .dice-area { 
-    position: relative; 
-    width: 100%; 
-    height: 420px; /* ลดลงจาก 550px เหลือ 420px */
-    margin-bottom: 5px; /* ลดระยะห่างด้านล่างจานลงเล็กน้อย */
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    background-image: url('plate.png'); 
-    background-size: contain; 
-    background-repeat: no-repeat; 
-    background-position: center; 
-    transition: 0.3s; 
-    overflow: visible; 
-}
-
-        #handIcon {
-            position: absolute; top: 50%; left: 50%; width: 450px; height: 450px;
-            background-image: url('hand.png'); background-size: contain; background-repeat: no-repeat;
-            z-index: 100; opacity: 0; pointer-events: none;
-            transform: translate(-80%, -50%) scale(0.8);
-            transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 0.5s;
-            display: block !important;
+            position: relative; width: 100%; height: 480px; 
+            margin-bottom: 10px; display: flex; justify-content: center; 
+            align-items: center; background-image: url('plate.png'); 
+            background-size: 600px; background-repeat: no-repeat; 
+            background-position: center; transition: 0.3s; 
+            overflow: visible; 
         }
 
+        /* --- ส่วนของมือจับ (hand.png) --- */
+        #handIcon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 450px; 
+            height: 450px;
+            background-image: url('hand.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 100; 
+            opacity: 0; /* เริ่มต้นซ่อนไว้ */
+            pointer-events: none;
+            /* ปรับตำแหน่งเริ่มต้นของมือ */
+            transform: translate(-80%, -50%) scale(0.8);
+            transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 0.5s;
+            display: block !important; /* บังคับให้ Tag แสดงผล */
+        }
+
+        /* จังหวะเมื่อมือเริ่มปรากฏตัว (ตอนเริ่มยก) */
         #handIcon.move-up {
-            opacity: 1 !important;
+            opacity: 1 !important; /* บังคับให้โชว์มือ */
             transform: translate(-80%, -180%) scale(0.8) !important;
         }
 
+
         #singleCover { 
             position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); 
-            width: 80%; height: 80%; max-width: 520px; max-height: 520px;
+            width: 90%; height: 90%; max-width: 520px; max-height: 520px;
             background-image: url('cover.png'); background-size: contain; background-repeat: no-repeat; background-position: center; 
             z-index: 30; transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 1s; display: none; opacity: 1; 
         }
@@ -93,25 +94,38 @@
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; width: 140px; }
         .dice-wrapper:nth-child(1) { width: 100%; margin-bottom: -175px; }
         .result-box { 
-            width: 150px; height: 150px; background: white; border-radius: 22px; 
-            display: flex; align-items: center; justify-content: center; overflow: hidden; 
-            border: 4px solid transparent; filter: drop-shadow(8px 12px 10px rgba(0,0,0,0.5)); 
-        }
+    width: 150px; 
+    height: 150px; 
+    background: white; 
+    border-radius: 22px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    border: 4px solid transparent;
+    
+    /* --- เพิ่มเงาให้ลูกเต๋าดูสมจริง --- */
+    filter: drop-shadow(8px 12px 10px rgba(0,0,0,0.5)); 
+}
 
-        .item-label { 
-            font-size: 80px; font-weight: bold; min-height: 90px; display: block; 
-            color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; 
-        }
+       .item-label { 
+    font-size: 80px; 
+    font-weight: bold; 
+    min-height: 90px; /* ค่าเดิมของคุณ ดีแล้วครับ */
+    display: block;   /* <--- เพิ่มบรรทัดนี้เข้าไปครับ */
+    color: var(--primary-yellow) !important; 
+    text-shadow: 2px 4px 8px rgba(0,0,0,0.8); 
+    line-height: 1.1; 
+}
 
-        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; transition: 0.1s; }
-        .btn-gold:active { transform: translateY(3px); box-shadow: 0 3px 0 #967a06; }
 
+        .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
         .bottom-section { margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; justify-content: center; }
         .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); min-width: 320px; justify-content: center; }
         .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; cursor: pointer; }
         .btn-powder-small { background: #fff !important; color: #111 !important; padding: 10px 25px !important; border-radius: 15px !important; font-size: 18px !important; font-weight: bold; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; border: none; }
         .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 50px; }
-        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; border-left: 5px solid var(--primary-yellow); }
+        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
 
         /* --- Animations --- */
         .shaking-plate { animation: shakePlate 0.1s infinite !important; }
@@ -119,17 +133,75 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
 
-        /* --- Mobile Responsive --- */
-        @media (max-width: 600px) { 
-            .dice-area { height: 600px !important; } 
-            .main-results { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 100% !important; height: 240px !important; display: block !important; z-index: 10 !important; opacity: 0; }
-            .dice-wrapper { position: absolute !important; width: 100px !important; display: flex !important; flex-direction: column !important; align-items: center !important; } 
-            .dice-wrapper:nth-child(1) { top: 0px !important; left: 50% !important; transform: translateX(-50%) !important; }
-            .dice-wrapper:nth-child(2) { bottom: 0px !important; left: 10% !important; }
-            .dice-wrapper:nth-child(3) { bottom: 0px !important; right: 10% !important; }
-            .result-box { width: 75px !important; height: 75px !important; border-radius: 12px !important; } 
-            .item-label { font-size: 32px !important; min-height: 40px !important; height: 40px !important; line-height: 40px !important; display: block !important; text-align: center !important; width: 100% !important; } 
-        }
+        
+            @media (max-width: 600px) { 
+    .dice-area { 
+        height: 320px !important; 
+        background-size: 380px !important; 
+        position: relative !important; 
+    } 
+
+    /* --- บังคับล็อคตำแหน่งลูกเต๋า ห้ามไหลมารวมกัน --- */
+    .main-results { 
+        position: absolute !important; 
+        top: 50% !important; 
+        left: 50% !important; 
+        transform: translate(-50%, -50%) !important; 
+        width: 100% !important; 
+        height: 240px !important; /* ล็อคความสูงพื้นที่วางลูกเต๋า */
+        display: block !important; /* เลิกใช้ Flex เพื่อไม่ให้มันดึงกัน */
+        z-index: 10 !important;
+        opacity: 0;
+    }
+
+    .dice-wrapper { 
+        position: absolute !important; /* ปรับเป็น Absolute เพื่อล็อคพิกัดตายตัว */
+        width: 100px !important; 
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    } 
+
+    /* --- [สำคัญ] ล็อคพิกัดลูกที่ 1 ไว้ด้านบนสุดของพื้นที่จาน --- */
+    .dice-wrapper:nth-child(1) { 
+        top: 0px !important; /* ยึดจากขอบบน ห้ามไหลลงมา */
+        left: 50% !important; 
+        transform: translateX(-50%) !important; 
+    }
+
+    /* --- [สำคัญ] ล็อคพิกัดลูกที่ 2 และ 3 ไว้แถวล่าง ห่างจากลูกบนชัดเจน --- */
+    .dice-wrapper:nth-child(2) { 
+        bottom: 0px !important; /* ยึดจากขอบล่าง */
+        left: 10% !important; 
+    }
+
+    .dice-wrapper:nth-child(3) { 
+        bottom: 0px !important; /* ยึดจากขอบล่าง */
+        right: 10% !important; 
+    }
+
+    .result-box { 
+        width: 75px !important; 
+        height: 75px !important; 
+        border-radius: 12px !important; 
+        background: white !important;
+    } 
+
+    .item-label { 
+        font-size: 32px !important; 
+        min-height: 40px !important; /* ล็อคพื้นที่แต้มไว้ให้คงที่ */
+        height: 40px !important;
+        line-height: 40px !important;
+        display: block !important; 
+        color: var(--primary-yellow) !important;
+        text-align: center !important;
+        width: 100% !important;
+    } 
+}
+
+
+
+
     </style>
 </head>
 <body>
@@ -149,11 +221,15 @@
                 <div class="dot" style="background: #333333;" onclick="changeBg('rgba(51,51,51,0.7)')"></div>
             </div>
             <div class="speed-control">
-                <label style="font-size: 12px; color: #aaa;">ความเร็วเสียง:</label>
+                <label>ปรับความเร็วเสียงขาน:</label>
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <button id="toggleLabel" class="speed-btn" onclick="toggleLabels()" style="width: auto; padding: 0 10px; margin-left: 10px;">👁️ ปิดแต้ม</button>
+                <button id="toggleLabel" class="speed-btn" onclick="toggleLabels()" style="width: auto; padding: 0 10px; margin-left: 10px;">
+    👁️ ปิดแต้ม
+</button>
+
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.4.3</span>
             </div>
         </div>
     </div>
@@ -161,14 +237,14 @@
     <div class="game-card">
         <div id="diceArea" class="dice-area">
             <div id="singleCover"></div>
-            <div id="handIcon"></div>
+            <div id="handIcon"></div> <!-- *** ต้องมีบรรทัดนี้ มือถึงจะขึ้นครับ *** -->
             <div id="diceGroup" class="main-results">
                 <div class="dice-wrapper"><div id="d1" class="result-box"></div><div id="label1" class="item-label"></div></div>
                 <div class="dice-wrapper"><div id="d2" class="result-box"></div><div id="label2" class="item-label"></div></div>
                 <div class="dice-wrapper"><div id="d3" class="result-box"></div><div id="label3" class="item-label"></div></div>
             </div>
         </div>
-        <div id="statusLabel" style="font-size:26px; font-weight:bold; margin:10px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">-</div>
+        <div id="statusLabel" style="font-size:26px; font-weight:bold; margin:10px 0;">-</div>
         <div id="rollInitial">
             <button id="btnMainShake" class="btn-gold" onclick="startShake('normal'); requestMotionPermission();">เขย่าลูกเต๋า</button>
         </div>
@@ -194,31 +270,16 @@
 
     <script>
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
-        let currentMode = 'hilo', voiceSpeed = 1.3, labelsVisible = true;
-        let result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
+        let currentMode = 'hilo', voiceSpeed = 1.3, result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
         let isShakingLogic = false, pendingPowder = false;
         const animalMap = ["", "ปลา", "กุ้ง", "น้ำเต้า", "เสือ", "ปู", "ไก่"];
 
-        // Preload Image เพื่อกันกระพริบ
-        function preloadAssets() {
-            ['plate.png', 'cover.png', 'hand.png', 'powder.png', 'h1.jpg', 'h2.jpg', 'h3.jpg', 'h4.jpg', 'h5.jpg', 'h6.jpg'].forEach(src => {
-                const img = new Image(); img.src = src;
-            });
-        }
-
-        window.onload = () => { 
-            preloadAssets();
-            resetUI(); 
-            showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะคะ!", "เริ่มเล่นกันเลย"); 
-        };
+        window.onload = () => { resetUI(); showPopup("🌟", "ยินดีต้อนรับ", "สู่เกมส์ทอยเต๋าพรีเมียม", "ขอให้สนุกกับการเล่นนะคะ!", "เริ่มเล่นกันเลย"); };
         
         function showPopup(icon, title, subtitle, msg, btnText) {
-            document.getElementById('popupIcon').innerText = icon; 
-            document.getElementById('popupTitle').innerText = title;
-            document.getElementById('popupSubtitle').innerText = subtitle; 
-            document.getElementById('popupMsg').innerHTML = msg;
-            document.getElementById('btnPopupAction').innerText = btnText; 
-            document.getElementById('welcomePopup').classList.add('show');
+            document.getElementById('popupIcon').innerText = icon; document.getElementById('popupTitle').innerText = title;
+            document.getElementById('popupSubtitle').innerText = subtitle; document.getElementById('popupMsg').innerHTML = msg;
+            document.getElementById('btnPopupAction').innerText = btnText; document.getElementById('welcomePopup').classList.add('show');
         }
         
         function handlePopupClose() {
@@ -230,26 +291,10 @@
         function triggerPowderPopup() { if (isShakingLogic) return; pendingPowder = true; new Audio('powder_popup.mp3').play().catch(()=>{}); showPopup("✨", "เตรียมขอหวย", "กำลังจะลงแป้งปิ่นทอง...", "ตั้งจิตอธิษฐานขอกับปิ่นทองนะครับ", "เริ่มทาแป้ง"); }
         
         function applyPowderLogic() {
-            isShakingLogic = true; 
-            const diceArea = document.getElementById('diceArea'); 
-            const btnP = document.getElementById('btnTaPang'); 
-            const btnS = document.getElementById('btnMainShake');
-            document.getElementById('diceGroup').style.opacity = "0"; 
-            btnP.style.display = "none"; 
-            btnS.disabled = true; 
-            document.getElementById('statusLabel').innerText = "กำลังทาแป้งขอหวย...";
-            diceArea.style.backgroundImage = "url('powder.png')"; 
-            diceArea.classList.add('shaking-plate'); 
-            new Audio('shake_light.mp3').play().catch(()=>{});
-            
-            setTimeout(() => { 
-                diceArea.classList.remove('shaking-plate'); 
-                diceArea.style.backgroundImage = "url('plate.png')"; 
-                document.getElementById('statusLabel').innerText = "ทาแป้งเรียบร้อย!"; 
-                btnP.style.display = "block"; 
-                btnS.disabled = false; 
-                isShakingLogic = false; 
-            }, 3000);
+            isShakingLogic = true; const diceArea = document.getElementById('diceArea'); const btnP = document.getElementById('btnTaPang'); const btnS = document.getElementById('btnMainShake');
+            document.getElementById('diceGroup').style.opacity = "0"; btnP.style.display = "none"; btnS.disabled = true; document.getElementById('statusLabel').innerText = "กำลังทาแป้งขอหวย...";
+            diceArea.style.backgroundImage = "url('powder.png')"; diceArea.style.backgroundSize = "500px"; diceArea.classList.add('shaking-plate'); new Audio('shake_light.mp3').play().catch(()=>{});
+            setTimeout(() => { diceArea.classList.remove('shaking-plate'); diceArea.style.backgroundImage = "url('plate.png')"; diceArea.style.backgroundSize = window.innerWidth < 600 ? "380px" : "600px"; document.getElementById('statusLabel').innerText = "ทาแป้งเรียบร้อย!"; btnP.style.display = "block"; btnS.disabled = false; isShakingLogic = false; }, 3000);
         }
 
         function adjustSpeed(val) { voiceSpeed = Math.min(Math.max(voiceSpeed + val, 1.0), 2.5); document.getElementById('speedVal').innerText = voiceSpeed.toFixed(1); }
@@ -262,6 +307,7 @@
             document.querySelectorAll('.item-label').forEach(el => el.innerText = ""); 
             document.getElementById('singleCover').classList.remove('open', 'shaking-cover'); 
             document.getElementById('singleCover').style.display = "none"; 
+            document.getElementById('diceArea').style.backgroundImage = "url('plate.png')"; 
             document.getElementById('rollInitial').style.display = "block"; 
             document.getElementById('rollSecondary').style.display = "none"; 
             document.getElementById('btnTaPang').style.display = "block"; 
@@ -279,18 +325,22 @@
         
         function sendToSheet() { const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status }); fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' }); }
 
-        async function startShake(shakeType) {
+        
+                               async function startShake(shakeType) {
             if (isShakingLogic) return; isShakingLogic = true;
             const cover = document.getElementById('singleCover'); 
             const diceGroup = document.getElementById('diceGroup'); 
             const statusLabel = document.getElementById('statusLabel');
 
+            // 1. เตรียมลูก 4-4-4: ทำเฉพาะ 'normal' (เขย่าครั้งแรก) เท่านั้น
             if (currentMode === 'hilo' && shakeType === 'normal') {
                 statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
                 for (let i = 1; i <= 3; i++) { 
                     const box = document.getElementById(`d${i}`); 
                     box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
                     box.style.borderColor = "var(--red-die)"; 
+                    
+                    // ล้างค่าแต้มออก (CSS จะทำหน้าที่รักษาช่องว่างไว้ให้เอง ไม่ซ้อนกันแล้ว)
                     document.getElementById(`label${i}`).innerText = ""; 
                 }
                 diceGroup.style.opacity = "1"; 
@@ -307,6 +357,7 @@
             cover.style.display = "block"; 
             cover.classList.remove('shaking-cover');
 
+            // --- ส่วนการเอียงฝา ---
             if (shakeType === 'rinBao') {
                 let deg = (Math.random() > 0.5 ? 20 : -20);
                 cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
@@ -321,8 +372,11 @@
             document.getElementById('rollInitial').style.display = "none"; 
             document.getElementById('rollSecondary').style.display = "none";
 
+            // --- จบการริน/เขย่า ---
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
+                
+                // คืนค่ากลับมาที่ 0 องศาเพื่อให้เปิดฝาได้ปกติ
                 cover.style.transform = "translate(-50%, -50%) rotate(0deg)"; 
 
                 if (shakeType === 'normal' || shakeType === 'rinNak') { 
@@ -334,53 +388,85 @@
                     result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); 
                     sendToSheet(); 
                 }
-                statusLabel.innerText = "ปิดฝาแล้ว!"; 
+                document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
                 document.getElementById('rollSecondary').style.display = "flex"; 
                 isShakingLogic = false;
             }, 1600);
         }
 
+
+
+
+
+
+
+
+
+        
         async function revealResults() {
+            // 1. บังคับปลดล็อคสถานะทันทีเพื่อให้ฟังก์ชันทำงานได้
             isShakingLogic = false; 
+            
             const cover = document.getElementById('singleCover');
             const hand = document.getElementById('handIcon');
             document.getElementById('rollSecondary').style.display = "none"; 
             
+            // 2. ล้างค่า transform ที่เป็น important ออกให้หมด (ป้องกันฝาล็อค)
             cover.style.removeProperty('transform');
             cover.style.transform = ""; 
-            if (hand) { hand.style.removeProperty('transform'); hand.style.transform = ""; }
+            if (hand) {
+                hand.style.removeProperty('transform');
+                hand.style.transform = "";
+            }
 
-            if (hand) { hand.style.opacity = "1"; hand.classList.remove('move-up'); }
+            // 3. แสดงมือ (โชว์มือมาวางบนจุกฝา)
+            if (hand) {
+                // ตั้งค่าตำแหน่งมือเริ่มต้นให้ทับจุกฝา
+                hand.style.opacity = "1";
+                // ถ้าอยากให้มั่นใจว่ามือเริ่มที่ตำแหน่งปิดฝา ให้ใช้คำสั่งนี้แทน:
+                hand.classList.remove('move-up'); 
+            }
             
+            // 4. เริ่มกระบวนการเปิด (หน่วงเวลาให้มือจับก่อนเล็กน้อย)
             setTimeout(() => {
-                isShakingLogic = true; 
+                isShakingLogic = true; // ล็อคป้องกันการกดซ้ำระหว่างเปิด
+                
                 new Audio('open.mp3').play().catch(()=>{});
+                
+                // สั่งเปิดฝาและขยับมือขึ้นพร้อมกัน
                 cover.classList.add('open');
                 if (hand) hand.classList.add('move-up');
 
                 const dice = [result.d1, result.d2, result.d3]; 
                 const prefix = currentMode === 'hilo' ? 'h' : '';
 
+                // อัปเดตลูกบนจานทันที
                 dice.forEach((val, i) => { 
                     const box = document.getElementById(`d${i+1}`); 
                     box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
                     box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
                     document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
+                    // สั่งปิด label
+                    // document.getElementById(`label${i+1}`).style.display = labelsVisible ? 'block' : 'none';
+                    // แล้วเพิ่มบรรทัดนี้ต่อท้าย:
                     document.getElementById(`label${i+1}`).style.visibility = labelsVisible ? 'visible' : 'hidden';
+
                 });
 
                 setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
+
+                // เมื่อลอยขึ้นไปแล้ว มือจางหายไป
                 setTimeout(() => { if (hand) hand.style.opacity = "0"; }, 1200);
 
+                // 5. รอเปิดฝาสุด (1.6 วิ) แล้วค่อยสรุปผลและขานเสียง
                 setTimeout(async () => {
                     document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
                         const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
                         return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
                     }).join('');
 
-                    const statusEl = document.getElementById('statusLabel');
-                    statusEl.innerText = `${result.status} (${result.total})`;
-                    statusEl.style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+                    document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
+                    document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
                     
                     addToHistory();
 
@@ -400,49 +486,56 @@
                     document.getElementById('rollInitial').style.display = "block"; 
                     document.getElementById('btnTaPang').style.display = "block";
                     
+                    // รีเซ็ตสถานะมือเผื่อรอบหน้า
                     setTimeout(() => { 
-                        if (hand) { hand.classList.remove('move-up'); hand.style.opacity = "0"; }
+                        if (hand) {
+                            hand.classList.remove('move-up');
+                            hand.style.opacity = "0";
+                        }
                     }, 500);
 
                     result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
                     isShakingLogic = false;
+
                 }, 1600); 
+
             }, 300); 
         }
+
+
+
+
 
         function addToHistory() {
             const list = document.getElementById('historyList'); const item = document.createElement('div'); item.className = 'history-item';
             const f = (v) => (v===1||v===4) ? `<span style="color:var(--red-die); font-weight:bold;">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
-            item.innerHTML = `<span style="flex:1;">[${f(result.d1)}, ${f(result.d2)}, ${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right; font-weight:bold;">${result.total}</span>`;
+            item.innerHTML = `<span style="flex:1;">[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right;">${result.total}</span>`;
             list.insertBefore(item, list.firstChild); if (list.children.length > 5) list.removeChild(list.lastChild);
-        }
-
-        function toggleLabels() {
-            labelsVisible = !labelsVisible;
-            const labels = document.querySelectorAll('.item-label');
-            const btn = document.getElementById('toggleLabel');
-            labels.forEach(label => { label.style.visibility = labelsVisible ? 'visible' : 'hidden'; });
-            btn.innerText = labelsVisible ? '👁️ ปิดแต้ม' : '👁️ เปิดแต้ม';
-            btn.style.background = labelsVisible ? '#444' : 'var(--primary-yellow)';
-            btn.style.color = labelsVisible ? 'white' : '#111';
         }
 
         function requestMotionPermission() {
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission().then(r => { 
-                    if(r=='granted') { 
-                        window.addEventListener('devicemotion', (e) => { 
-                            let acc = e.accelerationIncludingGravity; if (!acc) return; 
-                            let totalAcc = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z); 
-                            if (totalAcc > 25 && !isShakingLogic) { 
-                                if (document.getElementById('rollInitial').style.display !== 'none') startShake('normal'); 
-                                else if (document.getElementById('rollSecondary').style.display !== 'none') startShake('rinNak'); 
-                            } 
-                        }); 
-                    } 
-                });
+                DeviceMotionEvent.requestPermission().then(r => { if(r=='granted') { window.addEventListener('devicemotion', (e) => { let acc = e.accelerationIncludingGravity; if (!acc) return; let totalAcc = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z); if (totalAcc > 25 && !isShakingLogic) { if (document.getElementById('rollInitial').style.display !== 'none') startShake('normal'); else if (document.getElementById('rollSecondary').style.display !== 'none') startShake('rinNak'); } }); } });
             }
         }
+        let labelsVisible = true; // สถานะเริ่มต้นคือแสดงผล
+
+function toggleLabels() {
+    labelsVisible = !labelsVisible;
+    const labels = document.querySelectorAll('.item-label');
+    const btn = document.getElementById('toggleLabel');
+
+    labels.forEach(label => {
+        // ใช้ visibility แทน display เพื่อรักษาช่องว่างไว้
+        label.style.visibility = labelsVisible ? 'visible' : 'hidden';
+    });
+
+    btn.innerText = labelsVisible ? '👁️ ปิดแต้ม' : '👁️ เปิดแต้ม';
+    btn.style.background = labelsVisible ? '#444' : 'var(--primary-yellow)';
+    btn.style.color = labelsVisible ? 'white' : '#111';
+}
+
+
     </script>
 </body>
 </html>
