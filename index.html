@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.1</title>
+    <title>HILO Master Pro - v2.4.2</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -132,7 +132,6 @@
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
-        
                 @media (max-width: 600px) { 
             .dice-area { 
                 height: 320px !important; 
@@ -140,7 +139,7 @@
                 display: flex !important; 
                 justify-content: center !important; 
                 align-items: center !important; 
-                position: relative !important; /* เพิ่มเพื่อให้ลูกเต๋าอ้างอิงตำแหน่งจาน */
+                position: relative !important; 
             } 
             #singleCover { 
                 width: 280px !important; 
@@ -149,7 +148,7 @@
                 left: 50% !important; 
                 transform: translate(-50%, -50%) !important; 
                 opacity: 0; 
-                z-index: 50 !important; /* ให้ฝาอยู่บนสุด */
+                z-index: 50 !important; 
             } 
             #singleCover[style*="display: block"] { opacity: 1 !important; }
             #singleCover.open { 
@@ -158,37 +157,56 @@
                 transition: transform 3s, opacity 0.5s !important; 
             }
 
-            /* --- ส่วนที่แก้ไขให้ลูกเต๋าลงมาอยู่ในจาน --- */
+            /* --- ส่วนที่แก้ไขให้ลูกเต๋าคงที่ ไม่ซ้อนกัน --- */
             .main-results { 
-                position: absolute !important; /* สั่งให้ลอยทับจาน */
+                position: absolute !important; 
                 top: 50% !important; 
                 left: 50% !important; 
-                transform: translate(-50%, -50%) !important; /* จัดให้อยู่กลางจานเป๊ะ */
+                transform: translate(-50%, -50%) !important; 
                 display: flex !important; 
                 flex-wrap: wrap !important; 
                 justify-content: center !important; 
-                gap: 30px !important; 
+                align-items: flex-start !important; /* ให้ลูกเต๋าทั้งหมดเริ่มวางจากด้านบน */
+                gap: 20px !important; /* ปรับ gap ให้พอดีกับจอ */
                 width: 100% !important; 
-                max-width: 250px !important; 
+                max-width: 260px !important; 
                 padding: 0 !important;
                 z-index: 10 !important;
             }
-            .dice-wrapper { width: 80px !important; margin: 0 !important; } 
+
+            .dice-wrapper { 
+                width: 85px !important; 
+                margin: 0 !important; 
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                /* ล็อคความสูงรวม (เต๋า 75px + แต้ม 35px + เผื่อระยะห่าง) */
+                height: 125px !important; 
+            } 
+
             .dice-wrapper:nth-child(1) { 
                 width: 100% !important; 
-                margin-bottom: -15px !important; /* ดันลูกแรกเข้าหากลุ่ม */
+                height: 110px !important; /* เฉพาะลูกบนให้เตี้ยลงนิดนึงเพื่อความสวยงาม */
+                margin-bottom: 0 !important; 
             }
+
             .result-box { 
                 width: 75px !important; 
                 height: 75px !important; 
                 border-radius: 12px !important; 
+                flex-shrink: 0 !important; /* บังคับไม่ให้รูปหดตัว */
             } 
+
             .item-label { 
                 font-size: 32px !important; 
                 min-height: 35px !important; 
+                line-height: 35px !important;
                 display: block !important; 
+                width: 100% !important;
+                text-align: center !important;
             } 
         }
+
 
     </style>
 </head>
@@ -217,7 +235,7 @@
     👁️ ปิดแต้ม
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.4.1</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.4.2</span>
             </div>
         </div>
     </div>
