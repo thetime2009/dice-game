@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.3.2</title>
+    <title>HILO Master Pro - v2.3.3</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -46,38 +46,41 @@
         /* --- Game Area --- */
         .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
                 /* --- ส่วนของจานและพื้นที่เล่น --- */
+                /* --- ส่วนของจานและพื้นที่เล่น --- */
         .dice-area { 
             position: relative; width: 100%; height: 480px; 
             margin-bottom: 10px; display: flex; justify-content: center; 
             align-items: center; background-image: url('plate.png'); 
             background-size: 600px; background-repeat: no-repeat; 
             background-position: center; transition: 0.3s; 
-            overflow: visible; /* ยอมให้มือและฝาลอยออกนอกกรอบจานได้ */
+            overflow: visible; 
         }
 
-        /* --- เพิ่มส่วนของมือจับ (hand.png) --- */
+        /* --- ส่วนของมือจับ (hand.png) --- */
         #handIcon {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 320px; /* ขนาดมือให้ใหญ่สมจริง */
+            width: 320px; 
             height: 320px;
-            background-image: url('hand.png'); /* ชื่อไฟล์รูปมือของคุณ */
+            background-image: url('hand.png'); 
             background-size: contain;
             background-repeat: no-repeat;
-            z-index: 100; /* ให้อยู่สูงกว่าฝาครอบ */
+            z-index: 100; 
             opacity: 0; /* เริ่มต้นซ่อนไว้ */
             pointer-events: none;
-            /* ปรับตำแหน่งให้นิ้วจับตรงจุกฝา (ปรับ % แรกเพื่อขยับ ซ้าย-ขวา) */
+            /* ปรับตำแหน่งเริ่มต้นของมือ */
             transform: translate(-30%, -20%) scale(0.8);
             transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 0.5s;
+            display: block !important; /* บังคับให้ Tag แสดงผล */
         }
 
-        /* จังหวะเมื่อมือยกฝาขึ้นไปด้านบน */
+        /* จังหวะเมื่อมือเริ่มปรากฏตัว (ตอนเริ่มยก) */
         #handIcon.move-up {
-            opacity: 1;
-            transform: translate(-30%, -180%) scale(0.8);
+            opacity: 1 !important; /* บังคับให้โชว์มือ */
+            transform: translate(-30%, -180%) scale(0.8) !important;
         }
+
 
         #singleCover { 
             position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); 
