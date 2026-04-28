@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.7</title>
+    <title>HILO Master Pro - v2.4.8</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -132,61 +132,80 @@
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
-                              @media (max-width: 600px) { 
-            /* 1. จัดตำแหน่งกลุ่มลูกเต๋าให้อยู่กลางจาน */
+
+        
+                  @media (max-width: 600px) { 
+            .dice-area { 
+                height: 320px !important; 
+                background-size: 380px !important; 
+                display: flex !important; 
+                justify-content: center !important; 
+                align-items: center !important; 
+                position: relative !important; 
+            } 
+            
+            #singleCover { 
+                width: 280px !important; height: 280px !important; 
+                top: 50% !important; left: 50% !important; 
+                transform: translate(-50%, -50%) !important; 
+                z-index: 50 !important; 
+            } 
+
+            /* --- บังคับล็อคตำแหน่งลูกเต๋าแบบถาวร --- */
             .main-results { 
-                position: absolute !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                display: flex !important;
-                flex-wrap: wrap !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                max-width: 280px !important; /* คุมความกว้างเพื่อบังคับลูกเต๋าตกแถว */
-                gap: 15px !important; /* ระยะห่างระหว่างลูกเต๋า */
-                padding: 0 !important;
+                position: absolute !important; 
+                top: 50% !important; 
+                left: 50% !important; 
+                transform: translate(-50%, -50%) !important; 
+                width: 100% !important; 
+                height: 100% !important; 
+                display: block !important; /* เลิกใช้ Flex เพื่อไม่ให้มันดึงกัน */
                 z-index: 10 !important;
                 opacity: 0;
             }
 
-            /* 2. ล็อคขนาดกล่องที่หุ้มลูกเต๋าแต่ละลูก (สำคัญมาก) */
             .dice-wrapper { 
+                position: absolute !important; /* ปักหมุดลูกเต๋า */
+                width: 80px !important; 
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                justify-content: center !important;
-                width: 100px !important; /* ล็อคความกว้าง */
-                height: 130px !important; /* ล็อคความสูงรวม ห้ามยุบตัว! */
-                margin: 0 !important;
             } 
 
-            /* 3. บังคับให้ลูกแรกอยู่แถวบนลูกเดียว (ไม่ให้มาเบียดข้างล่าง) */
+            /* ปักหมุดลูกที่ 1 (บนกลาง) */
             .dice-wrapper:nth-child(1) { 
-                width: 100% !important; 
-                margin-bottom: -20px !important; 
+                top: 15% !important; 
+                left: 50% !important; 
+                transform: translateX(-50%) !important; 
             }
 
-            /* 4. ล็อคขนาดลูกเต๋า */
+            /* ปักหมุดลูกที่ 2 (ซ้ายล่าง) */
+            .dice-wrapper:nth-child(2) { 
+                top: 45% !important; 
+                left: 15% !important; 
+            }
+
+            /* ปักหมุดลูกที่ 3 (ขวาล่าง) */
+            .dice-wrapper:nth-child(3) { 
+                top: 45% !important; 
+                right: 15% !important; 
+            }
+
             .result-box { 
-                width: 80px !important; 
-                height: 80px !important; 
+                width: 75px !important; 
+                height: 75px !important; 
                 border-radius: 12px !important; 
-                flex-shrink: 0 !important;
+                background: white !important;
             } 
 
-            /* 5. ล็อคพื้นที่แต้ม (Item Label) */
             .item-label { 
                 font-size: 32px !important; 
-                min-height: 40px !important; /* ล็อคความสูงขั้นต่ำไว้เสมอ */
-                line-height: 40px !important;
+                min-height: 35px !important; 
                 display: block !important; 
-                width: 100% !important;
-                text-align: center !important;
-                margin-top: 5px !important;
                 color: var(--primary-yellow) !important;
-            }
+                text-align: center !important;
+                width: 100% !important;
+            } 
         }
 
 
