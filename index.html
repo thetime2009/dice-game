@@ -217,28 +217,25 @@
 }
 
 
-        /* สไตล์ของปุ่มกด ^ */
+       /* ทำให้กลุ่มปุ่ม Toggle และ Control Panel ดูเป็นชุดเดียวกัน */
+.toggle-container {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
 #toggleBtn {
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    border-radius: 5px 5px 0 0;
-    padding: 5px 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 8px 8px 0 0;
+    padding: 2px 15px;
     cursor: pointer;
-    font-size: 18px;
-    display: block;
-    margin: 0 auto; /* จัดกลาง */
-    transition: transform 0.3s;
+    font-size: 16px;
 }
 
-/* คลาสที่จะใช้ซ่อนแถบ */
-.hide-bar {
-    display: none !important;
-}
-
-/* เมื่อซ่อนแล้ว ให้ปุ่ม ^ หมุนหัวลง */
-.rotate-icon {
-    transform: rotate(180deg);
+.control-panel {
+    /* เพิ่ม transition ถ้าอยากให้มันค่อยๆ หายไป (ต้องใช้คู่กับ opacity/height) */
+    transition: all 0.3s ease;
 }
 
 
@@ -252,12 +249,12 @@
             <button id="modeHilo" class="mode-btn active" onclick="switchMode('hilo')">ไฮ-โล</button>
             <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
         </div>
-        <div class="control-panel">
-            <div class="toggle-container">
+        <div class="toggle-container">
                 <button id="toggleBtn" onclick="toggleSettings()">^</button>
                 <div id="settingsBar" class="settings-bar">
                 </div>
             </div>
+        <div class="control-panel">
             <div class="theme-switcher">
                 <div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div>
                 <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
@@ -581,14 +578,18 @@ function toggleLabels() {
 }
 
         function toggleSettings() {
-    const bar = document.getElementById('settingsBar');
+    // เลือกตัว control-panel (แถบเครื่องมือทั้งหมด)
+    const panel = document.querySelector('.control-panel');
     const btn = document.getElementById('toggleBtn');
     
-    // สลับคลาสเพื่อซ่อน/แสดง
-    bar.classList.toggle('hide-bar');
-    
-    // สลับคลาสเพื่อหมุนปุ่ม ^ เป็น v
-    btn.classList.toggle('rotate-icon');
+    // ตรวจสอบสถานะการซ่อน
+    if (panel.style.display === "none") {
+        panel.style.display = "block"; // หรือ "flex" ตามที่คุณตั้งค่าไว้
+        btn.innerText = "^";
+    } else {
+        panel.style.display = "none";
+        btn.innerText = "v";
+    }
 }
 
 
