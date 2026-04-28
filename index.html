@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.96</title>
+    <title>HILO Master Pro - v2.4.97</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -217,6 +217,30 @@
 }
 
 
+        /* สไตล์ของปุ่มกด ^ */
+#toggleBtn {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 5px 5px 0 0;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 18px;
+    display: block;
+    margin: 0 auto; /* จัดกลาง */
+    transition: transform 0.3s;
+}
+
+/* คลาสที่จะใช้ซ่อนแถบ */
+.hide-bar {
+    display: none !important;
+}
+
+/* เมื่อซ่อนแล้ว ให้ปุ่ม ^ หมุนหัวลง */
+.rotate-icon {
+    transform: rotate(180deg);
+}
+
 
     </style>
 </head>
@@ -229,6 +253,11 @@
             <button id="modeFish" class="mode-btn" onclick="switchMode('fish')">น้ำเต้า-ปู-ปลา</button>
         </div>
         <div class="control-panel">
+            <div class="toggle-container">
+                <button id="toggleBtn" onclick="toggleSettings()">^</button>
+                <div id="settingsBar" class="settings-bar">
+                </div>
+            </div>
             <div class="theme-switcher">
                 <div class="dot" style="background: #1e3d2b;" onclick="changeBg('rgba(30,61,43,0.7)')"></div>
                 <div class="dot" style="background: #121212;" onclick="changeBg('rgba(0,0,0,0.7)')"></div>
@@ -549,6 +578,17 @@ function toggleLabels() {
     btn.innerText = labelsVisible ? '👁️ ปิดแต้ม' : '👁️ เปิดแต้ม';
     btn.style.background = labelsVisible ? '#444' : 'var(--primary-yellow)';
     btn.style.color = labelsVisible ? 'white' : '#111';
+}
+
+        function toggleSettings() {
+    const bar = document.getElementById('settingsBar');
+    const btn = document.getElementById('toggleBtn');
+    
+    // สลับคลาสเพื่อซ่อน/แสดง
+    bar.classList.toggle('hide-bar');
+    
+    // สลับคลาสเพื่อหมุนปุ่ม ^ เป็น v
+    btn.classList.toggle('rotate-icon');
 }
 
 
