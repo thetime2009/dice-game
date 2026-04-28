@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.95</title>
+    <title>HILO Master Pro - v2.4.96</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -195,6 +195,25 @@
         text-align: center !important;
         width: 100% !important;
     } 
+            /* --- เพิ่มส่วนนี้เข้าไปด้านล่างสุดของ @media --- */
+    #handIcon {
+        width: 350px !important;  /* 1. ปรับขนาดมือ (กว้าง-สูง) */
+        height: 350px !important;
+        
+        /* 2. ปรับตำแหน่งมือ: translate(แกนX, แกนY) */
+        /* - แกน X: ยิ่งเลขติดลบน้อย (เช่น -60%) มือจะขยับไปทางขวา */
+        /* - แกน Y: ยิ่งเลขติดลบน้อย (เช่น -40%) มือจะขยับลงข้างล่าง */
+        transform: translate(-78%, -48%) scale(0.85) !important; 
+        
+        opacity: 0;
+        display: block !important;
+    }
+
+    /* 3. ปรับระยะที่มือจะยกขึ้น (ตอนเปิดฝา) ให้สัมพันธ์กับขนาดใหม่ */
+    #handIcon.move-up {
+        opacity: 1 !important;
+        transform: translate(-78%, -160%) scale(0.85) !important;
+    }
 }
 
 
