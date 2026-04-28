@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.92</title>
+    <title>HILO Master Pro - v2.4.93</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -447,7 +447,7 @@
                     box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
                     document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
                     // สั่งปิด label
-                    document.getElementById(`label${i+1}`).style.display = labelsVisible ? 'block' : 'none';
+                    // document.getElementById(`label${i+1}`).style.display = labelsVisible ? 'block' : 'none';
                     // แล้วเพิ่มบรรทัดนี้ต่อท้าย:
                     document.getElementById(`label${i+1}`).style.visibility = labelsVisible ? 'visible' : 'hidden';
 
