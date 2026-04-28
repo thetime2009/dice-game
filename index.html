@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.6</title>
+    <title>HILO Master Pro - v2.4.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -132,88 +132,63 @@
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
-                       @media (max-width: 600px) { 
-            .dice-area { 
-                height: 320px !important; 
-                background-size: 380px !important; 
-                display: flex !important; 
-                justify-content: center !important; 
-                align-items: center !important; 
-                position: relative !important; 
-            } 
-            
-            #singleCover { 
-                width: 280px !important; 
-                height: 280px !important; 
-                top: 50% !important; 
-                left: 50% !important; 
-                transform: translate(-50%, -50%) !important; 
-                opacity: 0; 
-                z-index: 50 !important; 
-            } 
-            #singleCover[style*="display: block"] { opacity: 1 !important; }
-            #singleCover.open { 
-                transform: translate(-50%, -180%) !important; 
-                opacity: 1 !important; 
-                transition: transform 3s, opacity 0.5s !important; 
-            }
-
-            /* --- แก้ไขจุดนี้: ล็อคตำแหน่งกลุ่มลูกเต๋าไม่ให้ขยับ --- */
+                              @media (max-width: 600px) { 
+            /* 1. จัดตำแหน่งกลุ่มลูกเต๋าให้อยู่กลางจาน */
             .main-results { 
-                position: absolute !important; 
-                top: 50% !important; 
-                left: 50% !important; 
-                transform: translate(-50%, -45%) !important; /* ปรับระดับให้ตรงกลางจานมากขึ้น */
-                display: flex !important; 
-                flex-wrap: wrap !important; 
-                justify-content: center !important; 
-                align-items: flex-start !important; 
-                gap: 15px !important; /* ระยะห่างระหว่างลูกเต๋าคู่ล่าง */
-                width: 100% !important; 
-                max-width: 260px !important; 
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                max-width: 280px !important; /* คุมความกว้างเพื่อบังคับลูกเต๋าตกแถว */
+                gap: 15px !important; /* ระยะห่างระหว่างลูกเต๋า */
                 padding: 0 !important;
                 z-index: 10 !important;
                 opacity: 0;
             }
 
-            /* ล็อคขนาดกล่องเต๋าแต่ละใบ ห้ามขยับเด็ดขาด */
+            /* 2. ล็อคขนาดกล่องที่หุ้มลูกเต๋าแต่ละลูก (สำคัญมาก) */
             .dice-wrapper { 
-                width: 90px !important; 
-                height: 120px !important; /* ล็อคความสูงรวม (เต๋า + แต้ม) ไว้เลย */
-                margin: 0 !important; 
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                justify-content: flex-start !important;
+                justify-content: center !important;
+                width: 100px !important; /* ล็อคความกว้าง */
+                height: 130px !important; /* ล็อคความสูงรวม ห้ามยุบตัว! */
+                margin: 0 !important;
             } 
 
-            /* ลูกบนสุด */
+            /* 3. บังคับให้ลูกแรกอยู่แถวบนลูกเดียว (ไม่ให้มาเบียดข้างล่าง) */
             .dice-wrapper:nth-child(1) { 
                 width: 100% !important; 
-                height: 100px !important; /* ลูกแรกเตี้ยลงนิดนึงเพราะอยู่แถวบน */
-                margin-bottom: 5px !important;
+                margin-bottom: -20px !important; 
             }
 
+            /* 4. ล็อคขนาดลูกเต๋า */
             .result-box { 
-                width: 75px !important; 
-                height: 75px !important; 
+                width: 80px !important; 
+                height: 80px !important; 
                 border-radius: 12px !important; 
                 flex-shrink: 0 !important;
-                display: flex !important;
             } 
 
-            /* ล็อคพื้นที่แต้มให้คงที่ ต่อให้ไม่มีตัวเลข พื้นที่ 35px ก็จะยังอยู่ */
+            /* 5. ล็อคพื้นที่แต้ม (Item Label) */
             .item-label { 
                 font-size: 32px !important; 
-                min-height: 35px !important; 
-                height: 35px !important; /* บังคับความสูงคงที่ */
-                line-height: 35px !important;
+                min-height: 40px !important; /* ล็อคความสูงขั้นต่ำไว้เสมอ */
+                line-height: 40px !important;
                 display: block !important; 
                 width: 100% !important;
                 text-align: center !important;
                 margin-top: 5px !important;
-            } 
+                color: var(--primary-yellow) !important;
+            }
         }
+
 
 
 
