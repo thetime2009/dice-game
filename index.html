@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.91</title>
+    <title>HILO Master Pro - v2.4.92</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -134,84 +134,70 @@
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
 
         
-                     @media (max-width: 600px) { 
-            /* 1. จัดพื้นที่จานให้คงที่ */
-            .dice-area { 
-                height: 320px !important; 
-                background-size: 380px !important; 
-                position: relative !important; 
-            } 
+            @media (max-width: 600px) { 
+    .dice-area { 
+        height: 320px !important; 
+        background-size: 380px !important; 
+        position: relative !important; 
+    } 
 
-            /* 2. บังคับล็อคพิกัดลูกเต๋าทั้ง 3 กล่อง ห้ามไหลมารวมกันเด็ดขาด */
-            .main-results { 
-                position: absolute !important; 
-                top: 50% !important; 
-                left: 50% !important; 
-                transform: translate(-50%, -50%) !important; 
-                width: 100% !important; 
-                height: 250px !important; 
-                display: block !important; /* เลิกใช้ Flex เพื่อหยุดการดึงกัน */
-                z-index: 10 !important;
-                opacity: 0;
-            }
+    /* --- บังคับล็อคตำแหน่งลูกเต๋า ห้ามไหลมารวมกัน --- */
+    .main-results { 
+        position: absolute !important; 
+        top: 50% !important; 
+        left: 50% !important; 
+        transform: translate(-50%, -50%) !important; 
+        width: 100% !important; 
+        height: 240px !important; /* ล็อคความสูงพื้นที่วางลูกเต๋า */
+        display: block !important; /* เลิกใช้ Flex เพื่อไม่ให้มันดึงกัน */
+        z-index: 10 !important;
+        opacity: 0;
+    }
 
-            /* 3. ล็อคขนาดกล่องเต๋าและตำแหน่งแต่ละลูก (Absolute) */
-            .dice-wrapper { 
-                position: absolute !important; 
-                width: 80px !important; 
-                height: 120px !important; /* ล็อคความสูงรวมไว้ ห้ามยุบตัว */
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-            } 
+    .dice-wrapper { 
+        position: absolute !important; /* ปรับเป็น Absolute เพื่อล็อคพิกัดตายตัว */
+        width: 100px !important; 
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    } 
 
-            /* --- ลูกที่ 1: ปักหมุดไว้ด้านบนสุดของจาน (ห้ามไหลลงมา) --- */
-            .dice-wrapper:nth-child(1) { 
-                top: 0% !important; 
-                left: 50% !important; 
-                transform: translateX(-50%) !important; 
-            }
+    /* --- [สำคัญ] ล็อคพิกัดลูกที่ 1 ไว้ด้านบนสุดของพื้นที่จาน --- */
+    .dice-wrapper:nth-child(1) { 
+        top: 0px !important; /* ยึดจากขอบบน ห้ามไหลลงมา */
+        left: 50% !important; 
+        transform: translateX(-50%) !important; 
+    }
 
-            /* --- ลูกที่ 2: ปักหมุดไว้ด้านซ้ายล่าง --- */
-            .dice-wrapper:nth-child(2) { 
-                bottom: 0% !important; 
-                left: 15% !important; 
-            }
+    /* --- [สำคัญ] ล็อคพิกัดลูกที่ 2 และ 3 ไว้แถวล่าง ห่างจากลูกบนชัดเจน --- */
+    .dice-wrapper:nth-child(2) { 
+        bottom: 0px !important; /* ยึดจากขอบล่าง */
+        left: 10% !important; 
+    }
 
-            /* --- ลูกที่ 3: ปักหมุดไว้ด้านขวาล่าง --- */
-            .dice-wrapper:nth-child(3) { 
-                bottom: 0% !important; 
-                right: 15% !important; 
-            }
+    .dice-wrapper:nth-child(3) { 
+        bottom: 0px !important; /* ยึดจากขอบล่าง */
+        right: 10% !important; 
+    }
 
-            /* 4. ขนาดลูกเต๋า */
-            .result-box { 
-                width: 75px !important; 
-                height: 75px !important; 
-                border-radius: 12px !important; 
-                background: white !important;
-                flex-shrink: 0 !important;
-            } 
+    .result-box { 
+        width: 75px !important; 
+        height: 75px !important; 
+        border-radius: 12px !important; 
+        background: white !important;
+    } 
 
-            /* 5. พื้นที่แต้ม (ล็อคความสูงไว้ให้คงที่) */
-            .item-label { 
-                font-size: 32px !important; 
-                min-height: 40px !important; 
-                line-height: 40px !important;
-                display: block !important; 
-                width: 100% !important;
-                text-align: center !important;
-                margin-top: 5px !important;
-            } 
-            
-            /* ฝาครอบบนมือถือ */
-            #singleCover { 
-                width: 280px !important; height: 280px !important; 
-                top: 50% !important; left: 50% !important; 
-                transform: translate(-50%, -50%) !important; 
-                z-index: 50 !important; 
-            }
-        }
+    .item-label { 
+        font-size: 32px !important; 
+        min-height: 40px !important; /* ล็อคพื้นที่แต้มไว้ให้คงที่ */
+        height: 40px !important;
+        line-height: 40px !important;
+        display: block !important; 
+        color: var(--primary-yellow) !important;
+        text-align: center !important;
+        width: 100% !important;
+    } 
+}
 
 
 
