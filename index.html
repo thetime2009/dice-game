@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.3.8</title>
+    <title>HILO Master Pro - v2.3.9</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -93,8 +93,21 @@
         .main-results { display: flex; flex-wrap: wrap; justify-content: center; gap: 100px; width: 100%; max-width: 450px; position: relative; z-index: 10; padding-top: 15px; opacity: 0; transition: opacity 0.3s; }
         .dice-wrapper { display: flex; flex-direction: column; align-items: center; width: 140px; }
         .dice-wrapper:nth-child(1) { width: 100%; margin-bottom: -175px; }
-        .result-box { width: 150px; height: 150px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid transparent; }
-        .result-box img { width: 100%; height: 100%; object-fit: cover; }
+        .result-box { 
+    width: 150px; 
+    height: 150px; 
+    background: white; 
+    border-radius: 22px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    border: 4px solid transparent;
+    
+    /* --- เพิ่มเงาให้ลูกเต๋าดูสมจริง --- */
+    filter: drop-shadow(8px 12px 10px rgba(0,0,0,0.5)); 
+}
+
         .item-label { font-size: 80px; font-weight: bold; min-height: 90px; color: var(--primary-yellow) !important; text-shadow: 2px 4px 8px rgba(0,0,0,0.8); line-height: 1.1; }
 
         .btn-gold { width: 100%; padding: 18px 5px; background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: #111; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 6px 0 #967a06; }
@@ -190,7 +203,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.3.0</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.9</span>
             </div>
         </div>
     </div>
