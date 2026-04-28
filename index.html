@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.93</title>
+    <title>HILO Master Pro - v2.4.94</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -133,51 +133,49 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
 
-        
-            @media (max-width: 600px) { 
+        @media (max-width: 600px) { 
     .dice-area { 
         height: 320px !important; 
         background-size: 380px !important; 
         position: relative !important; 
     } 
 
-    /* --- บังคับล็อคตำแหน่งลูกเต๋า ห้ามไหลมารวมกัน --- */
     .main-results { 
         position: absolute !important; 
         top: 50% !important; 
         left: 50% !important; 
         transform: translate(-50%, -50%) !important; 
         width: 100% !important; 
-        height: 240px !important; /* ล็อคความสูงพื้นที่วางลูกเต๋า */
-        display: block !important; /* เลิกใช้ Flex เพื่อไม่ให้มันดึงกัน */
+        /* --- แก้จุดที่ 1: ลดความสูงพื้นที่วางลูกเต๋าลงเพื่อให้ลูกแถวบนและล่างมาชิดกัน --- */
+        height: 160px !important; /* ลดจาก 240px เหลือ 160px */
+        display: block !important; 
         z-index: 10 !important;
         opacity: 0;
     }
 
     .dice-wrapper { 
-        position: absolute !important; /* ปรับเป็น Absolute เพื่อล็อคพิกัดตายตัว */
+        position: absolute !important; 
         width: 100px !important; 
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
     } 
 
-    /* --- [สำคัญ] ล็อคพิกัดลูกที่ 1 ไว้ด้านบนสุดของพื้นที่จาน --- */
     .dice-wrapper:nth-child(1) { 
-        top: 0px !important; /* ยึดจากขอบบน ห้ามไหลลงมา */
+        top: 0px !important; 
         left: 50% !important; 
         transform: translateX(-50%) !important; 
     }
 
-    /* --- [สำคัญ] ล็อคพิกัดลูกที่ 2 และ 3 ไว้แถวล่าง ห่างจากลูกบนชัดเจน --- */
+    /* --- แก้จุดที่ 2: บีบลูกที่ 2 และ 3 ให้มาชิดตรงกลางมากขึ้น --- */
     .dice-wrapper:nth-child(2) { 
-        bottom: 0px !important; /* ยึดจากขอบล่าง */
-        left: 10% !important; 
+        bottom: 0px !important; 
+        left: 22% !important; /* เพิ่มจาก 10% เป็น 22% เพื่อดันลูกซ้ายเข้าหาจุดศูนย์กลาง */
     }
 
     .dice-wrapper:nth-child(3) { 
-        bottom: 0px !important; /* ยึดจากขอบล่าง */
-        right: 10% !important; 
+        bottom: 0px !important; 
+        right: 22% !important; /* เพิ่มจาก 10% เป็น 22% เพื่อดันลูกขวาเข้าหาจุดศูนย์กลาง */
     }
 
     .result-box { 
@@ -189,7 +187,7 @@
 
     .item-label { 
         font-size: 32px !important; 
-        min-height: 40px !important; /* ล็อคพื้นที่แต้มไว้ให้คงที่ */
+        min-height: 40px !important; 
         height: 40px !important;
         line-height: 40px !important;
         display: block !important; 
@@ -198,7 +196,6 @@
         width: 100% !important;
     } 
 }
-
 
 
 
