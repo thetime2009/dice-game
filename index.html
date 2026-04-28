@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.2.9</title>
+    <title>HILO Master Pro - v2.3.0</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -45,8 +45,40 @@
 
         /* --- Game Area --- */
         .game-card { width: 100%; max-width: 650px; background: var(--card-bg); backdrop-filter: blur(10px); border: 2px solid var(--primary-yellow); border-radius: 40px; padding: 25px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.9); position: relative; margin-bottom: 20px; overflow: hidden; }
-        .dice-area { position: relative; width: 100%; height: 480px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; background-image: url('plate.png'); background-size: 600px; background-repeat: no-repeat; background-position: center; transition: 0.3s; }
-        
+                /* --- ส่วนของจานและพื้นที่เล่น --- */
+        .dice-area { 
+            position: relative; width: 100%; height: 480px; 
+            margin-bottom: 10px; display: flex; justify-content: center; 
+            align-items: center; background-image: url('plate.png'); 
+            background-size: 600px; background-repeat: no-repeat; 
+            background-position: center; transition: 0.3s; 
+            overflow: visible; /* ยอมให้มือและฝาลอยออกนอกกรอบจานได้ */
+        }
+
+        /* --- เพิ่มส่วนของมือจับ (hand.png) --- */
+        #handIcon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 320px; /* ขนาดมือให้ใหญ่สมจริง */
+            height: 320px;
+            background-image: url('hand.png'); /* ชื่อไฟล์รูปมือของคุณ */
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 100; /* ให้อยู่สูงกว่าฝาครอบ */
+            opacity: 0; /* เริ่มต้นซ่อนไว้ */
+            pointer-events: none;
+            /* ปรับตำแหน่งให้นิ้วจับตรงจุกฝา (ปรับ % แรกเพื่อขยับ ซ้าย-ขวา) */
+            transform: translate(-30%, -20%) scale(0.8);
+            transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95), opacity 0.5s;
+        }
+
+        /* จังหวะเมื่อมือยกฝาขึ้นไปด้านบน */
+        #handIcon.move-up {
+            opacity: 1;
+            transform: translate(-30%, -180%) scale(0.8);
+        }
+
         #singleCover { 
             position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); 
             width: 90%; height: 90%; max-width: 520px; max-height: 520px;
@@ -155,7 +187,7 @@
                 <button class="speed-btn" onclick="adjustSpeed(-0.1)">-</button>
                 <span id="speedVal">1.3</span>
                 <button class="speed-btn" onclick="adjustSpeed(0.1)">+</button>
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.2.9</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.3.0</span>
             </div>
         </div>
     </div>
@@ -348,63 +380,45 @@
         
 
         async function revealResults() {
-            if (isShakingLogic) return; isShakingLogic = true;
+    if (isShakingLogic) return; isShakingLogic = true;
+    const cover = document.getElementById('singleCover');
+    const hand = document.getElementById('handIcon');
+    document.getElementById('rollSecondary').style.display = "none"; 
+
+    // 1. มือกดลงบนฝา (โชว์มือ)
+    hand.style.opacity = "1";
+    
+    setTimeout(() => {
+        // 2. เริ่มยกฝาและมือขึ้นพร้อมกัน
+        cover.style.transform = ""; 
+        new Audio('open.mp3').play().catch(()=>{});
+        cover.classList.add('open');
+        hand.classList.add('move-up');
+
+        // อัปเดตลูกบนจานทันที
+        const dice = [result.d1, result.d2, result.d3];
+        const prefix = currentMode === 'hilo' ? 'h' : '';
+        dice.forEach((val, i) => {
+            const box = document.getElementById(`d${i+1}`);
+            box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`;
+        });
+        setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
+
+        // 3. เมื่อลอยขึ้นไปแล้ว มือจางหายไป
+        setTimeout(() => { hand.style.opacity = "0"; }, 1200);
+
+        // 4. รอเปิดฝาสุด (1.6 วิ) แล้วค่อยสรุปผล/ขานเสียง
+        setTimeout(async () => {
+            document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
+            // ... (โค้ดแสดงประวัติและเสียงขานเดิมของคุณ) ...
             
-            const cover = document.getElementById('singleCover');
-            document.getElementById('rollSecondary').style.display = "none"; 
-            
-            // --- จุดสำคัญ: ล้างค่า transform (องศาที่เอียง) ออก เพื่อให้แอนิเมชัน open ทำงานได้ ---
-            cover.style.transform = ""; 
-            
-            new Audio('open.mp3').play().catch(()=>{});
-            cover.classList.add('open');
+            // รีเซ็ตสถานะมือเผื่อรอบหน้า
+            setTimeout(() => { hand.classList.remove('move-up'); }, 500);
+            isShakingLogic = false;
+        }, 1600);
+    }, 300); // หน่วง 0.3 วิให้เห็นมือจับฝาก่อนยก
+}
 
-            const dice = [result.d1, result.d2, result.d3]; 
-            const prefix = currentMode === 'hilo' ? 'h' : '';
-
-            // 1. อัปเดตลูกเต๋าบนจานทันที
-            dice.forEach((val, i) => { 
-                const box = document.getElementById(`d${i+1}`); 
-                box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
-                box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
-                document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
-            });
-
-            setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-
-            // 2. รอเปิดฝาสุด แล้วค่อยอัปเดตสรุปผลและเสียงขาน
-            setTimeout(async () => {
-                document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
-                    const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
-                    return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
-                }).join('');
-
-                document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
-                document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
-                
-                addToHistory();
-
-                for (let val of dice) { 
-                    const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
-                    a.playbackRate = voiceSpeed; 
-                    a.play().catch(()=>{}); 
-                    await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
-                }
-                
-                if (currentMode === 'hilo') { 
-                    const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
-                    fin.playbackRate = voiceSpeed; 
-                    fin.play().catch(()=>{}); 
-                }
-
-                document.getElementById('rollInitial').style.display = "block"; 
-                document.getElementById('btnTaPang').style.display = "block";
-                
-                result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
-                isShakingLogic = false;
-
-            }, 1600); 
-        }
 
 
 
