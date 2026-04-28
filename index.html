@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.9</title>
+    <title>HILO Master Pro - v2.4.91</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -134,71 +134,83 @@
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
 
         
-                    @media (max-width: 600px) { 
+                     @media (max-width: 600px) { 
+            /* 1. จัดพื้นที่จานให้คงที่ */
             .dice-area { 
                 height: 320px !important; 
                 background-size: 380px !important; 
                 position: relative !important; 
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
             } 
 
-            /* --- บังคับล็อคตำแหน่งลูกเต๋า แยกจากกันเด็ดขาด --- */
+            /* 2. บังคับล็อคพิกัดลูกเต๋าทั้ง 3 กล่อง ห้ามไหลมารวมกันเด็ดขาด */
             .main-results { 
                 position: absolute !important; 
-                top: 0 !important; /* ยึดจากขอบบนสุดของจาน */
-                left: 0 !important;
+                top: 50% !important; 
+                left: 50% !important; 
+                transform: translate(-50%, -50%) !important; 
                 width: 100% !important; 
-                height: 100% !important; 
-                display: block !important; 
+                height: 250px !important; 
+                display: block !important; /* เลิกใช้ Flex เพื่อหยุดการดึงกัน */
                 z-index: 10 !important;
                 opacity: 0;
             }
 
+            /* 3. ล็อคขนาดกล่องเต๋าและตำแหน่งแต่ละลูก (Absolute) */
             .dice-wrapper { 
                 position: absolute !important; 
                 width: 80px !important; 
+                height: 120px !important; /* ล็อคความสูงรวมไว้ ห้ามยุบตัว */
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
             } 
 
-            /* --- แก้ไขจุดสำคัญ: ล็อคให้ลูกที่ 1 อยู่ด้านบนเสมอ ห้ามไหลลงมา --- */
+            /* --- ลูกที่ 1: ปักหมุดไว้ด้านบนสุดของจาน (ห้ามไหลลงมา) --- */
             .dice-wrapper:nth-child(1) { 
-                top: 45px !important; /* ดันลูกแรกไว้ข้างบนสุดของจาน */
+                top: 0% !important; 
                 left: 50% !important; 
                 transform: translateX(-50%) !important; 
             }
 
-            /* ลูกที่ 2 (ล่างซ้าย) */
+            /* --- ลูกที่ 2: ปักหมุดไว้ด้านซ้ายล่าง --- */
             .dice-wrapper:nth-child(2) { 
-                top: 135px !important; /* วางไว้ครึ่งล่างของจาน */
-                left: 18% !important; 
+                bottom: 0% !important; 
+                left: 15% !important; 
             }
 
-            /* ลูกที่ 3 (ล่างขวา) */
+            /* --- ลูกที่ 3: ปักหมุดไว้ด้านขวาล่าง --- */
             .dice-wrapper:nth-child(3) { 
-                top: 135px !important; /* วางไว้ครึ่งล่างของจาน ระดับเดียวกับลูกซ้าย */
-                right: 18% !important; 
+                bottom: 0% !important; 
+                right: 15% !important; 
             }
 
+            /* 4. ขนาดลูกเต๋า */
             .result-box { 
                 width: 75px !important; 
                 height: 75px !important; 
                 border-radius: 12px !important; 
                 background: white !important;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+                flex-shrink: 0 !important;
             } 
 
+            /* 5. พื้นที่แต้ม (ล็อคความสูงไว้ให้คงที่) */
             .item-label { 
                 font-size: 32px !important; 
-                min-height: 35px !important; 
+                min-height: 40px !important; 
+                line-height: 40px !important;
                 display: block !important; 
-                color: var(--primary-yellow) !important;
-                text-align: center !important;
                 width: 100% !important;
+                text-align: center !important;
+                margin-top: 5px !important;
             } 
+            
+            /* ฝาครอบบนมือถือ */
+            #singleCover { 
+                width: 280px !important; height: 280px !important; 
+                top: 50% !important; left: 50% !important; 
+                transform: translate(-50%, -50%) !important; 
+                z-index: 50 !important; 
+            }
         }
 
 
