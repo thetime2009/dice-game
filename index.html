@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.3.6</title>
+    <title>HILO Master Pro - v2.3.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -400,9 +400,10 @@
 
             // 3. แสดงมือ (โชว์มือมาวางบนจุกฝา)
             if (hand) {
-                hand.style.opacity = "1";
                 // ตั้งค่าตำแหน่งมือเริ่มต้นให้ทับจุกฝา
-                hand.style.transform = "translate(-30%, -20%) scale(0.8)";
+                hand.style.opacity = "1";
+                // ถ้าอยากให้มั่นใจว่ามือเริ่มที่ตำแหน่งปิดฝา ให้ใช้คำสั่งนี้แทน:
+                hand.classList.remove('move-up'); 
             }
             
             // 4. เริ่มกระบวนการเปิด (หน่วงเวลาให้มือจับก่อนเล็กน้อย)
