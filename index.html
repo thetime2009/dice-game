@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.3</title>
+    <title>HILO Master Pro - v2.4.4</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -132,7 +132,7 @@
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
-                @media (max-width: 600px) { 
+                       @media (max-width: 600px) { 
             .dice-area { 
                 height: 320px !important; 
                 background-size: 380px !important; 
@@ -141,6 +141,7 @@
                 align-items: center !important; 
                 position: relative !important; 
             } 
+            
             #singleCover { 
                 width: 280px !important; 
                 height: 280px !important; 
@@ -157,55 +158,63 @@
                 transition: transform 3s, opacity 0.5s !important; 
             }
 
-            /* --- ส่วนที่แก้ไขให้ลูกเต๋าคงที่ ไม่ซ้อนกัน --- */
+            /* --- แก้ไขจุดนี้: ล็อคตำแหน่งกลุ่มลูกเต๋าไม่ให้ขยับ --- */
             .main-results { 
                 position: absolute !important; 
                 top: 50% !important; 
                 left: 50% !important; 
-                transform: translate(-50%, -50%) !important; 
+                transform: translate(-50%, -45%) !important; /* ปรับระดับให้ตรงกลางจานมากขึ้น */
                 display: flex !important; 
                 flex-wrap: wrap !important; 
                 justify-content: center !important; 
-                align-items: flex-start !important; /* ให้ลูกเต๋าทั้งหมดเริ่มวางจากด้านบน */
-                gap: 20px !important; /* ปรับ gap ให้พอดีกับจอ */
+                align-items: flex-start !important; 
+                gap: 15px !important; /* ระยะห่างระหว่างลูกเต๋าคู่ล่าง */
                 width: 100% !important; 
                 max-width: 260px !important; 
                 padding: 0 !important;
                 z-index: 10 !important;
+                opacity: 0;
             }
 
+            /* ล็อคขนาดกล่องเต๋าแต่ละใบ ห้ามขยับเด็ดขาด */
             .dice-wrapper { 
-                width: 85px !important; 
+                width: 90px !important; 
+                height: 120px !important; /* ล็อคความสูงรวม (เต๋า + แต้ม) ไว้เลย */
                 margin: 0 !important; 
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                /* ล็อคความสูงรวม (เต๋า 75px + แต้ม 35px + เผื่อระยะห่าง) */
-                height: 125px !important; 
+                justify-content: flex-start !important;
             } 
 
+            /* ลูกบนสุด */
             .dice-wrapper:nth-child(1) { 
                 width: 100% !important; 
-                height: 110px !important; /* เฉพาะลูกบนให้เตี้ยลงนิดนึงเพื่อความสวยงาม */
-                margin-bottom: 0 !important; 
+                height: 100px !important; /* ลูกแรกเตี้ยลงนิดนึงเพราะอยู่แถวบน */
+                margin-bottom: 5px !important;
             }
 
             .result-box { 
                 width: 75px !important; 
                 height: 75px !important; 
                 border-radius: 12px !important; 
-                flex-shrink: 0 !important; /* บังคับไม่ให้รูปหดตัว */
+                flex-shrink: 0 !important;
+                display: flex !important;
             } 
 
+            /* ล็อคพื้นที่แต้มให้คงที่ ต่อให้ไม่มีตัวเลข พื้นที่ 35px ก็จะยังอยู่ */
             .item-label { 
                 font-size: 32px !important; 
                 min-height: 35px !important; 
+                height: 35px !important; /* บังคับความสูงคงที่ */
                 line-height: 35px !important;
                 display: block !important; 
                 width: 100% !important;
                 text-align: center !important;
+                margin-top: 5px !important;
             } 
         }
+
 
 
     </style>
