@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HILO Master Pro - v2.4.2</title>
+    <title>HILO Master Pro - v2.4.3</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -235,7 +235,7 @@
     👁️ ปิดแต้ม
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.4.2</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.4.3</span>
             </div>
         </div>
     </div>
@@ -350,7 +350,7 @@
                 document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; document.getElementById('rollSecondary').style.display = "flex"; isShakingLogic = false;
             }, 1200);
         }
-        async function startShake(shakeType) {
+                       async function startShake(shakeType) {
             if (isShakingLogic) return; isShakingLogic = true;
             const cover = document.getElementById('singleCover'); 
             const diceGroup = document.getElementById('diceGroup'); 
@@ -363,7 +363,12 @@
                     const box = document.getElementById(`d${i}`); 
                     box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
                     box.style.borderColor = "var(--red-die)"; 
-                    document.getElementById(`label${i}`).innerText = ""; 
+                    
+                    // --- แก้ไขจุดนี้: ใส่ช่องว่างพิเศษ (&nbsp;) เพื่อรักษาความสูงกล่อง ไม่ให้ลูกเต๋าซ้อนกัน ---
+                    const label = document.getElementById(`label${i}`);
+                    label.innerHTML = "&nbsp;"; 
+                    // บังคับให้แสดงพื้นที่ไว้ (ถ้าปิดแต้มอยู่ก็ต้องโชว์พื้นที่ว่างไว้กันซ้อน)
+                    label.style.visibility = "visible"; 
                 }
                 diceGroup.style.opacity = "1"; 
                 await new Promise(resolve => setTimeout(resolve, 500));
@@ -379,18 +384,13 @@
             cover.style.display = "block"; 
             cover.classList.remove('shaking-cover');
 
-            // --- ส่วนการเอียงฝา (ปรับให้รินหนักเอียงนิ่งๆ เหมือนรินเบา) ---
             if (shakeType === 'rinBao') {
-                // รินเบา: เอียง 20 องศา (แต้มไม่เปลี่ยน)
                 let deg = (Math.random() > 0.5 ? 20 : -20);
                 cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
             } else if (shakeType === 'rinNak') {
-                // รินหนัก: เอียง 40 องศา (เอียงนิ่งๆ ไม่สั่น เพื่อให้เหมือนการริน)
                 let deg = (Math.random() > 0.5 ? 40 : -40);
                 cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
-                // ลบส่วน setTimeout ที่สั่ง add shaking-cover ออกเพื่อให้มันเอียงนิ่งๆ
             } else {
-                // เขย่าปกติ: ตั้งตรงและสั่นตามปกติ
                 cover.style.transform = `translate(-50%, -50%) rotate(0deg)`;
                 setTimeout(() => { cover.classList.add('shaking-cover'); }, 10);
             }
@@ -398,11 +398,8 @@
             document.getElementById('rollInitial').style.display = "none"; 
             document.getElementById('rollSecondary').style.display = "none";
 
-            // --- จบการริน/เขย่า ---
             setTimeout(() => {
                 cover.classList.remove('shaking-cover');
-                
-                // คืนค่ากลับมาที่ 0 องศาเพื่อให้เปิดฝาได้ปกติ
                 cover.style.transform = "translate(-50%, -50%) rotate(0deg)"; 
 
                 if (shakeType === 'normal' || shakeType === 'rinNak') { 
@@ -419,6 +416,7 @@
                 isShakingLogic = false;
             }, 1600);
         }
+
 
 
 
