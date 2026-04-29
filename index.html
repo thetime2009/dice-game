@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.3</title>
+    <title>HILO Master Pro - v2.5.4</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -405,6 +405,9 @@
             const msg = document.getElementById('stickyMsg');
             
             if (popup && msg) {
+                // 1. ใส่เสียงเตือนตรงนี้ (เปลี่ยนชื่อไฟล์ตามที่คุณมี)
+                const alertSound = new Audio('warning.mp3'); 
+                alertSound.play().catch(e => console.log("Audio play failed:", e));
                 msg.innerHTML = `ตรวจพบผล <b>"${historyResults[0]}"</b> <br>ออกซ้ำกันติดต่อกัน 5 งวด!<br>ระบบจะทำการรีเซ็ตเพื่อความโปร่งใส`;
                 popup.style.display = 'flex'; // ใช้ .style.display แทน .classList เพื่อความชัวร์
             } else {
