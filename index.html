@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.6</title>
+    <title>HILO Master Pro - v2.5.7</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -309,7 +309,7 @@
     👁️ ปิดเลข
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.4.3</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.7</span>
             </div>
         </div>
     </div>
@@ -471,7 +471,7 @@
         async function startShake(shakeType) {
     if (isShakingLogic) return;
 
-    // --- 1. ตรวจสอบลูกหนืด (ถ้าซ้ำ 5 รอบ กดรอบที่ 6 จะเด้งเตือน) ---
+    // --- 1. ตรวจสอบลูกหนืด ---
     if (historyResults.length === 5) {
         const allSame = historyResults.every(v => v === historyResults[0]);
         if (allSame) {
@@ -494,12 +494,11 @@
     const diceGroup = document.getElementById('diceGroup'); 
     const statusLabel = document.getElementById('statusLabel');
 
-    // --- 2. เตรียมหน้า 4-4-4 (เฉพาะโหมดไฮโล และเขย่าปกติ) ---
+    // --- 2. เตรียมหน้า 4-4-4 ---
     if (currentMode === 'hilo' && shakeType === 'normal') {
         statusLabel.innerText = "เตรียมลูกเต๋า (4-4-4)...";
         for (let i = 1; i <= 3; i++) {
             const box = document.getElementById(`d${i}`);
-            // ใช้ภาพ h4.jpg หรือ 4.jpg ตามที่คุณมี
             box.innerHTML = `<img src="h4.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
             box.style.borderColor = "var(--red-die)";
             document.getElementById(`label${i}`).innerText = ""; 
@@ -511,11 +510,17 @@
     diceGroup.style.opacity = "0"; 
     document.getElementById('btnTaPang').style.display = "none"; 
 
-    // --- 3. ระบบสุ่มเสียงเขย่า (สุ่ม 1 จาก 5 ไฟล์) ---
-    // ตั้งชื่อไฟล์ในโฟลเดอร์ให้ตรง: shake1.mp3, shake2.mp3, shake3.mp3, shake4.mp3, shake5.mp3
-    const shakeSounds = ['shake1.mp3', 'shake2.mp3', 'shake3.mp3', 'shake4.mp3', 'shake5.mp3'];
-    const randomShake = shakeSounds[Math.floor(Math.random() * shakeSounds.length)];
-    new Audio(randomShake).play().catch(() => {}); 
+    // --- 3. ระบบจัดการเสียง (แก้ไขใหม่ตามสั่ง) ---
+    let sFile = '';
+    if (shakeType === 'rinBao') {
+        sFile = 'shake4.mp3'; // รินเบา
+    } else if (shakeType === 'rinNak') {
+        sFile = 'shake2.mp3'; // รินหนัก
+    } else {
+        const normalSounds = ['shake1.mp3', 'shake3.mp3', 'shake5.mp3']; // สุ่มเขย่าปกติ
+        sFile = normalSounds[Math.floor(Math.random() * normalSounds.length)];
+    }
+    new Audio(sFile).play().catch(() => {}); 
 
     statusLabel.innerText = shakeType === 'rinBao' ? "กำลังรินเบาๆ..." : (shakeType === 'rinNak' ? "กำลังรินหนัก..." : "กำลังเขย่า...");
 
@@ -523,7 +528,7 @@
     cover.style.display = "block"; 
     cover.classList.remove('shaking-cover');
 
-    // --- 4. การแสดงแอนิเมชั่นฝา (เอียงหรือเขย่า) ---
+    // --- 4. การแสดงแอนิเมชั่นฝา ---
     if (shakeType === 'rinBao') {
         let deg = (Math.random() > 0.5 ? 20 : -20);
         cover.style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
@@ -538,13 +543,12 @@
     document.getElementById('rollInitial').style.display = "none"; 
     document.getElementById('rollSecondary').style.display = "none";
 
-    // --- 5. จบการเขย่า/ริน และคำนวณผล ---
+    // --- 5. จบการเขย่าและคำนวณผล ---
     setTimeout(() => {
         cover.classList.remove('shaking-cover');
         cover.style.transform = "translate(-50%, -50%) rotate(0deg)"; 
 
         if (shakeType === 'normal' || shakeType === 'rinNak') { 
-            // สุ่มแต้ม
             result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
             result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
             result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
@@ -552,15 +556,12 @@
             result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); 
             result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); 
             
-            // อัปเดตรูปภาพลูกเต๋า (2D) รอไว้ใต้ฝา
             for (let i = 1; i <= 3; i++) {
                 const val = result[`d${i}`];
                 const box = document.getElementById(`d${i}`);
-                // สลับรูปตามโหมด (ถ้าเป็นน้ำเต้าปูปลาใช้ 1.jpg, ถ้าไฮโลใช้ h1.jpg เป็นต้น)
                 const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
                 box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
             }
-
             sendToSheet(); 
         }
 
@@ -569,7 +570,6 @@
         isShakingLogic = false;
     }, 1600);
 }
-
 
 // 1. สร้าง Array เก็บรายชื่อไฟล์เสียง
 const shakeSounds = [
