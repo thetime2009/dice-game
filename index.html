@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.0</title>
+    <title>HILO Master Pro - v2.5.1</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -221,6 +221,27 @@
     }
 }
 
+        /* Sticky Dice Popup */
+#stickyPopup { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); 
+    z-index: 2000; display: none; align-items: center; justify-content: center; 
+}
+#stickyPopup.show { display: flex; animation: fadeIn 0.3s forwards; }
+.sticky-card { 
+    background: linear-gradient(145deg, #2c3e50, #000); 
+    width: 85%; max-width: 400px; padding: 30px; border-radius: 30px; 
+    border: 3px solid #ff3e3e; text-align: center; 
+    box-shadow: 0 0 50px rgba(255, 62, 62, 0.4); 
+}
+.sticky-icon { font-size: 60px; margin-bottom: 15px; animation: pulse 1s infinite; }
+.sticky-title { font-size: 24px; color: #ff3e3e; font-weight: bold; margin-bottom: 10px; }
+.sticky-msg { font-size: 18px; color: #fff; margin-bottom: 25px; line-height: 1.5; }
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
 
     </style>
@@ -288,6 +309,17 @@
     </div>
     
     <div class="history-container" id="historyList"></div>
+    <div id="stickyPopup">
+    <div class="sticky-card">
+        <div class="sticky-icon">⚠️</div>
+        <div class="sticky-title">ตรวจพบลูกหนืด!</div>
+        <div id="stickyDetail" class="sticky-msg">
+            มีการออกผลซ้ำกัน 5 งวดติด <br>เพื่อความโปร่งใส ระบบจะทำการรีเซ็ต
+        </div>
+        <button class="btn-gold" style="background: #ff3e3e; box-shadow: 0 6px 0 #b32a2a; color: white;" 
+                onclick="location.reload()">ตกลงและรีเฟรช</button>
+    </div>
+</div>
 
     <script>
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzBOO8QhRgKmyM_XqlFioUcRmdK7zrvApY6BQY3bK8FQDZMnb3jCE04mXNdGXcVYGdzRQ/exec'; 
@@ -348,7 +380,18 @@
 
         
                                async function startShake(shakeType) {
-            if (isShakingLogic) return; isShakingLogic = true;
+            if (isShakingLogic) return;
+             // --- ส่วนที่เพิ่มใหม่: เช็คความหนืดก่อนเริ่มรอบใหม่ ---
+    if (historyResults.length === 5 && historyResults.every(v => v === historyResults[0])) {
+        const stickyPopup = document.getElementById('stickyPopup');
+        document.getElementById('stickyMsg').innerHTML = `ตรวจพบผล <b>"${historyResults[0]}"</b> <br>ออกซ้ำกันติดต่อกัน 5 งวด!<br>ระบบจะทำการรีเซ็ตเพื่อความสมดุล`;
+        stickyPopup.classList.add('show');
+        return; // หยุดการเขย่าทันที
+    }
+    // --------------------------------------------                      
+                                   
+                                   
+            isShakingLogic = true;
             const cover = document.getElementById('singleCover'); 
             const diceGroup = document.getElementById('diceGroup'); 
             const statusLabel = document.getElementById('statusLabel');
@@ -526,8 +569,14 @@
 
 
 
-
+        let historyResults = []; // เพิ่มไว้บนสุดของ <script>
         function addToHistory() {
+            // --- ส่วนที่เพิ่มใหม่: เก็บประวัติสถานะ ---
+    if (result.status) {
+        historyResults.push(result.status);
+        if (historyResults.length > 5) historyResults.shift(); // เก็บไว้แค่ 5 รอบล่าสุด
+    }
+    // --------------------------------------
             const list = document.getElementById('historyList'); const item = document.createElement('div'); item.className = 'history-item';
             const f = (v) => (v===1||v===4) ? `<span style="color:var(--red-die); font-weight:bold;">${currentMode==='hilo'?v:animalMap[v]}</span>` : (currentMode==='hilo'?v:animalMap[v]);
             item.innerHTML = `<span style="flex:1;">[${f(result.d1)},${f(result.d2)},${f(result.d3)}]</span><span style="flex:1; text-align:center; color:${result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)')}">${result.status}</span><span style="flex:0.5; text-align:right;">${result.total}</span>`;
