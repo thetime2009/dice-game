@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.4</title>
+    <title>HILO Master Pro - v2.5.5</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -129,9 +129,47 @@
         .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); min-width: 320px; justify-content: center; }
         .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; cursor: pointer; }
         .btn-powder-small { background: #fff !important; color: #111 !important; padding: 10px 25px !important; border-radius: 15px !important; font-size: 18px !important; font-weight: bold; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; border: none; }
-        .history-container { width: 100%; max-width: 600px; margin-top: 20px; padding-bottom: 50px; }
-        .history-item { background: rgba(30, 30, 30, 0.85); border-radius: 15px; padding: 12px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+        .history-container { 
+    width: 100%; 
+    max-width: 600px; 
+    margin-top: 20px; 
+    padding-bottom: 50px; 
+}
 
+.history-item { 
+    background: rgba(20, 20, 20, 0.9); /* พื้นหลังเข้มขึ้นเพื่อให้สีทองเด่น */
+    border-radius: 15px; 
+    padding: 12px 20px; 
+    margin-bottom: 12px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 18px; /* ปรับขนาดตัวอักษรให้ชัดขึ้น */
+    
+    /* เพิ่มมิติขอบเหลืองทอง */
+    border: 1px solid rgba(241, 196, 15, 0.4); 
+    box-shadow: inset 0 0 10px rgba(241, 196, 15, 0.1), 0 4px 15px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+/* เพิ่มแถบสีทองด้านซ้ายเพื่อความสวยงาม */
+.history-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(to bottom, #f1c40f, #967a06);
+}
+
+/* รายการล่าสุดให้มีแสงออร่าสีทองพิเศษ */
+.history-item:first-child {
+    border: 1px solid #f1c40f;
+    box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+    background: rgba(35, 35, 35, 0.95);
+}
         /* --- Animations --- */
         .shaking-plate { animation: shakePlate 0.1s infinite !important; }
         .shaking-cover { animation: shakeCover 0.1s infinite !important; transition: none !important; }
