@@ -290,11 +290,49 @@
         <div id="rollInitial">
             <button id="btnMainShake" class="btn-gold" onclick="startShake('normal'); requestMotionPermission();">เขย่าลูกเต๋า</button>
         </div>
-        <div id="rollSecondary" style="display:none; gap:10px; justify-content:center;">
-            <button style="background:#333; color:#fff; flex:1; border:none; border-radius:15px; font-weight:bold; cursor:pointer;" onclick="startShake('rinBao')">รินเบา</button>
-            <button style="background:#bbb; color:#111; flex:1; border:none; border-radius:15px; font-weight:bold; cursor:pointer;" onclick="startShake('rinNak')">รินหนัก</button>
-            <button class="btn-gold" style="flex:1.4;" onclick="revealResults()">เปิดดูแต้ม</button>
-        </div>
+        <div id="rollSecondary" style="display:none; gap:10px; justify-content:center; padding: 10px;">
+    <button style="
+        background: linear-gradient(180deg, #444 0%, #222 100%); 
+        color: #f1c40f; 
+        flex: 1; 
+        height: 60px; 
+        border: 1px solid #555; 
+        border-radius: 15px; 
+        font-size: 20px; 
+        font-weight: bold; 
+        text-shadow: 1px 1px 2px #000; 
+        box-shadow: 0 4px 0 #111;
+        cursor: pointer;" 
+        onclick="startShake('rinBao')">
+        รินเบา
+    </button>
+
+    <button style="
+        background: linear-gradient(180deg, #eee 0%, #bbb 100%); 
+        color: #111; 
+        flex: 1; 
+        height: 60px; 
+        border: 1px solid #fff; 
+        border-radius: 15px; 
+        font-size: 20px; 
+        font-weight: bold; 
+        text-shadow: 0 1px 0 rgba(255,255,255,0.8); 
+        box-shadow: 0 4px 0 #777;
+        cursor: pointer;" 
+        onclick="startShake('rinNak')">
+        รินหนัก
+    </button>
+
+    <button class="btn-gold" style="
+        flex: 1.4; 
+        height: 60px; 
+        font-size: 22px; 
+        font-weight: bold; 
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);" 
+        onclick="revealResults()">
+        เปิดดูแต้ม
+    </button>
+</div>
         <div class="bottom-section">
             <div id="bottomTray" class="results-tray">
                 <span style="font-size:20px; color:#aaa; font-weight:bold;">ผลล่าสุด:</span>
