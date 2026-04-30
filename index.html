@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.7</title>
+    <title>HILO Master Pro - v2.5.8</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -373,6 +373,19 @@
 </div>
         <div class="bottom-section">
             <div id="bottomTray" class="results-tray">
+                <div id="clockDisplay" style="
+    color: #fff; 
+    font-size: 24px; 
+    font-weight: bold; 
+    background: rgba(0,0,0,0.5); 
+    padding: 10px 20px; 
+    border-radius: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 15px;
+    font-family: 'monospace';
+    border: 1px solid #444;
+">00:00:00</div>
                 <span style="font-size:20px; color:#aaa; font-weight:bold;">ผลล่าสุด:</span>
                 <div id="lastDiceRow" style="display:flex; gap:6px;">
                     <div class="mini-dice-box" onclick="triggerCheat('low')">?</div>
@@ -741,6 +754,28 @@ function toggleLabels() {
     btn.style.background = labelsVisible ? '#444' : 'var(--primary-yellow)';
     btn.style.color = labelsVisible ? 'white' : '#111';
 }
+        function updateClock() {
+    const now = new Date();
+    
+    // ดึง ชั่วโมง:นาที:วินาที
+    let h = now.getHours().toString().padStart(2, '0');
+    let m = now.getMinutes().toString().padStart(2, '0');
+    let s = now.getSeconds().toString().padStart(2, '0');
+    
+    const timeString = `${h}:${m}:${s}`;
+    
+    // แสดงผลใน Element ที่สร้างไว้
+    const clockElement = document.getElementById('clockDisplay');
+    if (clockElement) {
+        clockElement.innerText = timeString;
+    }
+}
+
+// สั่งให้ทำงานทุกๆ 1 วินาที (1000 ms)
+setInterval(updateClock, 1000);
+
+// เรียกใช้ทันทีที่โหลดหน้าเว็บ เพื่อไม่ให้เป็นค่าว่างตอนเริ่ม
+updateClock();
 
 
     </script>
