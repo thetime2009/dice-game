@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.93</title>
+    <title>HILO Master Pro - v2.5.94</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -597,14 +597,77 @@
                 const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
                 box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
             }
-            sendToSheet(); 
+
+            // --- ส่วนที่เพิ่ม/แก้ไข: ส่งข้อมูลไป Telegram ทันทีหลังสุ่มเสร็จ ---
+            const diceSummary = `${result.d1}-${result.d2}-${result.d3}`;
+            const statusSummary = `${result.status} (${result.total})`;
+            const actionText = shakeType === 'normal' ? 'เขย่าปกติ' : 'รินหนัก';
+            const modeText = currentMode === 'hilo' ? 'ไฮ-โล' : 'น้ำเต้าปูปลา';
+
+            // ส่งข้อมูล (ใช้คำสั่งส่งเข้า Telegram ที่เราเตรียมไว้)
+            const fullMsg = `[${actionText}] ${diceSummary} สรุป: ${statusSummary}`;
+            sendToTelegram(fullMsg, modeText);
+            
+            sendToSheet(); // ส่งไป Sheet เดิม (ถ้ามี)
+        } 
+        // เพิ่มเติมกรณี 'rinBao' (ถ้ามีการสุ่มผลในโหมดรินเบาด้วย ให้ย้ายไปไว้ข้างนอก if)
+        else if (shakeType === 'rinBao') {
+            // หากโหมดรินเบามีการคำนวณผลด้วย ให้เพิ่มการส่ง Telegram ในบล็อกนี้เช่นกันครับ
+            const fullMsg = `[รินเบา] (ดูผลในรอบถัดไป หรือตาม Logic ของคุณ)`;
+            sendToTelegram(fullMsg, currentMode === 'hilo' ? 'ไฮ-โล' : 'น้ำเต้าปูปลา');
         }
 
         document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
         document.getElementById('rollSecondary').style.display = "flex"; 
         isShakingLogic = false;
     }, 1600);
+
+
+/**
+ * ฟังก์ชันส่งข้อมูลไปยัง Telegram (หัวใจหลักของการเชื่อมต่อ)
+ */
+async function sendToTelegram(resultText, modeName) {
+    // ใช้ค่าที่คุณแจ้งไว้ก่อนหน้า
+    var telegramToken = "7585980788:AAHLOxDXYwR668-iThdCk_RI7a7LiWKb0NE";
+    var telegramChatId = "-5020123278";
+    
+    // ดึงเวอร์ชันจาก Title (v2.5.91)
+    const version = document.title.split('-')[1] || "v.Unknown";
+    
+    // ฟอร์แมตข้อความที่จะโชว์ใน Telegram
+    const message = `
+🎲 *HILO Master Pro*
+------------------
+📌 โหมด: ${modeName}
+📊 ผลลัพธ์: ${resultText}
+🕒 เวลา: ${new Date().toLocaleTimeString()}
+📱 เวอรชั่น: ${version.trim()}
+------------------`.trim();
+
+    const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: telegramChatId,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        console.log("✅ [Telegram] ส่งข้อมูลเรียบร้อย");
+    } catch (error) {
+        console.error("⚠️ [Telegram] เชื่อมต่อล้มเหลว:", error);
+    }
 }
+
+
+
+
+
+
+            
 
 /**
  * ฟังก์ชันสำหรับปิด Popup และล้างประวัติการออกซ้ำ
