@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.97</title>
+    <title>HILO Master Pro - v2.5.98</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -331,7 +331,7 @@
     👁️ ปิดเลข
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.97</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.98</span>
             </div>
         </div>
     </div>
@@ -492,12 +492,59 @@
             isShakingLogic = false; 
         }
 
-        function getRiggedRoll(target) {
-            let d1, d2, d3, total;
-            do { d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; total = d1 + d2 + d3; }
-            while ((target === 'low' && (total > 10 || total === 11)) || (target === 'high' && (total < 12)) || (target === 'hilo' && (total !== 11)));
-            return { d1, d2, d3, total };
-        }
+        /**
+ * ฟังก์ชันล็อคผล (โหมดโกง) และส่งข้อมูลเข้า Telegram
+ * @param {string} target - เป้าหมายที่ต้องการ ('low', 'high', 'hilo')
+ */
+async function triggerRiggedCheat(target) {
+    let d1, d2, d3, total;
+    
+    // 1. วนซ้ำจนกว่าจะได้ผลลัพธ์ตามเป้าหมาย (Logic เดิมของคุณ)
+    do { 
+        d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+        d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+        d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+        total = d1 + d2 + d3; 
+    } while (
+        (target === 'low' && (total > 10 || total === 11)) || 
+        (target === 'high' && (total < 12)) || 
+        (target === 'hilo' && (total !== 11))
+    );
+
+    // 2. อัปเดตค่าลงในตัวแปร Global 'result'
+    result.d1 = d1;
+    result.d2 = d2;
+    result.d3 = d3;
+    result.total = total;
+
+    // 3. กำหนดสถานะรหัสย่อ (HL, L, H)
+    if (total === 11) {
+        result.status = "HL";
+        result.class = "hilo";
+    } else if (total < 11) {
+        result.status = "L";
+        result.class = "low";
+    } else {
+        result.status = "H";
+        result.class = "high";
+    }
+
+    // 4. แสดงผลบนหน้าจอ (เตรียมไว้ในจาน)
+    for (let i = 1; i <= 3; i++) {
+        const val = result[`d${i}`];
+        const box = document.getElementById(`d${i}`);
+        const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
+        box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    // 5. ส่งรหัสเข้า Telegram ทันที (ระบุว่าเป็นโหมดโกง [C])
+    // ฟังก์ชัน sendToTelegram จะใช้ตรรกะแปลงสัตว์ (P, pl, n...) อัตโนมัติที่เราทำไว้ก่อนหน้า
+    await sendToTelegram(true); 
+
+    // แสดงสถานะที่หน้าจอเว็บ
+    document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+    document.getElementById('rollSecondary').style.display = "flex";
+}
 
         function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
         
