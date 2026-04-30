@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.993</title>
+    <title>HILO Master Pro - v2.5.994</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -501,6 +501,12 @@
  * @param {string} target - ประเภทผลลัพธ์ที่ต้องการ ('low', 'high', 'hilo')
  */
 async function triggerCheat(target) {
+    // --- [สำคัญ] ตรวจสอบเงื่อนไขก่อนเริ่มทำงาน ---
+    if (!canCheat) {
+        console.warn("แจ้งเตือน: ต้องเขย่าก่อนจึงจะล็อคผลได้!");
+        // อาจจะเพิ่ม UI แจ้งเตือนสั้นๆ ตรงนี้ได้ครับ เช่น statusLabel.innerText = "กรุณาเขย่าก่อน!";
+        return; 
+    }
     if (isShakingLogic) return; // ป้องกันการกดซ้ำขณะกำลังประมวลผล
 
     let d1, d2, d3, total;
