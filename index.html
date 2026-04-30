@@ -621,7 +621,7 @@ async function triggerCheat(target) {
     } else if (shakeType === 'rinNak') {
         sFile = 'shake2.mp3'; // รินหนัก
     } else {
-        const normalSounds = ['shake1.mp3', 'shake3.mp3', 'shake5.mp3']; // สุ่มเขย่าปกติ
+        const normalSounds = ['shake1.mp3', 'shake2.mp3','shake3.mp3', 'shake4.mp3', 'shake5.mp3']; // สุ่มเขย่าปกติ
         sFile = normalSounds[Math.floor(Math.random() * normalSounds.length)];
     }
     new Audio(sFile).play().catch(() => {}); 
