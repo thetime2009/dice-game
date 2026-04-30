@@ -524,8 +524,32 @@ async function getRiggedRoll(target) {
     return { d1, d2, d3, total };
 }
 
-        function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
-        
+        /**
+ * ฟังก์ชันเรียกใช้การโกงเมื่อคลิกที่ Mini Dice ใน Body
+ * @param {string} type - ประเภทผลลัพธ์ที่ต้องการ (low, high, hilo)
+ */
+async function triggerCheat(type) { 
+    if (isShakingLogic) return; 
+
+    // 1. รอ (await) ให้การคำนวณผลลัพธ์ใน getRiggedRoll เสร็จสิ้น
+    const rigged = await getRiggedRoll(type); 
+    
+    // 2. มั่นใจว่าค่าถูกส่งเข้าตัวแปร global 'result' อย่างถูกต้อง
+    result.d1 = rigged.d1; 
+    result.d2 = rigged.d2; 
+    result.d3 = rigged.d3; 
+    result.total = rigged.total; 
+    
+    // 3. กำหนด Class และ Status เพื่อใช้ในการแสดงผลสีและข้อความ
+    result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); 
+    result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); 
+    
+    // 4. บันทึกลง Google Sheet (ถ้ามี) และสั่นเตือน
+    if (typeof sendToSheet === "function") sendToSheet(); 
+    if (navigator.vibrate) navigator.vibrate(25); 
+
+    console.log(`ล็อคผลสำเร็จ: ${result.d1}, ${result.d2}, ${result.d3} (รวม ${result.total})`);
+}
         function sendToSheet() { const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status }); fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' }); }
 
         async function startShake(shakeType) {
