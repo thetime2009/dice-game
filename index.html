@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.91</title>
+    <title>HILO Master Pro - v2.5.92</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -129,6 +129,23 @@
         .results-tray { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); min-width: 320px; justify-content: center; }
         .mini-dice-box { width: 60px; height: 60px; background: white; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; cursor: pointer; }
         .btn-powder-small { background: #fff !important; color: #111 !important; padding: 10px 25px !important; border-radius: 15px !important; font-size: 18px !important; font-weight: bold; box-shadow: 0 4px 0 #bbb !important; cursor: pointer; border: none; }
+        .btn-reset-small {
+    background: linear-gradient(180deg, #555 0%, #333 100%);
+    color: #ff4444; /* ใช้ตัวอักษรสีแดงเพื่อให้ดูเด่นว่าเป็นปุ่มล้างค่า */
+    border: 1px solid #666;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: 0.2s;
+}
+
+.btn-reset-small:hover {
+    background: #444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}
         .history-container { 
     width: 100%; 
     max-width: 600px; 
@@ -312,7 +329,7 @@
     👁️ ปิดเลข
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.91</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.92</span>
             </div>
         </div>
     </div>
@@ -400,6 +417,8 @@
                     <div class="mini-dice-box" onclick="triggerCheat('high')">?</div>
                 </div>
                 <button id="btnTaPang" class="btn-powder-small" onclick="triggerPowderPopup()">ทาแป้ง</button>
+                <!-- ปุ่มรีเซ็ตที่เพิ่มใหม่ -->
+                <button id="btnResetSystem" class="btn-reset-small" onclick="resetGameSystem()">รีเซ็ตระบบ</button>
             </div>
         </div>
     </div>
@@ -420,7 +439,7 @@
 
     <!-- ทางเลือกที่ 2: เล่นต่อ (ใช้ฟังก์ชันที่เราสร้างใหม่) -->
     <button onclick="continuePlaying()" style="flex: 1; padding: 12px; background: #444; color: #fff; border: 1px solid #666; border-radius: 10px; font-weight: bold; cursor: pointer;">
-        เล่นต่อ (ล้างประวัติ)
+        เล่นต่อ (ไม่ล้างประวัติ)
     </button>
 </div>
     </div>
@@ -799,6 +818,33 @@ setInterval(updateClock, 1000);
 
 // เรียกใช้ทันทีที่โหลดหน้าเว็บ เพื่อไม่ให้เป็นค่าว่างตอนเริ่ม
 updateClock();
+
+        /**
+ * ฟังก์ชันสำหรับรีเซ็ตระบบเกม
+ * ล้างประวัติการเล่น และล้างการแสดงผลหน้าจอ
+ */
+function resetGameSystem() {
+    if (confirm("คุณต้องการล้างประวัติการเล่นทั้งหมดใช่หรือไม่?")) {
+        // 1. ล้าง Array ประวัติ (ตัวแปรที่คุณใช้นับลูกหนืด)
+        if (typeof historyResults !== 'undefined') {
+            historyResults.length = 0;
+        }
+
+        // 2. ล้างการแสดงผลในหน้าประวัติ (ถ้ามี Element นี้)
+        const historyList = document.getElementById('historyList');
+        if (historyList) historyList.innerHTML = '';
+
+        // 3. รีเซ็ตช่อง "ผลล่าสุด" (Mini Dice) ให้กลับเป็นเครื่องหมาย ?
+        const miniDice = document.querySelectorAll('.mini-dice-box');
+        miniDice.forEach(box => box.innerText = '?');
+
+        // 4. รีเซ็ตสถานะตัวอักษร
+        const statusLabel = document.getElementById('statusLabel');
+        if (statusLabel) statusLabel.innerText = '-';
+
+        console.log("ระบบถูกรีเซ็ตเรียบร้อยแล้ว");
+    }
+}
 
 
     </script>
