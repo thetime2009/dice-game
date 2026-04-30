@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.992</title>
+    <title>HILO Master Pro - v2.5.993</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -561,6 +561,11 @@ async function triggerCheat(target) {
         
         function sendToSheet() { const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status }); fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' }); }
 
+
+        // --- 1. เพิ่มตัวแปรควบคุมสถานะ ---
+       let canCheat = false; // เริ่มต้นให้กดไม่ได้จนกว่าจะเขย่า
+
+      
         async function startShake(shakeType) {
     if (isShakingLogic) return;
 
@@ -636,6 +641,10 @@ async function triggerCheat(target) {
     document.getElementById('rollInitial').style.display = "none"; 
     document.getElementById('rollSecondary').style.display = "none";
 
+     // --- [สำคัญ] อนุญาตให้กดปุ่มโกงได้หลังจากเขย่า ---
+    canCheat = true; 
+    console.log("สถานะ: เขย่าแล้ว สามารถล็อคผลได้");
+            
     // --- 5. จบการเขย่าและคำนวณผล ---
     setTimeout(() => {
     cover.classList.remove('shaking-cover');
@@ -845,6 +854,8 @@ function playRandomShakeSound() {
 
                 setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
 
+               
+
                 // เมื่อลอยขึ้นไปแล้ว มือจางหายไป
                 setTimeout(() => { if (hand) hand.style.opacity = "0"; }, 1200);
 
@@ -886,6 +897,9 @@ function playRandomShakeSound() {
 
                     result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
                     isShakingLogic = false;
+                     // --- [สำคัญ] ไม่อนุญาตให้กดปุ่มโกงหลังจากเปิดฝาแล้ว ---
+                     canCheat = false; 
+                     console.log("สถานะ: เปิดฝาแล้ว ห้ามล็อคผล"); 
 
                 }, 1600); 
 
