@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.994</title>
+    <title>HILO Master Pro - v2.6.0</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -331,7 +331,7 @@
     👁️ ปิดเลข
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.98</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.6.0</span>
             </div>
         </div>
     </div>
@@ -531,13 +531,16 @@ async function triggerCheat(target) {
 
     // 3. กำหนดรหัสย่อและคลาส (สำหรับโหมดไฮโล)
     if (total === 11) {
-        result.status = "HL";
+        result.status = "11 ไฮโล"; // ภาษาไทยบนเว็บ
+        result.code = "HL";        // ตัวย่อ Telegram
         result.class = "hilo";
     } else if (total < 11) {
-        result.status = "L";
+        result.status = "ต่ำ";      // ภาษาไทยบนเว็บ
+        result.code = "L";         // ตัวย่อ Telegram
         result.class = "low";
     } else {
-        result.status = "H";
+        result.status = "สูง";      // ภาษาไทยบนเว็บ
+        result.code = "H";         // ตัวย่อ Telegram
         result.class = "high";
     }
 
@@ -663,15 +666,18 @@ async function triggerCheat(target) {
         result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
         result.total = result.d1 + result.d2 + result.d3; 
 
-        // --- กำหนดรหัสสถานะตามเงื่อนไขใหม่ ---
+       // --- กำหนดรหัสสถานะแยกส่วน เว็บ vs Telegram ---
         if (result.total === 11) {
-            result.status = "HL"; // 11 ไฮโล
+            result.status = "11 ไฮโล"; // แสดงบนเว็บ
+            result.code = "HL";        // ส่งไป Telegram
             result.class = "hilo";
         } else if (result.total < 11) {
-            result.status = "L";  // ต่ำ
+            result.status = "ต่ำ";     // แสดงบนเว็บ
+            result.code = "L";         // ส่งไป Telegram
             result.class = "low";
         } else {
-            result.status = "H";  // สูง
+            result.status = "สูง";     // แสดงบนเว็บ
+            result.code = "H";         // ส่งไป Telegram
             result.class = "high";
         }
 
@@ -720,7 +726,7 @@ async function sendToTelegram() {
     if (currentMode === 'hilo') {
         // โหมดไฮโล: ใช้ตัวเลขติดกัน และสถานะ H, L, HL
         diceCode = `${result.d1}${result.d2}${result.d3}`;
-        statusText = `${result.total}${result.status}`;
+        statusText = `${result.total}${result.code}`;
     } else {
         // โหมดน้ำเต้าปูปลา: แปลงเป็นอักษรย่อ P, pl, n, k, s, G
         const c1 = getAnimalCode(result.d1);
