@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.994</title>
+    <title>HILO Master Pro - v2.5.98</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -492,11 +492,14 @@
             isShakingLogic = false; 
         }
 
-      /**
- * แก้ไขฟังก์ชัน getRiggedRoll เพื่อป้องกันค่า undefined
+        /**
+ * ฟังก์ชันล็อคผล (โหมดโกง) และส่งข้อมูลเข้า Telegram
+ * @param {string} target - เป้าหมายที่ต้องการ ('low', 'high', 'hilo')
  */
-async function getRiggedRoll(target) {
+async function triggerRiggedCheat(target) {
     let d1, d2, d3, total;
+    
+    // 1. วนซ้ำจนกว่าจะได้ผลลัพธ์ตามเป้าหมาย (Logic เดิมของคุณ)
     do { 
         d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
         d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
@@ -508,56 +511,47 @@ async function getRiggedRoll(target) {
         (target === 'hilo' && (total !== 11))
     );
 
-    // อัปเดตตัวแปรหลัก
-    result.d1 = d1; result.d2 = d2; result.d3 = d3; result.total = total;
-    result.status = total === 11 ? "HL" : (total < 11 ? "L" : "H");
-    result.class = total === 11 ? "hilo" : (total < 11 ? "low" : "high");
+    // 2. อัปเดตค่าลงในตัวแปร Global 'result'
+    result.d1 = d1;
+    result.d2 = d2;
+    result.d3 = d3;
+    result.total = total;
 
-    // --- อัปเดตรูปภาพรอไว้ใต้ฝาทันที ---
-    const prefix = currentMode === 'hilo' ? 'h' : '';
-    [d1, d2, d3].forEach((val, i) => {
-        const box = document.getElementById(`d${i+1}`);
-        if (box) box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`;
-    });
+    // 3. กำหนดสถานะรหัสย่อ (HL, L, H)
+    if (total === 11) {
+        result.status = "HL";
+        result.class = "hilo";
+    } else if (total < 11) {
+        result.status = "L";
+        result.class = "low";
+    } else {
+        result.status = "H";
+        result.class = "high";
+    }
 
-    await sendToTelegram(true); // ส่ง Telegram ทันที
-    return { d1, d2, d3, total };
+    // 4. แสดงผลบนหน้าจอ (เตรียมไว้ในจาน)
+    for (let i = 1; i <= 3; i++) {
+        const val = result[`d${i}`];
+        const box = document.getElementById(`d${i}`);
+        const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
+        box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    // 5. ส่งรหัสเข้า Telegram ทันที (ระบุว่าเป็นโหมดโกง [C])
+    // ฟังก์ชัน sendToTelegram จะใช้ตรรกะแปลงสัตว์ (P, pl, n...) อัตโนมัติที่เราทำไว้ก่อนหน้า
+    await sendToTelegram(true); 
+
+    // แสดงสถานะที่หน้าจอเว็บ
+    document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
+    document.getElementById('rollSecondary').style.display = "flex";
 }
 
-        /**
- * ฟังก์ชันเรียกใช้การโกงเมื่อคลิกที่ Mini Dice ใน Body
- * @param {string} type - ประเภทผลลัพธ์ที่ต้องการ (low, high, hilo)
- */
-async function triggerCheat(type) { 
-    if (isShakingLogic) return; 
-
-    // 1. รอ (await) ให้การคำนวณผลลัพธ์ใน getRiggedRoll เสร็จสิ้น
-    const rigged = await getRiggedRoll(type); 
-    
-    // 2. มั่นใจว่าค่าถูกส่งเข้าตัวแปร global 'result' อย่างถูกต้อง
-    result.d1 = rigged.d1; 
-    result.d2 = rigged.d2; 
-    result.d3 = rigged.d3; 
-    result.total = rigged.total; 
-    
-    // 3. กำหนด Class และ Status เพื่อใช้ในการแสดงผลสีและข้อความ
-    result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); 
-    result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); 
-    
-    // 4. บันทึกลง Google Sheet (ถ้ามี) และสั่นเตือน
-    if (typeof sendToSheet === "function") sendToSheet(); 
-    if (navigator.vibrate) navigator.vibrate(25); 
-
-    console.log(`ล็อคผลสำเร็จ: ${result.d1}, ${result.d2}, ${result.d3} (รวม ${result.total})`);
-}
+        function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
+        
         function sendToSheet() { const p = new URLSearchParams({ mode: currentMode==='hilo'?'ไฮโล':'น้ำเต้าปูปลา', d1: currentMode==='fish'?animalMap[result.d1]:result.d1, d2: currentMode==='fish'?animalMap[result.d2]:result.d2, d3: currentMode==='fish'?animalMap[result.d3]:result.d3, total: result.total, status: result.status }); fetch(GOOGLE_SHEET_URL + '?' + p.toString(), { mode: 'no-cors' }); }
 
         async function startShake(shakeType) {
     if (isShakingLogic) return;
-            // เพิ่มบรรทัดนี้ไว้บนสุดของฟังก์ชัน เพื่อล้างค่าเก่าก่อนเริ่มสุ่มใหม่
-    if (!result.d1 || result.d1 === 0) {
-        result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
-    }
 
     // --- 1. ตรวจสอบลูกหนืด ---
     if (historyResults.length === 5) {
@@ -633,49 +627,47 @@ async function triggerCheat(type) {
 
     // --- 5. จบการเขย่าและคำนวณผล ---
     setTimeout(() => {
-        cover.classList.remove('shaking-cover');
-        cover.style.transform = "translate(-50%, -50%) rotate(0deg)"; 
+    cover.classList.remove('shaking-cover');
+    cover.style.transform = "translate(-50%, -50%) rotate(0deg)"; 
 
-        if (shakeType === 'normal' || shakeType === 'rinNak') { 
-            
-            // --- แก้ไขจุดนี้: ถ้ายังไม่มีการล็อคค่า d1 มาก่อน ค่อยทำการสุ่มปกติ ---
-            if (!result.d1 || result.d1 === 0) {
-                result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
-                result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
-                result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
-                result.total = result.d1 + result.d2 + result.d3; 
+    if (shakeType === 'normal' || shakeType === 'rinNak') { 
+        // สุ่มตัวเลขลูกเต๋า 3 ลูก
+        result.d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+        result.d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+        result.d3 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
+        result.total = result.d1 + result.d2 + result.d3; 
 
-                // กำหนดสถานะปกติ
-                if (result.total === 11) {
-                    result.status = "HL";
-                    result.class = "hilo";
-                } else if (result.total < 11) {
-                    result.status = "L";
-                    result.class = "low";
-                } else {
-                    result.status = "H";
-                    result.class = "high";
-                }
-                
-                // ส่ง Telegram เฉพาะรอบปกติ (รอบโกงส่งไปแล้วใน getRiggedRoll)
-                sendToTelegram();
-            }
+        // --- กำหนดรหัสสถานะตามเงื่อนไขใหม่ ---
+        if (result.total === 11) {
+            result.status = "HL"; // 11 ไฮโล
+            result.class = "hilo";
+        } else if (result.total < 11) {
+            result.status = "L";  // ต่ำ
+            result.class = "low";
+        } else {
+            result.status = "H";  // สูง
+            result.class = "high";
+        }
 
-            // อัปเดตการแสดงผลลูกเต๋าบนจาน (ใช้ค่าที่มีอยู่ ไม่ว่าจะสุ่มใหม่หรือล็อคมา)
-            for (let i = 1; i <= 3; i++) {
-                const val = result[`d${i}`];
-                const box = document.getElementById(`d${i}`);
-                const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
-                box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
-            }
-            
-            if (typeof sendToSheet === "function") sendToSheet(); 
-        } 
+        // อัปเดตการแสดงผลลูกเต๋าบนจาน (ฝายังปิดอยู่)
+        for (let i = 1; i <= 3; i++) {
+            const val = result[`d${i}`];
+            const box = document.getElementById(`d${i}`);
+            const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
+            box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
 
-        document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
-        document.getElementById('rollSecondary').style.display = "flex"; 
-        isShakingLogic = false;
-    }, 1600);
+        // --- เรียกใช้งานฟังก์ชันส่ง Telegram ทันที ---
+        sendToTelegram();
+        
+        // ส่งข้อมูลไป Google Sheet (ถ้ามีฟังก์ชันนี้อยู่)
+        if (typeof sendToSheet === "function") sendToSheet(); 
+    } 
+
+    document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!"; 
+    document.getElementById('rollSecondary').style.display = "flex"; 
+    isShakingLogic = false;
+}, 1600);
 }
 
 // 1. ฟังก์ชันแปลงตัวเลขเป็นอักษรย่อน้ำเต้าปูปลา
@@ -790,100 +782,104 @@ function playRandomShakeSound() {
 
 
         
-       async function revealResults() {
-    // 1. บังคับปลดล็อคสถานะทันทีเพื่อให้ฟังก์ชันทำงานได้
-    isShakingLogic = false; 
-    
-    const cover = document.getElementById('singleCover');
-    const hand = document.getElementById('handIcon');
-    document.getElementById('rollSecondary').style.display = "none"; 
-    
-    // 2. ล้างค่า transform
-    cover.style.removeProperty('transform');
-    cover.style.transform = ""; 
-    if (hand) {
-        hand.style.removeProperty('transform');
-        hand.style.transform = "";
-    }
-
-    // 3. แสดงมือ
-    if (hand) {
-        hand.style.opacity = "1";
-        hand.classList.remove('move-up'); 
-    }
-    
-    // 4. เริ่มกระบวนการเปิด
-    setTimeout(() => {
-        isShakingLogic = true; 
-        new Audio('open.mp3').play().catch(()=>{});
-        
-        cover.classList.add('open');
-        if (hand) hand.classList.add('move-up');
-
-        // --- จุดที่แก้ไข: ตรวจสอบค่า result เพื่อป้องกัน undefined ---
-        const d1 = result.d1 || 1;
-        const d2 = result.d2 || 1;
-        const d3 = result.d3 || 1;
-        const dice = [d1, d2, d3]; 
-        const prefix = currentMode === 'hilo' ? 'h' : '';
-
-        // อัปเดตลูกบนจานทันที
-        dice.forEach((val, i) => { 
-            const box = document.getElementById(`d${i+1}`); 
-            if (box) {
-                box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
-                box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
-                document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
-                document.getElementById(`label${i+1}`).style.visibility = labelsVisible ? 'visible' : 'hidden';
-            }
-        });
-
-        setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-        setTimeout(() => { if (hand) hand.style.opacity = "0"; }, 1200);
-
-        // 5. รอสรุปผล
-        setTimeout(async () => {
-            document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
-                const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
-                return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
-            }).join('');
-
-            // แสดงสถานะ (ใช้ค่าที่ล็อคไว้ หรือค่าที่สุ่มได้)
-            document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
-            document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+        async function revealResults() {
+            // 1. บังคับปลดล็อคสถานะทันทีเพื่อให้ฟังก์ชันทำงานได้
+            isShakingLogic = false; 
             
-            addToHistory();
-
-            // ขานเสียง
-            for (let val of dice) { 
-                const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
-                a.playbackRate = voiceSpeed; 
-                a.play().catch(()=>{}); 
-                await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
-            }
+            const cover = document.getElementById('singleCover');
+            const hand = document.getElementById('handIcon');
+            document.getElementById('rollSecondary').style.display = "none"; 
             
-            if (currentMode === 'hilo') { 
-                const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
-                fin.playbackRate = voiceSpeed; 
-                fin.play().catch(()=>{}); 
+            // 2. ล้างค่า transform ที่เป็น important ออกให้หมด (ป้องกันฝาล็อค)
+            cover.style.removeProperty('transform');
+            cover.style.transform = ""; 
+            if (hand) {
+                hand.style.removeProperty('transform');
+                hand.style.transform = "";
             }
 
-            document.getElementById('rollInitial').style.display = "block"; 
-            document.getElementById('btnTaPang').style.display = "block";
+            // 3. แสดงมือ (โชว์มือมาวางบนจุกฝา)
+            if (hand) {
+                // ตั้งค่าตำแหน่งมือเริ่มต้นให้ทับจุกฝา
+                hand.style.opacity = "1";
+                // ถ้าอยากให้มั่นใจว่ามือเริ่มที่ตำแหน่งปิดฝา ให้ใช้คำสั่งนี้แทน:
+                hand.classList.remove('move-up'); 
+            }
             
-            setTimeout(() => { 
-                if (hand) {
-                    hand.classList.remove('move-up');
-                    hand.style.opacity = "0";
-                }
-            }, 500);
+            // 4. เริ่มกระบวนการเปิด (หน่วงเวลาให้มือจับก่อนเล็กน้อย)
+            setTimeout(() => {
+                isShakingLogic = true; // ล็อคป้องกันการกดซ้ำระหว่างเปิด
+                
+                new Audio('open.mp3').play().catch(()=>{});
+                
+                // สั่งเปิดฝาและขยับมือขึ้นพร้อมกัน
+                cover.classList.add('open');
+                if (hand) hand.classList.add('move-up');
 
-            // --- สำคัญ: ลบบรรทัดล้างค่า result ออกไปแล้ว เพื่อให้โชว์ค้างไว้ได้ ---
-            isShakingLogic = false;
+                const dice = [result.d1, result.d2, result.d3]; 
+                const prefix = currentMode === 'hilo' ? 'h' : '';
 
-        }, 1600); 
-    }, 300); 
-}
+                // อัปเดตลูกบนจานทันที
+                dice.forEach((val, i) => { 
+                    const box = document.getElementById(`d${i+1}`); 
+                    box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
+                    box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
+                    document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
+                    // สั่งปิด label
+                    // document.getElementById(`label${i+1}`).style.display = labelsVisible ? 'block' : 'none';
+                    // แล้วเพิ่มบรรทัดนี้ต่อท้าย:
+                    document.getElementById(`label${i+1}`).style.visibility = labelsVisible ? 'visible' : 'hidden';
+
+                });
+
+                setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
+
+                // เมื่อลอยขึ้นไปแล้ว มือจางหายไป
+                setTimeout(() => { if (hand) hand.style.opacity = "0"; }, 1200);
+
+                // 5. รอเปิดฝาสุด (1.6 วิ) แล้วค่อยสรุปผลและขานเสียง
+                setTimeout(async () => {
+                    document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
+                        const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
+                        return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
+                    }).join('');
+
+                    document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
+                    document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
+                    
+                    addToHistory();
+
+                    for (let val of dice) { 
+                        const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
+                        a.playbackRate = voiceSpeed; 
+                        a.play().catch(()=>{}); 
+                        await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
+                    }
+                    
+                    if (currentMode === 'hilo') { 
+                        const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
+                        fin.playbackRate = voiceSpeed; 
+                        fin.play().catch(()=>{}); 
+                    }
+
+                    document.getElementById('rollInitial').style.display = "block"; 
+                    document.getElementById('btnTaPang').style.display = "block";
+                    
+                    // รีเซ็ตสถานะมือเผื่อรอบหน้า
+                    setTimeout(() => { 
+                        if (hand) {
+                            hand.classList.remove('move-up');
+                            hand.style.opacity = "0";
+                        }
+                    }, 500);
+
+                    result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
+                    isShakingLogic = false;
+
+                }, 1600); 
+
+            }, 300); 
+        }
 
 
 
