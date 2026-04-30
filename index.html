@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.95</title>
+    <title>HILO Master Pro - v2.5.8</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -176,66 +176,7 @@
         @keyframes shakePlate { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 2px); } }
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
 
-        /* --- ส่วนสำหรับจอคอมพิวเตอร์และแท็บเล็ต (Default) --- */
-#clockDisplay {
-    display: inline-block !important; /* บังคับแสดงผลบนจอใหญ่ */
-    color: #ffcc00;
-    font-size: 22px;
-    font-weight: bold;
-    background: linear-gradient(180deg, #222 0%, #111 100%);
-    padding: 8px 15px;
-    border-radius: 8px;
-    vertical-align: middle;
-    margin-right: 12px;
-    font-family: 'monospace';
-    border: 2px solid #ffcc00;
-    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
-    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
-    min-width: 100px;
-    text-align: center;
-}
-
-.results-tray {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.result-text {
-    font-size: 20px;
-    color: #aaa;
-    font-weight: bold;
-}
-
-/* --- การตั้งค่าสำหรับมือถือ (Mobile) --- */
-@media (max-width: 600px) {
-    /* 1. สั่งซ่อนนาฬิกาบนมือถือ */
-    #clockDisplay {
-        display: none !important;
-    }
-
-    /* 2. ปรับถาดแสดงผลด้านล่างให้จัดวางสวยงามขึ้นเมื่อไม่มีนาฬิกา */
-    .results-tray {
-        display: flex !important;
-        justify-content: center !important; /* จัดให้อยู่กึ่งกลางหน้าจอ */
-        align-items: center !important;
-        gap: 10px !important;
-        padding: 10px !important;
-        flex-wrap: nowrap !important; /* ป้องกันการตกแถว */
-    }
-
-    /* 3. ลดขนาดตัวอักษรเล็กน้อยเพื่อให้พอดีกับจอมือถือ */
-    .results-tray span {
-        font-size: 16px !important;
-    }
-
-    /* 4. ปรับขนาดปุ่มทาแป้งให้เล็กลงเล็กน้อย */
-    .btn-powder-small {
-        padding: 5px 10px !important;
-        font-size: 14px !important;
-    }
-
-        
+        @media (max-width: 600px) { 
     .dice-area { 
         height: 320px !important; 
         background-size: 380px !important; 
@@ -339,35 +280,6 @@
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
-        /* --- เพิ่มโค้ดส่วนนี้เข้าไปใน @media (max-width: 600px) เดิมของคุณ --- */
-
-/* 1. ซ่อนนาฬิกาบนมือถือ */
-.clock-container, 
-#clockDisplay, 
-.digital-clock-gold {
-    display: none !important;
-}
-
-/* 2. ปรับโครงสร้างแถบสถานะด้านล่างให้จัดผลล่าสุดไว้ตรงกลาง */
-.footer-status-bar {
-    display: flex !important;
-    justify-content: center !important; /* จัดให้อยู่กึ่งกลางหน้าจอ */
-    padding: 10px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* 3. ปรับขนาดและตำแหน่งของผลล่าสุดให้เด่นชัดขึ้นบนมือถือ */
-.result-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important; /* จัดตัวอักษรและเต๋าจิ๋วให้ตรงกัน */
-    width: auto !important;
-}
-
-.mini-dice-row {
-    gap: 8px !important; /* เพิ่มระยะห่างระหว่างเต๋าจิ๋วเล็กน้อยให้กดดูง่ายขึ้น */
-}
 
 
     </style>
@@ -461,12 +373,23 @@
 </div>
         <div class="bottom-section">
             <div id="bottomTray" class="results-tray">
-    <div class="bottom-section">
-    <div id="bottomTray" class="results-tray">
-        <!-- ลบ style="..." ออกเพื่อให้ CSS ภายนอกควบคุมได้ 100% -->
-        <div id="clockDisplay">00:00:00</div>
-        
-        
+                <div id="clockDisplay" style="
+    color: #ffcc00; /* สีตัวเลขเหลืองทอง */
+    font-size: 22px; 
+    font-weight: bold; 
+    background: linear-gradient(180deg, #222 0%, #111 100%); /* พื้นหลังไล่เฉดดำ */
+    padding: 8px 15px; 
+    border-radius: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 12px;
+    font-family: 'monospace';
+    border: 2px solid #ffcc00; /* กรอบเหลืองทอง */
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); /* แสงฟุ้งรอบกรอบ */
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5); /* แสงฟุ้งที่ตัวเลข */
+    min-width: 100px;
+    text-align: center;
+">00:00:00</div>
                 <span style="font-size:20px; color:#aaa; font-weight:bold;">ผลล่าสุด:</span>
                 <div id="lastDiceRow" style="display:flex; gap:6px;">
                     <div class="mini-dice-box" onclick="triggerCheat('low')">?</div>
