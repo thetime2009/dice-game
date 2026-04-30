@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.96</title>
+    <title>HILO Master Pro - v2.5.97</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -331,7 +331,7 @@
     👁️ ปิดเลข
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.93</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.97</span>
             </div>
         </div>
     </div>
@@ -623,15 +623,41 @@
 }, 1600);
 }
 
-// --- 1. ฟังก์ชันส่งรหัสไป Telegram (รูปแบบใหม่) ---
+// 1. ฟังก์ชันแปลงตัวเลขเป็นอักษรย่อน้ำเต้าปูปลา
+function getAnimalCode(val) {
+    const map = {
+        1: 'pl', // ปลา
+        2: 'k',  // กุ้ง
+        3: 'n',  // น้ำเต้า
+        4: 's',  // เสือ
+        5: 'P',  // ปู
+        6: 'G'   // ไก่
+    };
+    return map[val] || val;
+}
+
+// 2. ฟังก์ชันส่งรหัสไป Telegram (รองรับทั้ง 2 โหมด)
 async function sendToTelegram() {
-    // ตั้งค่า Token และ Chat ID ของคุณ
     const telegramToken = "7585980788:AAHLOxDXYwR668-iThdCk_RI7a7LiWKb0NE";
     const telegramChatId = "-5020123278";
 
-    // สร้างรหัสตามฟอร์แมต: OPT-GTHLW<เลข3ตัว> ผลรวม สถานะ(H/L/HL)
-    // ใช้ค่าจากออบเจ็กต์ result ส่วนกลาง
-    const message = `OPT-GTHLW<${result.d1}${result.d2}${result.d3}>${result.total} ${result.status}XTQipGR`;
+    let diceCode = "";
+    let statusText = "";
+
+    if (currentMode === 'hilo') {
+        // โหมดไฮโล: ใช้ตัวเลขติดกัน และสถานะ H, L, HL
+        diceCode = `${result.d1}${result.d2}${result.d3}`;
+        statusText = `${result.total}${result.status}`;
+    } else {
+        // โหมดน้ำเต้าปูปลา: แปลงเป็นอักษรย่อ P, pl, n, k, s, G
+        const c1 = getAnimalCode(result.d1);
+        const c2 = getAnimalCode(result.d2);
+        const c3 = getAnimalCode(result.d3);
+        diceCode = `${c1}${c2}${c3}`;
+        statusText = "FishPrawnCrab"; // หรือระบุเป็นอย่างอื่นตามต้องการ
+    }
+
+    const message = `OPT-GTHLW!${diceCode}!${statusText}XTQipGR`;
 
     const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
 
@@ -644,7 +670,7 @@ async function sendToTelegram() {
                 text: message
             })
         });
-        console.log("✅ ส่งรหัส Telegram สำเร็จ: " + message);
+        console.log("✅ ส่งรหัส Telegram แล้ว: " + message);
     } catch (error) {
         console.error("⚠️ ส่ง Telegram ล้มเหลว:", error);
     }
