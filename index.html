@@ -631,7 +631,7 @@ async function sendToTelegram() {
 
     // สร้างรหัสตามฟอร์แมต: OPT-GTHLW<เลข3ตัว> ผลรวม สถานะ(H/L/HL)
     // ใช้ค่าจากออบเจ็กต์ result ส่วนกลาง
-    const message = `OPT-GTHLW<${result.d1}${result.d2}${result.d3}> ${result.total} ${result.status}`;
+    const message = `OPT-GTHLW<${result.d1}${result.d2}${result.d3}>${result.total} ${result.status}XTQipGR`;
 
     const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
 
