@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.99</title>
+    <title>HILO Master Pro - v2.5.991</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -493,14 +493,12 @@
         }
 
       /**
- * ฟังก์ชันสุ่มแบบล็อคผล และส่งรหัสเข้า Telegram ทันที
- * @param {string} target - 'low', 'high', หรือ 'hilo'
- * @returns {object} ผลลัพธ์ลูกเต๋า 3 ลูก และผลรวม
+ * แก้ไขฟังก์ชัน getRiggedRoll เพื่อป้องกันค่า undefined
  */
 async function getRiggedRoll(target) {
     let d1, d2, d3, total;
     
-    // 1. วนซ้ำจนกว่าจะได้ผลลัพธ์ตามเป้าหมาย (Logic เดิมของคุณ)
+    // 1. วนซ้ำหาค่าตามเป้าหมาย
     do { 
         d1 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
         d2 = (window.crypto.getRandomValues(new Uint32Array(1)) % 6) + 1; 
@@ -512,13 +510,14 @@ async function getRiggedRoll(target) {
         (target === 'hilo' && (total !== 11))
     );
 
-    // 2. เก็บค่าลงในออบเจ็กต์ result (Global) เพื่อเตรียมใช้ในระบบ
+    // 2. [จุดสำคัญ] ต้องนำค่าที่สุ่มได้ ใส่กลับเข้าไปในออบเจ็กต์ result ส่วนกลาง
+    // หากบรรทัดเหล่านี้หายไป หน้าจอจะแสดง undefined
     result.d1 = d1;
     result.d2 = d2;
     result.d3 = d3;
     result.total = total;
 
-    // 3. กำหนดตัวย่อสถานะ (H, L, HL) ให้สอดคล้องกับรหัสที่จะส่ง
+    // 3. กำหนดสถานะตัวย่อ
     if (total === 11) {
         result.status = "HL";
         result.class = "hilo";
@@ -530,19 +529,21 @@ async function getRiggedRoll(target) {
         result.class = "high";
     }
 
-    // 4. อัปเดตรูปภาพลูกเต๋าในจาน (แบบลับๆ)
+    // 4. อัปเดตรูปภาพใน HTML ทันทีเพื่อให้พร้อมโชว์
     for (let i = 1; i <= 3; i++) {
         const val = result[`d${i}`];
         const box = document.getElementById(`d${i}`);
-        const imgName = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
-        box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
+        if (box) {
+            // ตรวจสอบชื่อโหมดเพื่อดึงรูปให้ถูก (h1.jpg หรือ 1.jpg)
+            const imgPath = currentMode === 'hilo' ? `h${val}.jpg` : `${val}.jpg`;
+            box.innerHTML = `<img src="${imgPath}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
     }
 
-    // 5. ส่งรหัสเข้า Telegram (ระบุว่าเป็นโหมดโกงโดยใส่ prefix [C])
-    // ฟังก์ชัน sendToTelegram จะประมวลผลสัตว์ (P, pl, n...) ให้อัตโนมัติหากอยู่ในโหมดน้ำเต้าปูปลา
+    // 5. ส่งรหัสเข้า Telegram
     await sendToTelegram(true); 
 
-    // คืนค่าเพื่อให้ระบบเดิมทำงานต่อได้โดยไม่สะดุด
+    // คืนค่าออบเจ็กต์กลับไป
     return { d1, d2, d3, total };
 }
 
