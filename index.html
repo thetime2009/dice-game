@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.991</title>
+    <title>HILO Master Pro - v2.5.992</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -553,6 +553,8 @@ async function getRiggedRoll(target) {
 
         async function startShake(shakeType) {
     if (isShakingLogic) return;
+            // เพิ่มบรรทัดนี้ไว้บนสุดของฟังก์ชัน เพื่อล้างค่าเก่าก่อนเริ่มสุ่มใหม่
+    result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" };
 
     // --- 1. ตรวจสอบลูกหนืด ---
     if (historyResults.length === 5) {
@@ -874,7 +876,7 @@ function playRandomShakeSound() {
                         }
                     }, 500);
 
-                    result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
+                   // result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
                     isShakingLogic = false;
 
                 }, 1600); 
