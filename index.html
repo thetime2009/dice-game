@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.991</title>
+    <title>HILO Master Pro - v2.5.992</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -550,12 +550,9 @@ async function triggerCheat(target) {
     // หมายเหตุ: ฟังก์ชันนี้จะจัดการรูปแบบรหัส OPT-GTHLW! ตามที่คุณเขียนไว้
     await sendToTelegram(); 
 
-    // อัปเดตสถานะที่หน้าจอเว็บ
-    const statusLabel = document.getElementById('statusLabel');
-    if (statusLabel) statusLabel.innerText = "ปิดฝาแล้ว!";
     
-    const rollSecondary = document.getElementById('rollSecondary');
-    if (rollSecondary) rollSecondary.style.display = "flex";
+    
+    
     sendToSheet();
     
 }
