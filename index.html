@@ -374,17 +374,21 @@
         <div class="bottom-section">
             <div id="bottomTray" class="results-tray">
                 <div id="clockDisplay" style="
-    color: #fff; 
-    font-size: 24px; 
+    color: #ffcc00; /* สีตัวเลขเหลืองทอง */
+    font-size: 22px; 
     font-weight: bold; 
-    background: rgba(0,0,0,0.5); 
-    padding: 10px 20px; 
-    border-radius: 10px;
+    background: linear-gradient(180deg, #222 0%, #111 100%); /* พื้นหลังไล่เฉดดำ */
+    padding: 8px 15px; 
+    border-radius: 8px;
     display: inline-block;
     vertical-align: middle;
-    margin-right: 15px;
+    margin-right: 12px;
     font-family: 'monospace';
-    border: 1px solid #444;
+    border: 2px solid #ffcc00; /* กรอบเหลืองทอง */
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); /* แสงฟุ้งรอบกรอบ */
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5); /* แสงฟุ้งที่ตัวเลข */
+    min-width: 100px;
+    text-align: center;
 ">00:00:00</div>
                 <span style="font-size:20px; color:#aaa; font-weight:bold;">ผลล่าสุด:</span>
                 <div id="lastDiceRow" style="display:flex; gap:6px;">
