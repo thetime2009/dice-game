@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.93</title>
+    <title>HILO Master Pro - v2.5.94</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -724,6 +724,10 @@ function playRandomShakeSound() {
                     document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
                     
                     addToHistory();
+                    // --- ส่วนที่เพิ่มใหม่: ส่งข้อมูลไป Telegram ---
+            const fullResultMsg = `${dice.join('-')} สรุป: ${statusText}`;
+            sendToTelegram(fullResultMsg, currentMode === 'hilo' ? 'ไฮ-โล' : 'น้ำเต้าปูปลา');
+            // -------------------------------------------
 
                     for (let val of dice) { 
                         const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
@@ -847,6 +851,50 @@ function resetGameSystem() {
     }
 }
 
+        /**
+ * ฟังก์ชันสำหรับส่งผลการทอยเข้า Telegram
+ * @param {string} resultText - ข้อความสรุปผล (เช่น "6-6-5 (17 แต้ม)")
+ * @param {string} modeName - โหมดการเล่น (เช่น "ไฮ-โล")
+ */
+async function sendToTelegram(resultText, modeName) {
+    const telegramToken = "7585980788:AAHLOxDXYwR668-iThdCk_RI7a7LiWKb0NE";
+    const telegramChatId = "-5020123278";
+    
+    // ดึงเวอร์ชันจากระบบ (ที่เราทำไว้ในฟังก์ชันก่อนหน้า)
+    const version = document.title.split('-')[1] || "v2.5.91";
+    
+    // สร้างรูปแบบข้อความที่จะส่ง
+    const message = `
+🎲 *ผลการทอยใหม่!*
+------------------
+📌 โหมด: ${modeName}
+📊 ผลลัพธ์: ${resultText}
+🕒 เวลา: ${new Date().toLocaleTimeString()}
+📱 เวอร์ชัน: ${version}
+------------------`.trim();
+
+    const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: telegramChatId,
+                text: message,
+                parse_mode: 'Markdown' // ช่วยให้ข้อความดูสวยงาม (ตัวหนา/เอียง)
+            })
+        });
+
+        if (response.ok) {
+            console.log("✅ ส่งข้อมูลไป Telegram สำเร็จ");
+        } else {
+            console.error("❌ ส่งข้อมูลไม่สำเร็จ:", response.statusText);
+        }
+    } catch (error) {
+        console.error("⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อ Telegram:", error);
+    }
+}
 
     </script>
 </body>
