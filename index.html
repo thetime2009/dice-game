@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.99</title>
+    <title>HILO Master Pro - v2.5.991</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -552,13 +552,12 @@ async function triggerCheat(target) {
 
     // อัปเดตสถานะที่หน้าจอเว็บ
     const statusLabel = document.getElementById('statusLabel');
-    if (statusLabel) statusLabel.innerText = "เตรียมผลสำเร็จ!";
+    if (statusLabel) statusLabel.innerText = "ปิดฝาแล้ว!";
     
     const rollSecondary = document.getElementById('rollSecondary');
     if (rollSecondary) rollSecondary.style.display = "flex";
-
-    // สั่นแจ้งเตือนเบาๆ
-    if (navigator.vibrate) navigator.vibrate(25);
+    sendToSheet();
+    
 }
 
         //function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
