@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.9</title>
+    <title>HILO Master Pro - v2.5.91</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -312,7 +312,7 @@
     👁️ ปิดเลข
 </button>
 
-                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.9</span>
+                <span style="color:rgba(255,255,255,0.4); font-size:10px; margin-left:5px;">V.2.5.91</span>
             </div>
         </div>
     </div>
@@ -410,24 +410,19 @@
     <div style="background: #1a1a1a; width: 85%; max-width: 380px; padding: 40px 20px; border-radius: 35px; border: 3px solid #f1c40f; text-align: center; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4);">
         <div style="font-size: 70px; margin-bottom: 15px;">⚠️</div>
         <h2 style="color:#f1c40f; margin:0 0 10px; font-size: 28px; font-weight: bold;">ตรวจพบลูกหนืด!</h2>
-        <p id="stickyMsg" style="color:#ffffff; line-height: 1.6; font-size: 18px; margin-bottom: 25px;"></p>
+        <p id="stickyMsg" style="color:#ffffff; line-height: 1.6; font-size: 18px; margin-bottom: 25px;">ผลลัพธ์ออกซ้ำกันเกิน 5 ครั้ง คุณต้องการจัดการอย่างไร?</p>
         
-        <button onclick="location.reload()" style="
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); 
-            color: #111; 
-            border: none; 
-            padding: 15px 40px; 
-            border-radius: 20px; 
-            font-size: 22px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            box-shadow: 0 6px 0 #967a06; 
-            transition: 0.1s;
-            width: 100%;
-            max-width: 250px;
-        ">
-            ตกลง (รีเฟรช)
-        </button>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+    <!-- ทางเลือกที่ 1: รีเซ็ตทั้งหน้าจอ (ค่าเริ่มต้นเดิม) -->
+    <button onclick="location.reload()" style="flex: 1; padding: 12px; background: #f1c40f; color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">
+        รีเซ็ตระบบ
+    </button>
+
+    <!-- ทางเลือกที่ 2: เล่นต่อ (ใช้ฟังก์ชันที่เราสร้างใหม่) -->
+    <button onclick="continuePlaying()" style="flex: 1; padding: 12px; background: #444; color: #fff; border: 1px solid #666; border-radius: 10px; font-weight: bold; cursor: pointer;">
+        เล่นต่อ (ล้างประวัติ)
+    </button>
+</div>
     </div>
 </div>
 
@@ -590,6 +585,27 @@
         isShakingLogic = false;
     }, 1600);
 }
+
+/**
+ * ฟังก์ชันสำหรับปิด Popup และล้างประวัติการออกซ้ำ
+ * เพื่อให้ผู้ใช้เล่นต่อได้โดยไม่โดนเตือนซ้ำในทันที
+ */
+function continuePlaying() {
+    const popup = document.getElementById('stickyPopup');
+    if (popup) {
+        popup.style.display = 'none';
+        
+        // ล้างค่าใน Array ประวัติผลลัพธ์ เพื่อเริ่มนับการซ้ำใหม่
+        // โดยใช้การล้างความยาวของ Array เดิมที่มีอยู่
+        if (typeof historyResults !== 'undefined') {
+            historyResults.length = 0; 
+            console.log("ประวัติถูกรีเซ็ตแล้ว - เริ่มนับการซ้ำใหม่");
+        }
+    }
+}
+
+
+        
 
 // 1. สร้าง Array เก็บรายชื่อไฟล์เสียง
 const shakeSounds = [
