@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.92</title>
+    <title>HILO Master Pro - v2.5.93</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -177,8 +177,30 @@
         @keyframes shakeCover { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-51%, -51%) rotate(-1deg); } 50% { transform: translate(-49%, -49%) rotate(1deg); } }
 
         /* สไตล์สำหรับการแสดงผลปกติ (คอมพิวเตอร์/แท็บเล็ต) */
+/* --- 1. ตั้งค่าเริ่มต้นสำหรับคอมพิวเตอร์และแท็บเล็ต --- */
 #clockDisplay {
-    display: inline-block; /* แสดงผลปกติ */
+    display: inline-block !important; /* บังคับให้แสดงผลบนจอใหญ่ */
+    color: #ffcc00;
+    font-size: 22px;
+    font-weight: bold;
+    background: linear-gradient(180deg, #222 0%, #111 100%);
+    padding: 8px 15px;
+    border-radius: 8px;
+    vertical-align: middle;
+    margin-right: 12px;
+    font-family: 'monospace';
+    border: 2px solid #ffcc00;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+    min-width: 100px;
+    text-align: center;
+}
+
+.results-tray {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* จัดเรียงจากซ้ายไปขวาบนคอม */
+    gap: 15px;
 }
 
 /* --- การตั้งค่าสำหรับมือถือ (Mobile) --- */
