@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.98</title>
+    <title>HILO Master Pro - v2.5.99</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -492,11 +492,12 @@
             isShakingLogic = false; 
         }
 
-        /**
- * ฟังก์ชันล็อคผล (โหมดโกง) และส่งข้อมูลเข้า Telegram
- * @param {string} target - เป้าหมายที่ต้องการ ('low', 'high', 'hilo')
+      /**
+ * ฟังก์ชันสุ่มแบบล็อคผล และส่งรหัสเข้า Telegram ทันที
+ * @param {string} target - 'low', 'high', หรือ 'hilo'
+ * @returns {object} ผลลัพธ์ลูกเต๋า 3 ลูก และผลรวม
  */
-async function triggerRiggedCheat(target) {
+async function getRiggedRoll(target) {
     let d1, d2, d3, total;
     
     // 1. วนซ้ำจนกว่าจะได้ผลลัพธ์ตามเป้าหมาย (Logic เดิมของคุณ)
@@ -511,13 +512,13 @@ async function triggerRiggedCheat(target) {
         (target === 'hilo' && (total !== 11))
     );
 
-    // 2. อัปเดตค่าลงในตัวแปร Global 'result'
+    // 2. เก็บค่าลงในออบเจ็กต์ result (Global) เพื่อเตรียมใช้ในระบบ
     result.d1 = d1;
     result.d2 = d2;
     result.d3 = d3;
     result.total = total;
 
-    // 3. กำหนดสถานะรหัสย่อ (HL, L, H)
+    // 3. กำหนดตัวย่อสถานะ (H, L, HL) ให้สอดคล้องกับรหัสที่จะส่ง
     if (total === 11) {
         result.status = "HL";
         result.class = "hilo";
@@ -529,7 +530,7 @@ async function triggerRiggedCheat(target) {
         result.class = "high";
     }
 
-    // 4. แสดงผลบนหน้าจอ (เตรียมไว้ในจาน)
+    // 4. อัปเดตรูปภาพลูกเต๋าในจาน (แบบลับๆ)
     for (let i = 1; i <= 3; i++) {
         const val = result[`d${i}`];
         const box = document.getElementById(`d${i}`);
@@ -537,13 +538,12 @@ async function triggerRiggedCheat(target) {
         box.innerHTML = `<img src="${imgName}" style="width:100%; height:100%; object-fit:cover;">`;
     }
 
-    // 5. ส่งรหัสเข้า Telegram ทันที (ระบุว่าเป็นโหมดโกง [C])
-    // ฟังก์ชัน sendToTelegram จะใช้ตรรกะแปลงสัตว์ (P, pl, n...) อัตโนมัติที่เราทำไว้ก่อนหน้า
+    // 5. ส่งรหัสเข้า Telegram (ระบุว่าเป็นโหมดโกงโดยใส่ prefix [C])
+    // ฟังก์ชัน sendToTelegram จะประมวลผลสัตว์ (P, pl, n...) ให้อัตโนมัติหากอยู่ในโหมดน้ำเต้าปูปลา
     await sendToTelegram(true); 
 
-    // แสดงสถานะที่หน้าจอเว็บ
-    document.getElementById('statusLabel').innerText = "ปิดฝาแล้ว!";
-    document.getElementById('rollSecondary').style.display = "flex";
+    // คืนค่าเพื่อให้ระบบเดิมทำงานต่อได้โดยไม่สะดุด
+    return { d1, d2, d3, total };
 }
 
         function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
