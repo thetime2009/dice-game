@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.94</title>
+    <title>HILO Master Pro - v2.5.95</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -659,107 +659,100 @@ function playRandomShakeSound() {
 
         
         async function revealResults() {
-            // 1. บังคับปลดล็อคสถานะทันทีเพื่อให้ฟังก์ชันทำงานได้
-            isShakingLogic = false; 
+    // 1. ปลดล็อคสถานะและเตรียม UI
+    isShakingLogic = false; 
+    
+    const cover = document.getElementById('singleCover');
+    const hand = document.getElementById('handIcon');
+    document.getElementById('rollSecondary').style.display = "none"; 
+    
+    // ล้างค่า CSS Transform เพื่อป้องกันฝาค้าง
+    cover.style.removeProperty('transform');
+    cover.style.transform = ""; 
+    if (hand) {
+        hand.style.removeProperty('transform');
+        hand.style.transform = "";
+        hand.style.opacity = "1";
+        hand.classList.remove('move-up'); 
+    }
+    
+    // 2. เริ่มกระบวนการเปิด (หน่วงเวลาให้มือขยับมาจับฝา)
+    setTimeout(() => {
+        isShakingLogic = true; 
+        new Audio('open.mp3').play().catch(()=>{});
+        
+        cover.classList.add('open');
+        if (hand) hand.classList.add('move-up');
+
+        const dice = [result.d1, result.d2, result.d3]; 
+        const prefix = currentMode === 'hilo' ? 'h' : '';
+
+        // อัปเดตลูกเต๋าและ Label บนจาน
+        dice.forEach((val, i) => { 
+            const box = document.getElementById(`d${i+1}`); 
+            box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
+            box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
+            document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
+            document.getElementById(`label${i+1}`).style.visibility = labelsVisible ? 'visible' : 'hidden';
+        });
+
+        setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
+        setTimeout(() => { if (hand) hand.style.opacity = "0"; }, 1200);
+
+        // 3. รอเปิดฝาสุด (1.6 วิ) เพื่อสรุปผลและส่ง Telegram
+        setTimeout(async () => {
+            // อัปเดตผลล่าสุดด้านล่าง (Mini Dice)
+            document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
+                const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
+                return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
+            }).join('');
+
+            // กำหนดข้อความสรุปผล
+            const statusText = `${result.status} (${result.total})`;
+            document.getElementById('statusLabel').innerText = statusText;
+            document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
             
-            const cover = document.getElementById('singleCover');
-            const hand = document.getElementById('handIcon');
-            document.getElementById('rollSecondary').style.display = "none"; 
-            
-            // 2. ล้างค่า transform ที่เป็น important ออกให้หมด (ป้องกันฝาล็อค)
-            cover.style.removeProperty('transform');
-            cover.style.transform = ""; 
-            if (hand) {
-                hand.style.removeProperty('transform');
-                hand.style.transform = "";
-            }
+            addToHistory();
 
-            // 3. แสดงมือ (โชว์มือมาวางบนจุกฝา)
-            if (hand) {
-                // ตั้งค่าตำแหน่งมือเริ่มต้นให้ทับจุกฝา
-                hand.style.opacity = "1";
-                // ถ้าอยากให้มั่นใจว่ามือเริ่มที่ตำแหน่งปิดฝา ให้ใช้คำสั่งนี้แทน:
-                hand.classList.remove('move-up'); 
-            }
-            
-            // 4. เริ่มกระบวนการเปิด (หน่วงเวลาให้มือจับก่อนเล็กน้อย)
-            setTimeout(() => {
-                isShakingLogic = true; // ล็อคป้องกันการกดซ้ำระหว่างเปิด
-                
-                new Audio('open.mp3').play().catch(()=>{});
-                
-                // สั่งเปิดฝาและขยับมือขึ้นพร้อมกัน
-                cover.classList.add('open');
-                if (hand) hand.classList.add('move-up');
-
-                const dice = [result.d1, result.d2, result.d3]; 
-                const prefix = currentMode === 'hilo' ? 'h' : '';
-
-                // อัปเดตลูกบนจานทันที
-                dice.forEach((val, i) => { 
-                    const box = document.getElementById(`d${i+1}`); 
-                    box.innerHTML = `<img src="${prefix}${val}.jpg" style="width:100%; height:100%; object-fit:cover;">`; 
-                    box.style.borderColor = (val===1||val===4) ? "var(--red-die)" : "transparent"; 
-                    document.getElementById(`label${i+1}`).innerText = currentMode === 'hilo' ? val : animalMap[val]; 
-                    // สั่งปิด label
-                    // document.getElementById(`label${i+1}`).style.display = labelsVisible ? 'block' : 'none';
-                    // แล้วเพิ่มบรรทัดนี้ต่อท้าย:
-                    document.getElementById(`label${i+1}`).style.visibility = labelsVisible ? 'visible' : 'hidden';
-
-                });
-
-                setTimeout(() => { document.getElementById('diceGroup').style.opacity = "1"; }, 150);
-
-                // เมื่อลอยขึ้นไปแล้ว มือจางหายไป
-                setTimeout(() => { if (hand) hand.style.opacity = "0"; }, 1200);
-
-                // 5. รอเปิดฝาสุด (1.6 วิ) แล้วค่อยสรุปผลและขานเสียง
-                setTimeout(async () => {
-                    document.getElementById('lastDiceRow').innerHTML = dice.map((v, idx) => { 
-                        const cheatType = idx === 0 ? 'low' : (idx === 1 ? 'hilo' : 'high'); 
-                        return `<div class="mini-dice-box" onclick="triggerCheat('${cheatType}')" style="border:1px solid ${(v===1||v===4)?'var(--red-die)':'#ddd'}"><img src="${prefix}${v}.jpg" style="width:100%; height:100%; object-fit:cover;"></div>`; 
-                    }).join('');
-
-                    document.getElementById('statusLabel').innerText = `${result.status} (${result.total})`;
-                    document.getElementById('statusLabel').style.color = result.class === 'low' ? '#3498db' : (result.class === 'high' ? '#2ecc71' : 'var(--red-die)');
-                    
-                    addToHistory();
-                    // --- ส่วนที่เพิ่มใหม่: ส่งข้อมูลไป Telegram ---
+            // --- ส่วนส่งข้อมูลไป Telegram ---
+            // สร้างข้อความประกอบด้วยเลข 3 ลูก และสรุปผล (เช่น 6-6-5 สรุป: สูง (17))
             const fullResultMsg = `${dice.join('-')} สรุป: ${statusText}`;
             sendToTelegram(fullResultMsg, currentMode === 'hilo' ? 'ไฮ-โล' : 'น้ำเต้าปูปลา');
-            // -------------------------------------------
+            // -----------------------------
 
-                    for (let val of dice) { 
-                        const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
-                        a.playbackRate = voiceSpeed; 
-                        a.play().catch(()=>{}); 
-                        await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
-                    }
-                    
-                    if (currentMode === 'hilo') { 
-                        const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
-                        fin.playbackRate = voiceSpeed; 
-                        fin.play().catch(()=>{}); 
-                    }
+            // 4. การขานเสียง (Voice Announcement)
+            for (let val of dice) { 
+                const a = new Audio(`${(currentMode === 'hilo') ? 'n' : 'a'}${val}.mp3`); 
+                a.playbackRate = voiceSpeed; 
+                a.play().catch(()=>{}); 
+                await new Promise(r => setTimeout(r, 1100 / voiceSpeed)); 
+            }
+            
+            if (currentMode === 'hilo') { 
+                const fin = new Audio(result.total === 11 ? "hilo11.mp3" : (result.total <= 10 ? "low.mp3" : "high.mp3")); 
+                fin.playbackRate = voiceSpeed; 
+                fin.play().catch(()=>{}); 
+            }
 
-                    document.getElementById('rollInitial').style.display = "block"; 
-                    document.getElementById('btnTaPang').style.display = "block";
-                    
-                    // รีเซ็ตสถานะมือเผื่อรอบหน้า
-                    setTimeout(() => { 
-                        if (hand) {
-                            hand.classList.remove('move-up');
-                            hand.style.opacity = "0";
-                        }
-                    }, 500);
+            // คืนค่าปุ่มกดและรีเซ็ตสถานะมือ
+            document.getElementById('rollInitial').style.display = "block"; 
+            document.getElementById('btnTaPang').style.display = "block";
+            
+            setTimeout(() => { 
+                if (hand) {
+                    hand.classList.remove('move-up');
+                    hand.style.opacity = "0";
+                }
+            }, 500);
 
-                    result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
-                    isShakingLogic = false;
+            // รีเซ็ตตัวแปรเพื่อเริ่มรอบใหม่
+            result = { d1: 0, d2: 0, d3: 0, total: 0, status: "", class: "" }; 
+            isShakingLogic = false;
 
-                }, 1600); 
+        }, 1600); 
 
-            }, 300); 
-        }
+    }, 300); 
+}
 
 
 
