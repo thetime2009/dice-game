@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Dice Game">
 
     <meta name="theme-color" content="#000000">
-    <title>HILO Master Pro - v2.5.8</title>
+    <title>HILO Master Pro - v2.5.9</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { 
@@ -279,6 +279,35 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+        /* --- เพิ่มโค้ดส่วนนี้เข้าไปใน @media (max-width: 600px) เดิมของคุณ --- */
+
+/* 1. ซ่อนนาฬิกาบนมือถือ */
+.clock-container, 
+#clockDisplay, 
+.digital-clock-gold {
+    display: none !important;
+}
+
+/* 2. ปรับโครงสร้างแถบสถานะด้านล่างให้จัดผลล่าสุดไว้ตรงกลาง */
+.footer-status-bar {
+    display: flex !important;
+    justify-content: center !important; /* จัดให้อยู่กึ่งกลางหน้าจอ */
+    padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 3. ปรับขนาดและตำแหน่งของผลล่าสุดให้เด่นชัดขึ้นบนมือถือ */
+.result-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important; /* จัดตัวอักษรและเต๋าจิ๋วให้ตรงกัน */
+    width: auto !important;
+}
+
+.mini-dice-row {
+    gap: 8px !important; /* เพิ่มระยะห่างระหว่างเต๋าจิ๋วเล็กน้อยให้กดดูง่ายขึ้น */
 }
 
 
