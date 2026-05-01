@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Controller Panel</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; }
+        .btn { padding: 20px; margin: 10px; font-size: 20px; cursor: pointer; border-radius: 10px; border: none; }
+        .low { background: #3498db; color: white; }
+        .high { background: #e67e22; color: white; }
+        .hilo { background: #e74c3c; color: white; }
+        .reset { background: #95a5a6; color: white; }
+    </style>
+</head>
+<body>
+    <h1>ระบบควบคุมผลการเขย่า</h1>
+    <div id="status">สถานะปัจจุบัน: สุ่มปกติ</div>
+    
+    <button class="btn low" onclick="updateRemoteResult('low')">ล็อคผล: ต่ำ</button>
+    <button class="btn high" onclick="updateRemoteResult('high')">ล็อคผล: สูง</button>
+    <button class="btn hilo" onclick="updateRemoteResult('hilo')">ล็อคผล: 11</button>
+    <br>
+    <button class="btn reset" onclick="updateRemoteResult('normal')">ยกเลิกการล็อค (สุ่มปกติ)</button>
+
+    <script>
+        // ฟังก์ชันส่งค่าไปยังตัวกลาง (ตัวอย่างการส่งไป API)
+        async function updateRemoteResult(mode) {
+            document.getElementById('status').innerText = "กำลังบันทึกค่า: " + mode;
+            
+            // ในขั้นตอนถัดไป เราจะเขียนโค้ดเชื่อมต่อ Firebase หรือ Database ตรงนี้
+            console.log("ส่งคำสั่งล็อคผลไปที่ Database:", mode);
+            
+            // จำลองการบันทึกสำเร็จ
+            alert("ตั้งค่าผลเป็น " + mode + " เรียบร้อยแล้ว!");
+            document.getElementById('status').innerText = "สถานะปัจจุบัน: ล็อค " + mode;
+        }
+    </script>
+</body>
+</html>
