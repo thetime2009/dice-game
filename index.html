@@ -562,7 +562,7 @@ async function triggerCheat(target) {
     
     // --- แทรกบรรทัดนี้ลงไปตรงท้ายฟังก์ชัน ---
     // ใช้ result.status และ result.total เพื่อส่งค่าไปหา Siri
-    sendToSiri(result.status, result.total);
+    await sendToSiri(result.status, result.total);
     
     sendToSheet();
     
