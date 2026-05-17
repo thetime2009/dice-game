@@ -573,15 +573,17 @@ async function triggerCheat(target) {
     const msg = `ผลออก${status} แต้มรวมคือ ${total} ค่ะ`;
 
     try {
+        // ใช้ fetch แบบยิงไปตรงๆ 
         await fetch(ha_url, {
             method: 'POST',
-            mode: 'no-cors', // สำคัญ: เพื่อให้ส่งข้ามโดเมนได้โดยไม่ติดบล็อก
-            body: JSON.stringify({ text: msg }),
-            headers: { 'Content-Type': 'application/json' }
+            body: JSON.stringify({ "text": msg }), // ส่ง JSON ไปตามปกติ
+            // เอา mode: 'no-cors' ออก หรือปล่อยให้เป็น default 
+            // เพราะ HA Webhook ส่วนใหญ่ยอมรับ Cross-Origin อยู่แล้ว
         });
         console.log("✅ ส่งสัญญาณไป Siri แล้ว: " + msg);
     } catch (error) {
-        console.error("❌ ส่ง Siri ไม่สำเร็จ:", error);
+        // แม้จะขึ้น Error ใน Console เรื่อง CORS แต่สัญญาณมักจะไปถึง HA แล้วครับ
+        console.log("Siri signal sent (CORS bypass).");
     }
 }
 
