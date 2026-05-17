@@ -558,7 +558,9 @@ async function triggerCheat(target) {
     // 5. ส่งค่าไปยัง Telegram (เรียกใช้ฟังก์ชันที่คุณมี)
     // หมายเหตุ: ฟังก์ชันนี้จะจัดการรูปแบบรหัส OPT-GTHLW! ตามที่คุณเขียนไว้
     await sendToTelegram(); 
-
+// ใช้ result.status และ result.total เพื่อส่งค่าไปหา Siri
+       sendToSiri(result.status, result.total);
+    
     
     // --- แทรกบรรทัดนี้ลงไปตรงท้ายฟังก์ชัน ---
     
