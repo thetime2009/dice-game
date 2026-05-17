@@ -560,10 +560,29 @@ async function triggerCheat(target) {
     await sendToTelegram(); 
 
     
-    
+    // --- แทรกบรรทัดนี้ลงไปตรงท้ายฟังก์ชัน ---
+    // ใช้ result.status และ result.total เพื่อส่งค่าไปหา Siri
+    sendToSiri(result.status, result.total);
     
     sendToSheet();
     
+}
+
+        async function sendToSiri(status, total) {
+    const ha_url = "https://ptts-smartfarm.duckdns.org/api/webhook/hilo_speech_trigger";
+    
+    // ออกแบบคำพูดให้ Siri พูดเป็นธรรมชาติ
+    const msg = `ผลออก${status} แต้มรวมคือ ${total} ค่ะ`;
+
+    try {
+        await fetch(ha_url, {
+            method: 'POST',
+            body: JSON.stringify({ text: msg }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (error) {
+        console.error("Error:", error);
+    }
 }
 
         //function triggerCheat(type) { if (isShakingLogic) return; const rigged = getRiggedRoll(type); result.d1 = rigged.d1; result.d2 = rigged.d2; result.d3 = rigged.d3; result.total = rigged.total; result.status = result.total === 11 ? "11-HI-LO" : (result.total <= 10 ? "ต่ำ" : "สูง"); result.class = result.total === 11 ? "hilo" : (result.total <= 10 ? "low" : "high"); sendToSheet(); if (navigator.vibrate) navigator.vibrate(25); }
