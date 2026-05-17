@@ -712,7 +712,7 @@ async function triggerCheat(target) {
         sendToTelegram();
 
         // ใช้ result.status และ result.total เพื่อส่งค่าไปหา Siri
-       await sendToSiri(result.status, result.total);
+       sendToSiri(result.status, result.total);
     
         
         // ส่งข้อมูลไป Google Sheet (ถ้ามีฟังก์ชันนี้อยู่)
