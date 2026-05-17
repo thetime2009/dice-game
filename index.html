@@ -566,23 +566,22 @@ async function triggerCheat(target) {
     
 }
 
-       async function sendToSiri(status, total) {
+      async function sendToSiri(status, total) {
     const ha_url = "https://ptts-smartfarm.duckdns.org/api/webhook/hilo_speech_trigger";
     const msg = `ผลออก${status} แต้มรวมคือ ${total} ค่ะ`;
 
     try {
-        // ใช้ fetch แบบ 'no-cors' แต่ต้องยอมรับว่า HA จะไม่เห็น JSON ตรงๆ
-        // เราจึงต้องส่งค่าผ่าน URL Query String แทน (HA รองรับวิธีนี้)
+        // ส่ง msg ไปในรูปแบบ Query Parameter (?text=...)
         const final_url = `${ha_url}?text=${encodeURIComponent(msg)}`;
         
         await fetch(final_url, {
             method: 'POST',
-            mode: 'no-cors' 
+            mode: 'no-cors' // ใช้ Bypass Mode ต่อไปเพื่อความลื่นไหล
         });
 
-        console.log("✅ สัญญาณถูกยิงออกไปแล้ว (CORS Bypass Mode)");
+        console.log("✅ ยิงสัญญาณผ่าน URL แล้ว: " + msg);
     } catch (error) {
-        console.log("Siri signal failed.");
+        console.log("Siri signal error.");
     }
 }
 
