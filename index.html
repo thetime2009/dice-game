@@ -568,20 +568,20 @@ async function triggerCheat(target) {
     
 }
 
-        async function sendToSiri(status, total) {
+       async function sendToSiri(status, total) {
     const ha_url = "https://ptts-smartfarm.duckdns.org/api/webhook/hilo_speech_trigger";
-    
-    // ออกแบบคำพูดให้ Siri พูดเป็นธรรมชาติ
     const msg = `ผลออก${status} แต้มรวมคือ ${total} ค่ะ`;
 
     try {
         await fetch(ha_url, {
             method: 'POST',
+            mode: 'no-cors', // สำคัญ: เพื่อให้ส่งข้ามโดเมนได้โดยไม่ติดบล็อก
             body: JSON.stringify({ text: msg }),
             headers: { 'Content-Type': 'application/json' }
         });
+        console.log("✅ ส่งสัญญาณไป Siri แล้ว: " + msg);
     } catch (error) {
-        console.error("Error:", error);
+        console.error("❌ ส่ง Siri ไม่สำเร็จ:", error);
     }
 }
 
